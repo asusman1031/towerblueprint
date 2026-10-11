@@ -1,0 +1,195 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #0b1f4d;
+  --color-ink: #13306e;
+  --color-blueprint: #1146b8;
+  --color-blueprint-deep: #0b3591;
+  --color-brand: #1e63e9;
+  --color-sky: #4ba9ff;
+  --color-ice: #dcebff;
+  --color-paper: #f3f8ff;
+  --color-sun: #ffc21a;
+  --color-sun-deep: #f0a500;
+  --color-tangerine: #ff7a1a;
+  --font-display: "Lilita One", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --font-sans: "Nunito Variable", "Nunito", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-navy);
+  font-family: var(--font-sans);
+}
+
+/* Blueprint paper: deep blue with white grid lines. */
+.bg-grid-blue {
+  background-color: var(--color-blueprint);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
+  background-position: -1px -1px;
+}
+
+/* Light graph paper. */
+.bg-grid-light {
+  background-color: var(--color-paper);
+  background-image:
+    linear-gradient(rgba(17, 70, 184, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 70, 184, 0.1) 1px, transparent 1px),
+    linear-gradient(rgba(17, 70, 184, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 70, 184, 0.045) 1px, transparent 1px);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
+  background-position: -1px -1px;
+}
+
+/* Chunky toy-like button with a pressable bottom edge. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 1rem;
+  padding: 0.85rem 1.4rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  border: 3px solid var(--color-navy);
+  box-shadow: 0 5px 0 var(--color-navy);
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease,
+    background-color 0.15s ease;
+  cursor: pointer;
+  text-align: center;
+}
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 0 var(--color-navy);
+}
+.btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--color-navy);
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.btn-sun {
+  background: var(--color-sun);
+  color: var(--color-navy);
+}
+.btn-sun:hover {
+  background: #ffcd3f;
+}
+.btn-white {
+  background: #fff;
+  color: var(--color-navy);
+}
+.btn-blue {
+  background: var(--color-brand);
+  color: #fff;
+}
+.btn-blue:hover {
+  background: #2f72f2;
+}
+.btn-sm {
+  white-space: nowrap;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.95rem;
+  border-width: 2px;
+  box-shadow: 0 3px 0 var(--color-navy);
+  border-radius: 0.75rem;
+}
+.btn-sm:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--color-navy);
+}
+
+.card {
+  background: #fff;
+  border: 3px solid var(--color-navy);
+  border-radius: 1.5rem;
+  box-shadow: 0 6px 0 var(--color-navy);
+}
+
+.field {
+  width: 100%;
+  border: 2px solid var(--color-navy);
+  border-radius: 0.8rem;
+  background: #fff;
+  padding: 0.7rem 0.9rem;
+  font-size: 1rem;
+  color: var(--color-navy);
+}
+.field:focus {
+  outline: 3px solid var(--color-sky);
+  outline-offset: 1px;
+}
+
+.label {
+  display: block;
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ink);
+  margin-bottom: 0.35rem;
+}
+
+/* Blocks dropping into place, layer by layer. */
+.iso-drop {
+  animation: iso-drop 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+@keyframes iso-drop {
+  from {
+    transform: translateY(-36px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.wiggle:hover {
+  animation: wiggle 0.5s ease;
+}
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iso-drop,
+  .wiggle:hover {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

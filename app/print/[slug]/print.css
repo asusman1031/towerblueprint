@@ -1,0 +1,96 @@
+.sheet {
+  display: flex;
+  flex-direction: column;
+  width: 8.5in;
+  min-height: 11in;
+  margin: 0 auto 0.4in;
+  padding: 0.5in;
+  background: #fff;
+  box-shadow: 0 6px 24px rgba(11, 31, 77, 0.18);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+@media screen and (max-width: 8.6in) {
+  .sheet {
+    width: 100%;
+    min-height: 0;
+    padding: 0.35in 0.25in;
+  }
+}
+
+.title-block {
+  border: 2.5px solid var(--color-blueprint);
+  border-collapse: collapse;
+  color: var(--color-navy);
+}
+.title-block th,
+.title-block td {
+  border: 1.5px solid var(--color-blueprint);
+  padding: 0.35rem 0.6rem;
+}
+.title-block th {
+  width: 1%;
+  white-space: nowrap;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-blueprint);
+  background: var(--color-ice);
+}
+
+.parts {
+  border-collapse: collapse;
+  color: var(--color-navy);
+}
+.parts th {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-blueprint);
+  border-bottom: 2.5px solid var(--color-blueprint);
+  padding: 0.4rem 0.5rem;
+}
+.parts td {
+  border-bottom: 1.5px dashed rgba(17, 70, 184, 0.35);
+  padding: 0.55rem 0.5rem;
+}
+.parts tfoot td {
+  border-bottom: none;
+  border-top: 2.5px solid var(--color-blueprint);
+  color: var(--color-blueprint);
+}
+
+.step-card {
+  break-inside: avoid;
+}
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-root {
+    background: #fff !important;
+    padding: 0 !important;
+  }
+  .sheet {
+    margin: 0;
+    box-shadow: none;
+    width: 8.5in;
+    height: 11in;
+    min-height: 11in;
+    padding: 0.5in;
+    overflow: hidden;
+    break-after: page;
+  }
+  .sheet:last-child {
+    break-after: auto;
+  }
+}
