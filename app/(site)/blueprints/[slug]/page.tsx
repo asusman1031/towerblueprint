@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageProps<"/blueprints/[slug]
   if (!bp) return { title: "Blueprint not found" };
   return {
     title: `${bp.name} blueprint`,
-    description: `${bp.tagline} An official magnetic block tower blueprint designed by Sawyer, age 7.`,
+    description: `${bp.tagline} An original magnetic block tower blueprint made by Sawyer, age 7.`,
     openGraph: { images: bp.photo_url && !bp.photo_url.startsWith("/api/") ? [bp.photo_url] : ["/brand/logo.png"] },
   };
 }
@@ -90,6 +90,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   priceCents={bp.price_cents}
                   checkoutUrl={bp.checkout_url}
                   status={bp.status}
+                  previewUrl={bp.preview_url}
                 />
               </div>
             </div>
@@ -117,7 +118,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
             </li>
             <li className="flex gap-3">
               <span aria-hidden>🖨️</span>
-              <span>A printer for your official blueprint</span>
+              <span>A printer for Sawyer&apos;s blueprint</span>
             </li>
           </ul>
         </div>
@@ -128,6 +129,18 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
             <p className="mt-3 text-lg text-ink">{bp.fun_fact}</p>
           </div>
         ) : null}
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <div className="bg-grid-blue flex flex-col items-start gap-4 rounded-[1.5rem] border-[3px] border-navy p-6 text-white sm:flex-row sm:items-center">
+          <div className="flex-1">
+            <p className="font-display text-3xl">Built your own tower?</p>
+            <p className="mt-1 text-ice">Sawyer will make your design a blueprint too.</p>
+          </div>
+          <Link href="/your-design" className="btn btn-sun">
+            Send Sawyer your tower
+          </Link>
+        </div>
       </section>
     </>
   );

@@ -3,11 +3,12 @@ import Link from "next/link";
 import BlueprintCard from "@/components/BlueprintCard";
 import BlueprintPeek from "@/components/BlueprintPeek";
 import BuildingTower from "@/components/BuildingTower";
+import OriginalPreview from "@/components/OriginalPreview";
 import Photo from "@/components/Photo";
 import SignupForm from "@/components/SignupForm";
 import Track from "@/components/Track";
-import { getArchitectNote, getBlueprints } from "@/lib/data";
-import { towerTotals } from "@/lib/tower";
+import { getBlueprints, getSettings } from "@/lib/data";
+import { formatPrice, SAMPLE_CUSTOM_TOWER, towerTotals } from "@/lib/tower";
 
 export const revalidate = 60;
 
@@ -16,30 +17,31 @@ const STEPS = [
     n: 1,
     color: "bg-sun",
     title: "Pick a blueprint",
-    body: "Every tower is designed and tested by Sawyer. Choose one that matches how many blocks you have.",
+    body: "Every tower is designed, built, and tested by Sawyer. Choose one that matches how many blocks you have.",
   },
   {
     n: 2,
     color: "bg-sky",
     title: "Count your blocks",
-    body: "The parts list tells you exactly how many blocks you need. Counting is part of the fun!",
+    body: "Each blueprint tells you how many blocks you need. Counting is part of the fun!",
   },
   {
     n: 3,
     color: "bg-tangerine",
-    title: "Build layer by layer",
-    body: "Each step shows a map of one layer from the top, and how many times to stack it.",
+    title: "Build it Sawyer's way",
+    body: "Follow Sawyer's own instructions, layer by layer, from the base all the way to the top.",
   },
   {
     n: 4,
     color: "bg-[#22c063]",
     title: "Show it off",
-    body: "Fill in your “I built it!” certificate and snap a photo of your giant tower.",
+    body: "Snap a photo of your giant tower. Built your own design? Send it to Sawyer!",
   },
 ];
 
 export default async function Home() {
-  const [blueprints, note] = await Promise.all([getBlueprints(), getArchitectNote()]);
+  const [blueprints, settings] = await Promise.all([getBlueprints(), getSettings()]);
+  const note = settings.architectNote;
   const featured = blueprints.find((b) => b.status === "live") ?? blueprints[0];
   const featuredTotals = featured ? towerTotals(featured.sections) : null;
   const biggest = Math.max(0, ...blueprints.map((b) => towerTotals(b.sections).blocks));
@@ -67,7 +69,8 @@ export default async function Home() {
               <span className="text-sun">One layer at a time.</span>
             </h1>
             <p className="mt-4 text-center text-lg font-semibold text-ice md:text-left">
-              Official step-by-step blueprints for magnetic block towers, designed and tested by Sawyer, age 7.
+              Real blueprints for giant magnetic block towers, made by Sawyer, age 7. He designs every tower, builds it,
+              and writes the instructions himself.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3 md:justify-start">
               <Link href="/blueprints" className="btn btn-sun">
@@ -176,19 +179,22 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* What's inside */}
+      {/* Sawyer originals */}
       {featured ? (
         <section className="bg-ice overflow-x-clip border-y-[3px] border-navy">
           <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 md:grid-cols-2">
             <div>
-              <h2 className="font-display text-4xl text-navy sm:text-5xl">What&apos;s in an official blueprint?</h2>
+              <h2 className="font-display text-4xl text-navy sm:text-5xl">Every blueprint is a Sawyer original</h2>
+              <p className="mt-4 text-lg text-ink">
+                Sawyer builds every tower for real. Then he writes the blueprint himself: how big each layer is, how many
+                to stack, and a photo of the finished tower. That&apos;s exactly what you get.
+              </p>
               <ul className="mt-6 space-y-4 text-lg text-ink">
                 {[
-                  ["📐", "A cover drawing of the whole tower"],
-                  ["🧮", "A parts list with the block math worked out"],
-                  ["🗺️", "A top-down map of every layer, step by step"],
-                  ["📏", "A height chart so you know how tall you're getting"],
-                  ["🏆", "An “I built it!” certificate signed by the architect"],
+                  ["✍️", "Sawyer's own instructions, in his words"],
+                  ["📸", "A photo of his real, finished tower"],
+                  ["🧊", "How many blocks you'll need"],
+                  ["🖨️", "Print it at home and build it as many times as you want"],
                 ].map(([icon, text]) => (
                   <li key={text} className="flex gap-3">
                     <span className="text-2xl" aria-hidden>
@@ -198,12 +204,50 @@ export default async function Home() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-6 text-ink">Print it at home on regular paper. Build it as many times as you want.</p>
+              <Link href={`/blueprints/${featured.slug}`} className="btn btn-sun mt-8">
+                Get the {featured.name} blueprint
+              </Link>
             </div>
-            <BlueprintPeek sections={featured.sections} name={featured.name} number={featured.number} />
+            {featured.preview_url ? (
+              <OriginalPreview src={featured.preview_url} name={featured.name} />
+            ) : featured.photo_url ? (
+              <Photo
+                src={featured.photo_url}
+                alt={`Sawyer's ${featured.name}`}
+                className="mx-auto h-[28rem] w-56 rounded-2xl border-[3px] border-navy object-cover"
+              />
+            ) : null}
           </div>
         </section>
       ) : null}
+
+      {/* Custom design service */}
+      <section className="bg-grid-blue overflow-x-clip text-white">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 md:grid-cols-2">
+          <div className="order-2 md:order-1">
+            <BlueprintPeek sections={SAMPLE_CUSTOM_TOWER.sections} name={SAMPLE_CUSTOM_TOWER.name} badge="Sample" />
+          </div>
+          <div className="order-1 md:order-2">
+            <span className="rounded-full border-2 border-navy bg-sun px-3 py-1 font-display text-navy">
+              Got your own tower?
+            </span>
+            <h2 className="mt-4 font-display text-4xl leading-[1.05] sm:text-5xl">
+              Sawyer will make your design a blueprint too!
+            </h2>
+            <p className="mt-4 text-lg text-ice">
+              Send Sawyer a photo of your tower and how you built it. He&apos;ll turn it into an official blueprint
+              with a drawing of your tower, the block math, a map of every layer, and an &ldquo;I built it!&rdquo;
+              certificate with your name on it.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-4">
+              <Link href="/your-design" className="btn btn-sun">
+                Send Sawyer your tower
+              </Link>
+              <span className="font-display text-xl">{formatPrice(settings.customPriceCents)}</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* The architect */}
       <section id="architect" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-16 sm:px-6">

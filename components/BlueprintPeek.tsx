@@ -3,7 +3,15 @@ import GridDiagram from "@/components/GridDiagram";
 import { towerTotals, type Section } from "@/lib/tower";
 
 // A tilted mini "page" from the official blueprint, for marketing sections.
-export default function BlueprintPeek({ sections, name, number }: { sections: Section[]; name: string; number: number }) {
+export default function BlueprintPeek({
+  sections,
+  name,
+  badge,
+}: {
+  sections: Section[];
+  name: string;
+  badge: string;
+}) {
   const t = towerTotals(sections);
   const first = sections[0];
   return (
@@ -12,7 +20,7 @@ export default function BlueprintPeek({ sections, name, number }: { sections: Se
       <div className="relative -rotate-2 rounded-2xl border-[3px] border-navy bg-white p-5 shadow-[0_8px_0_#0b1f4d]">
         <div className="flex items-center justify-between border-b-2 border-blueprint pb-2 text-blueprint">
           <span className="text-[0.65rem] font-extrabold tracking-[0.2em] uppercase">Official Blueprint</span>
-          <span className="font-display text-sm">No. {String(number).padStart(3, "0")}</span>
+          <span className="font-display text-sm">{badge}</span>
         </div>
         <p className="mt-3 font-display text-2xl text-blueprint">{name}</p>
         <div className="mt-3 grid grid-cols-[1fr_auto] items-end gap-4">

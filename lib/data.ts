@@ -19,7 +19,18 @@ export type Blueprint = {
   checkout_url: string | null;
   status: Status;
   photo_url: string | null;
+  designer: string;
+  original_pages: number;
+  preview_url: string | null;
   sort_order: number;
+};
+
+export type OriginalFile = { id: number; mime: string; filename: string };
+
+export type SiteSettings = {
+  architectNote: string;
+  customPriceCents: number;
+  customOpen: boolean;
 };
 
 // Used until the database is connected, and as the seed row in Supabase.
@@ -31,7 +42,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     name: "Jeddah Tower",
     tagline: "A super-skinny supertall that goes up, up, up.",
     description:
-      "Sawyer's very first official blueprint. Four sections that get skinnier as they go up, just like the real tower. It starts with a wide, strong base and ends with a spire one block wide.",
+      "Sawyer's very first blueprint. Four sections that get skinnier as they go up, just like the real tower. It starts with a wide, strong base and ends with a spire one block wide.",
     inspired_by: "Jeddah Tower, Saudi Arabia",
     fun_fact:
       "The real Jeddah Tower is being built in Saudi Arabia. When it's finished it is planned to be about 1 kilometer tall (more than 3,000 feet), which would make it the tallest building in the world, taller than the Burj Khalifa.",
@@ -46,12 +57,15 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     checkout_url: null,
     status: "live",
     photo_url: "/photos/jeddah-tower.jpg",
+    designer: "",
+    original_pages: 0,
+    preview_url: "/previews/jeddah-tower-original.jpg",
     sort_order: 1,
   },
 ];
 
 export const DEFAULT_ARCHITECT_NOTE =
-  "Hi! I'm Sawyer and I'm 7. I love building really tall towers with magnetic blocks. I design every tower myself, test it to make sure it stands up, and then turn it into a blueprint so you can build it too. My first one is the Jeddah Tower. It has 327 blocks! What should I build next?";
+  "Hi! I'm Sawyer and I'm 7. I love building really tall towers with magnetic blocks. I design every tower myself, test it to make sure it stands up, and then turn it into a blueprint so you can build it too. My first one is the Jeddah Tower. It has 327 blocks! Built your own tower? Send it to me and I can make it a blueprint too.";
 
 function normalize(row: Record<string, unknown>): Blueprint {
   return { ...(row as unknown as Blueprint), sections: cleanSections(row.sections) };
@@ -101,9 +115,34 @@ export async function getPrint(slug: string, key: string): Promise<Blueprint | n
   return row ? normalize(row) : null;
 }
 
-export async function getArchitectNote(): Promise<string> {
+export const DEFAULT_CUSTOM_PRICE_CENTS = 1000;
+
+export async function getSettings(): Promise<SiteSettings> {
+  const defaults: SiteSettings = {
+    architectNote: DEFAULT_ARCHITECT_NOTE,
+    customPriceCents: DEFAULT_CUSTOM_PRICE_CENTS,
+    customOpen: true,
+  };
   const sb = db();
-  if (!sb) return DEFAULT_ARCHITECT_NOTE;
-  const { data } = await sb.from("site_settings").select("value").eq("key", "architect_note").maybeSingle();
-  return data?.value?.trim() || DEFAULT_ARCHITECT_NOTE;
+  if (!sb) return defaults;
+  const { data, error } = await sb.from("site_settings").select("key, value");
+  if (error || !data) return defaults;
+  const map = Object.fromEntries(data.map((r) => [r.key, String(r.value ?? "")]));
+  const price = Number(map.custom_price_cents);
+  return {
+    architectNote: map.architect_note?.trim() || defaults.architectNote,
+    customPriceCents: map.custom_price_cents && Number.isFinite(price) ? price : defaults.customPriceCents,
+    customOpen: map.custom_open !== "false",
+  };
+}
+
+export async function getOriginals(slug: string, key: string): Promise<OriginalFile[]> {
+  const sb = db();
+  if (!sb || !key) return [];
+  const { data, error } = await sb.rpc("get_originals", { p_slug: slug, p_key: key });
+  if (error) {
+    console.error("getOriginals", error.message);
+    return [];
+  }
+  return (data ?? []) as OriginalFile[];
 }

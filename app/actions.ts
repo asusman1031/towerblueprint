@@ -38,3 +38,48 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
   }
   return MESSAGES[String(data)] ?? { ok: false, message: "Something went wrong. Please try again." };
 }
+
+const DESIGN_MESSAGES: Record<string, { ok: boolean; message: string }> = {
+  sent: { ok: true, message: "Sawyer got your tower! He'll email you soon about making your blueprint." },
+  need_grown_up: MESSAGES.need_grown_up,
+  bad_email: MESSAGES.bad_email,
+  need_details: { ok: false, message: "Tell Sawyer how you built it, or add a photo, so he can make your blueprint." },
+  bad_photo: { ok: false, message: "That photo didn't work. Try a JPG or PNG." },
+  closed: { ok: false, message: "Sawyer isn't taking new designs right now. Please check back soon!" },
+  busy: { ok: false, message: "Lots of towers came in today! Please try again tomorrow." },
+};
+
+export type DesignInput = {
+  email: string;
+  grownUp: boolean;
+  builderName: string;
+  towerName: string;
+  description: string;
+  photoMime: string;
+  photoB64: string;
+};
+
+export async function submitDesign(input: DesignInput): Promise<{ ok: boolean; message: string }> {
+  const email = String(input.email ?? "").trim();
+  if (!input.grownUp) return DESIGN_MESSAGES.need_grown_up;
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || email.length > 254) return DESIGN_MESSAGES.bad_email;
+  const photo = String(input.photoB64 ?? "");
+  if (photo.length > 1_400_000) return { ok: false, message: "That photo is too big. Try a smaller one." };
+
+  const sb = db();
+  if (!sb) return { ok: false, message: "Design requests open very soon. Please check back in a day or two!" };
+  const { data, error } = await sb.rpc("submit_design_request", {
+    p_email: email,
+    p_grown_up: true,
+    p_builder_name: String(input.builderName ?? "").slice(0, 40),
+    p_tower_name: String(input.towerName ?? "").slice(0, 80),
+    p_description: String(input.description ?? "").slice(0, 2000),
+    p_photo_mime: photo ? input.photoMime : null,
+    p_photo_b64: photo || null,
+  });
+  if (error) {
+    console.error("submit_design_request", error.message);
+    return { ok: false, message: "Something went wrong. Please try again in a minute." };
+  }
+  return DESIGN_MESSAGES[String(data)] ?? { ok: false, message: "Something went wrong. Please try again." };
+}

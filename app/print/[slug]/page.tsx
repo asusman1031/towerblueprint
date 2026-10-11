@@ -4,7 +4,7 @@ import Link from "next/link";
 import IsoTower from "@/components/IsoTower";
 import PlacementDiagram from "@/components/PlacementDiagram";
 import PrintButton from "@/components/PrintButton";
-import { getPrint, SEED_BLUEPRINTS, type Blueprint } from "@/lib/data";
+import { getOriginals, getPrint, SEED_BLUEPRINTS, type Blueprint, type OriginalFile } from "@/lib/data";
 import { dbReady } from "@/lib/supabase";
 import { difficultyLabel, sectionStats, towerTotals, type SectionStats } from "@/lib/tower";
 import "./print.css";
@@ -117,10 +117,72 @@ function StepCard({
   );
 }
 
+function OriginalsView({ bp, files, keyParam }: { bp: Blueprint; files: OriginalFile[]; keyParam: string }) {
+  const url = (f: OriginalFile, download = false) =>
+    `/api/original/${bp.slug}/${f.id}?key=${encodeURIComponent(keyParam)}${download ? "&download=1" : ""}`;
+  const images = files.filter((f) => f.mime.startsWith("image/"));
+  const pdfs = files.filter((f) => f.mime === "application/pdf");
+  return (
+    <main className="print-root bg-[#e9eef6] py-6">
+      <div className="no-print mx-auto mb-6 max-w-[8.5in] px-4">
+        <div className="card flex flex-wrap items-center gap-4 p-5">
+          <Image src="/brand/mark.png" alt="" width={400} height={270} className="h-12 w-auto" loading="eager" />
+          <div className="min-w-0 flex-1">
+            <p className="font-display text-2xl text-navy">Sawyer&apos;s original {bp.name} blueprint</p>
+            <p className="text-sm text-ink">Made by Sawyer himself. Keep this link to print it again anytime.</p>
+          </div>
+          {images.length && !pdfs.length ? <PrintButton /> : null}
+        </div>
+        {pdfs.length ? (
+          <div className="mt-4 flex flex-wrap gap-3">
+            {pdfs.map((f) => (
+              <span key={f.id} className="flex flex-wrap gap-3">
+                <a href={url(f)} target="_blank" rel="noopener" className="btn btn-sun">
+                  🖨️ Open &amp; print{pdfs.length > 1 ? ` ${f.filename || "PDF"}` : ""}
+                </a>
+                <a href={url(f, true)} className="btn btn-white">
+                  ⬇️ Download PDF
+                </a>
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </div>
+
+      {pdfs.map((f) => (
+        <div key={f.id} className="no-print mx-auto mb-6 max-w-[8.5in] px-4">
+          <object
+            data={url(f)}
+            type="application/pdf"
+            className="h-[11in] w-full rounded-xl border-[3px] border-navy bg-white"
+            aria-label={`${bp.name} original blueprint`}
+          >
+            <p className="p-6 text-center text-ink">
+              Your browser can&apos;t show the PDF here.{" "}
+              <a href={url(f)} className="font-bold text-brand underline">
+                Open it in a new tab
+              </a>
+              .
+            </p>
+          </object>
+        </div>
+      ))}
+
+      {images.map((f) => (
+        <section key={f.id} className="sheet items-center justify-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={url(f)} alt={`${bp.name} original blueprint page`} className="max-h-[10in] max-w-full object-contain" />
+        </section>
+      ))}
+    </main>
+  );
+}
+
 export default async function PrintPage({ params, searchParams }: PageProps<"/print/[slug]">) {
   const { slug } = await params;
   const { key } = await searchParams;
-  let bp = await getPrint(slug, typeof key === "string" ? key : "");
+  const keyParam = typeof key === "string" ? key : "";
+  let bp = await getPrint(slug, keyParam);
   // Local development without a database: preview the seed blueprint.
   if (!bp && !dbReady() && process.env.NODE_ENV !== "production") {
     bp = SEED_BLUEPRINTS.find((b) => b.slug === slug) ?? null;
@@ -142,6 +204,9 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
       </main>
     );
   }
+
+  const originals = await getOriginals(bp.slug, keyParam);
+  if (originals.length) return <OriginalsView bp={bp} files={originals} keyParam={keyParam} />;
 
   const stats = sectionStats(bp.sections);
   const t = towerTotals(bp.sections);
@@ -185,8 +250,8 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
         <table className="title-block w-full text-left text-sm">
           <tbody>
             <tr>
-              <th>Architect</th>
-              <td className="font-display text-lg">Sawyer (age 7)</td>
+              <th>{bp.designer ? "Designer" : "Architect"}</th>
+              <td className="font-display text-lg">{bp.designer || "Sawyer (age 7)"}</td>
               <th>Blocks</th>
               <td className="font-display text-lg">{t.blocks}</td>
               <th>Height</th>
@@ -203,8 +268,8 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
               <td>{difficultyLabel(bp.difficulty)}</td>
             </tr>
             <tr>
-              <th>Inspired by</th>
-              <td colSpan={3}>{bp.inspired_by || "Sawyer's imagination"}</td>
+              <th>{bp.designer ? "Blueprint by" : "Inspired by"}</th>
+              <td colSpan={3}>{bp.designer ? "Sawyer (age 7), Tower Blueprints for Kids" : bp.inspired_by || "Sawyer's imagination"}</td>
               <th>Scale</th>
               <td>1 block = 1 block</td>
             </tr>
@@ -316,6 +381,7 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
           <p className="mt-2 font-bold text-navy">
             {t.blocks} blocks · {t.height} blocks tall
           </p>
+          {bp.designer ? <p className="mt-1 text-ink">Designed by {bp.designer}</p> : null}
           <div className="mt-12 grid w-full grid-cols-2 gap-10">
             <div>
               <div className="h-10 border-b-[3px] border-blueprint" />

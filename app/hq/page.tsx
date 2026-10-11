@@ -5,10 +5,11 @@ import { cookies, headers } from "next/headers";
 import { deleteSale, logout } from "@/app/hq/actions";
 import BlueprintManager from "@/components/hq/BlueprintManager";
 import LoginForm from "@/components/hq/LoginForm";
+import CustomSettingsForm from "@/components/hq/CustomSettingsForm";
 import NoteForm from "@/components/hq/NoteForm";
 import SaleForm from "@/components/hq/SaleForm";
 import type { HqDashboard } from "@/components/hq/types";
-import { getArchitectNote } from "@/lib/data";
+import { DEFAULT_ARCHITECT_NOTE, DEFAULT_CUSTOM_PRICE_CENTS } from "@/lib/data";
 import { db } from "@/lib/supabase";
 import { cleanSections, formatPrice } from "@/lib/tower";
 
@@ -74,7 +75,9 @@ export default async function HQPage() {
 
   const h = await headers();
   const origin = `${h.get("x-forwarded-proto") ?? "https"}://${h.get("x-forwarded-host") ?? h.get("host")}`;
-  const note = await getArchitectNote();
+  const note = dash.settings?.architect_note?.trim() || DEFAULT_ARCHITECT_NOTE;
+  const customPrice = Number(dash.settings?.custom_price_cents ?? DEFAULT_CUSTOM_PRICE_CENTS);
+  const customOpen = dash.settings?.custom_open !== "false";
   const blueprints = dash.blueprints.map((b) => ({ ...b, sections: cleanSections(b.sections) }));
   const n = (v: unknown) => Number(v ?? 0);
   const visitsTotal = n(dash.total.visit);
@@ -188,7 +191,7 @@ export default async function HQPage() {
         <section>
           <h2 className="font-display text-3xl text-navy">My blueprints</h2>
           <p className="mb-4 text-ink">Design a tower, watch it build, and publish it when it&apos;s ready.</p>
-          <BlueprintManager blueprints={blueprints} origin={origin} />
+          <BlueprintManager blueprints={blueprints} requests={dash.requests ?? []} origin={origin} />
         </section>
 
         {/* Cash register */}
@@ -219,6 +222,13 @@ export default async function HQPage() {
           )}
         </section>
 
+        {/* Custom design service settings */}
+        <section className="card p-5">
+          <h2 className="font-display text-3xl text-navy">&ldquo;Make your design a blueprint&rdquo; settings</h2>
+          <p className="mb-4 text-ink">How much do you charge to turn someone&apos;s tower into a blueprint?</p>
+          <CustomSettingsForm priceCents={Number.isFinite(customPrice) ? customPrice : DEFAULT_CUSTOM_PRICE_CENTS} open={customOpen} />
+        </section>
+
         {/* Architect note */}
         <section className="card p-5">
           <h2 className="font-display text-3xl text-navy">Meet the Architect</h2>
@@ -242,6 +252,10 @@ export default async function HQPage() {
             <li>
               <strong>Emails:</strong> Builders Club and reservation emails are in Supabase, table{" "}
               <code>private.signups</code>.
+            </li>
+            <li>
+              <strong>Design requests:</strong> reply to the grown-up&apos;s email to confirm and send a payment link.
+              Once paid, use &ldquo;Copy link to send&rdquo; on the request and email them their blueprint.
             </li>
           </ul>
         </section>

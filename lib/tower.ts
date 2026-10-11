@@ -112,3 +112,14 @@ export function formatPrice(cents: number | null | undefined) {
   const dollars = cents / 100;
   return Number.isInteger(dollars) ? `$${dollars}` : `$${dollars.toFixed(2)}`;
 }
+
+// A made-up tower used to show what a custom blueprint looks like,
+// so marketing never gives away a real blueprint's recipe.
+export const SAMPLE_CUSTOM_TOWER: { name: string; sections: Section[] } = {
+  name: "Your Tower Here",
+  sections: [
+    { w: 4, d: 4, count: 4 },
+    { w: 2, d: 2, count: 8 },
+    { w: 1, d: 1, count: 10 },
+  ],
+};

@@ -6,6 +6,19 @@ export type HqBlueprint = Blueprint & {
   views: number;
   buy_clicks: number;
   sales: number;
+  originals: { id: number; mime: string; filename: string }[];
+};
+
+export type HqRequest = {
+  id: number;
+  email: string;
+  builder_name: string;
+  tower_name: string;
+  description: string;
+  status: "new" | "making" | "done" | "declined";
+  blueprint_id: string | null;
+  created_at: string;
+  has_photo: boolean;
 };
 
 export type HqSale = {
@@ -26,4 +39,6 @@ export type HqDashboard = {
   sales_cents: number;
   recent_sales: HqSale[];
   blueprints: HqBlueprint[];
+  requests: HqRequest[];
+  settings: Partial<Record<"architect_note" | "custom_price_cents" | "custom_open", string>>;
 };

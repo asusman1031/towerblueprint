@@ -1,6 +1,6 @@
 # Tower Blueprints for Kids
 
-Sawyer (age 7) designs giant towers out of magnetic cube blocks. This site sells the official, printable blueprints so other kids can build them.
+Sawyer (age 7) designs giant towers out of magnetic cube blocks and writes the blueprints himself. This site sells his original blueprints so other kids can build them, and offers a custom service: **"Sawyer will make your design a blueprint too."**
 
 Live at **towerblueprintsforkids.com** (once the domain is connected).
 
@@ -9,12 +9,24 @@ Live at **towerblueprintsforkids.com** (once the domain is connected).
 | Route | What it is |
 | --- | --- |
 | `/` | Home: animated tower, how it works, Meet the Architect, Builders Club sign-up |
-| `/blueprints`, `/blueprints/[slug]` | Catalog and blueprint pages with price and order button |
-| `/print/[slug]?key=…` | The product: a printable 5-page official blueprint (cover, parts-list math, layer-by-layer steps, certificate). Only opens with the blueprint's secret key. |
-| `/hq` | **Architect HQ**, Sawyer's passcode-protected dashboard: scoreboard, visitor-to-buyer funnel, tower designer with live 3D preview, cash register, and his home-page note |
+| `/blueprints`, `/blueprints/[slug]` | Catalog and blueprint pages with price, order button, and a blurred peek at Sawyer's original |
+| `/your-design` | Custom blueprint requests: a grown-up sends a photo and description of their kid's tower |
+| `/print/[slug]?key=…` | Delivery page, opened only with the blueprint's secret key. Shows **Sawyer's original files** (PDF or photos) when uploaded; otherwise a generated 5-page blueprint (cover, parts-list math, layer-by-layer steps, certificate), which is what custom blueprints use. |
+| `/hq` | **Architect HQ**, Sawyer's passcode-protected dashboard: scoreboard, visitor-to-buyer funnel, tower designer with live 3D preview, original-file uploads, design-request inbox, cash register, custom-blueprint price, and his home-page note |
 | `/grown-ups` | Parent info and privacy |
 
 Every tower is just data: a list of sections, bottom first (`{ w, d, count }`). The isometric drawings, block math, step pages, and placement maps are all generated from it (`lib/tower.ts`, `components/IsoTower.tsx`).
+
+## Sawyer's original files
+
+This repo is public, so originals are never committed. Upload them in HQ (Edit a tower, then "Upload PDF or photo"). PDFs up to 3 MB; photos are resized in the browser. A small blurred preview is made automatically from photos; for PDFs, add a blurred preview image under `public/previews/` and set the blueprint's `preview_url`.
+
+## Custom blueprints ("Sawyer will make your design a blueprint too")
+
+1. A request arrives in HQ under Design requests (photo, description, grown-up's email).
+2. Reply to the grown-up to confirm and arrange payment.
+3. Click "Make the blueprint". The designer opens prefilled; enter the sections and save. It stays a secret draft, linked to the request.
+4. "Copy link to send" and email it. Mark the request Sent.
 
 ## Stack
 

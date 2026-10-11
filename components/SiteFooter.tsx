@@ -17,6 +17,9 @@ export default function SiteFooter() {
           <Link href="/blueprints" className="hover:text-white">
             All blueprints
           </Link>
+          <Link href="/your-design" className="hover:text-white">
+            Make my design a blueprint
+          </Link>
           <Link href="/#club" className="hover:text-white">
             Builders Club
           </Link>

@@ -54,6 +54,7 @@ export type BlueprintInput = {
   price_cents: number;
   checkout_url: string;
   status: string;
+  designer: string;
 };
 
 function slugify(s: string) {
@@ -95,6 +96,7 @@ export async function saveBlueprint(input: BlueprintInput): Promise<{ ok: boolea
       price_cents: Math.max(0, Math.min(100000, Math.round(Number(input.price_cents) || 0))),
       checkout_url: checkout,
       status,
+      designer: String(input.designer ?? "").trim().slice(0, 40),
     },
   });
   if (error) {
@@ -155,4 +157,69 @@ export async function saveNote(_prev: FormState, formData: FormData): Promise<Fo
   if (error || !data) return { ok: false, message: "Couldn't save your note." };
   revalidatePath("/", "layout");
   return { ok: true, message: "Your note is on the website now! ✨" };
+}
+
+export async function uploadOriginal(
+  slug: string,
+  mime: string,
+  filename: string,
+  b64: string,
+  previewB64: string,
+): Promise<{ ok: boolean; message: string }> {
+  const sb = db();
+  if (!sb) return { ok: false, message: "Database not connected." };
+  if (!["application/pdf", "image/jpeg", "image/png"].includes(mime)) {
+    return { ok: false, message: "Use a PDF, JPG, or PNG file." };
+  }
+  if (b64.length > 4_300_000) return { ok: false, message: "That file is too big (3 MB max). Try saving a smaller PDF." };
+  const { data, error } = await sb.rpc("hq_add_original", {
+    p_token: await token(),
+    p_slug: slug,
+    p_mime: mime,
+    p_filename: filename.slice(0, 120),
+    p_b64: b64,
+    p_preview_b64: previewB64 || null,
+  });
+  if (error || !data) {
+    if (error) console.error("hq_add_original", error.message);
+    return { ok: false, message: "Couldn't upload that file." };
+  }
+  revalidatePath("/", "layout");
+  return { ok: true, message: "Your original is uploaded! 📄" };
+}
+
+export async function deleteOriginal(id: number): Promise<boolean> {
+  const sb = db();
+  if (!sb) return false;
+  const { data } = await sb.rpc("hq_delete_original", { p_token: await token(), p_id: id });
+  revalidatePath("/", "layout");
+  return Boolean(data);
+}
+
+export async function setRequest(id: number, status: string, blueprintId?: string): Promise<boolean> {
+  const sb = db();
+  if (!sb) return false;
+  const { data } = await sb.rpc("hq_set_request", {
+    p_token: await token(),
+    p_id: id,
+    p_status: status,
+    p_blueprint_id: blueprintId ?? null,
+  });
+  revalidatePath("/hq");
+  return Boolean(data);
+}
+
+export async function saveCustomSettings(_prev: FormState, formData: FormData): Promise<FormState> {
+  const sb = db();
+  if (!sb) return { ok: false, message: "Database not connected." };
+  const dollars = Number(formData.get("price"));
+  if (!Number.isFinite(dollars) || dollars < 0 || dollars > 1000) return { ok: false, message: "Type a price in dollars." };
+  const t = await token();
+  const results = await Promise.all([
+    sb.rpc("hq_set_setting", { p_token: t, p_key: "custom_price_cents", p_value: String(Math.round(dollars * 100)) }),
+    sb.rpc("hq_set_setting", { p_token: t, p_key: "custom_open", p_value: formData.get("open") === "on" ? "true" : "false" }),
+  ]);
+  if (results.some((r) => r.error || !r.data)) return { ok: false, message: "Couldn't save. Try again?" };
+  revalidatePath("/", "layout");
+  return { ok: true, message: "Saved! ✨" };
 }

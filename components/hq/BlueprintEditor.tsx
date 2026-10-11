@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { saveBlueprint, uploadPhoto } from "@/app/hq/actions";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { deleteOriginal, saveBlueprint, uploadOriginal, uploadPhoto } from "@/app/hq/actions";
 import IsoTower from "@/components/IsoTower";
+import { fileToBase64, pageWithPreview, shrinkImage } from "@/lib/image-client";
 import { MAX_LAYERS, MAX_SIDE, sectionStats, towerTotals, type Section } from "@/lib/tower";
 import type { HqBlueprint } from "./types";
 
@@ -20,7 +21,10 @@ type Draft = {
   price: string;
   checkout_url: string;
   status: "draft" | "coming_soon" | "live";
+  designer: string;
 };
+
+export type EditorSeed = { name: string; designer: string; description: string };
 
 const STATUS = [
   { v: "draft", label: "🤫 Secret draft", hint: "Only you can see it" },
@@ -28,13 +32,13 @@ const STATUS = [
   { v: "live", label: "🚀 Live!", hint: "People can get the blueprint" },
 ] as const;
 
-function toDraft(bp?: HqBlueprint): Draft {
+function toDraft(bp?: HqBlueprint, seed?: EditorSeed): Draft {
   if (!bp) {
     return {
       slug: "",
-      name: "",
+      name: seed?.name ?? "",
       tagline: "",
-      description: "",
+      description: seed?.description ?? "",
       inspired_by: "",
       fun_fact: "",
       sections: [
@@ -46,6 +50,7 @@ function toDraft(bp?: HqBlueprint): Draft {
       price: "5",
       checkout_url: "",
       status: "draft",
+      designer: seed?.designer ?? "",
     };
   }
   return {
@@ -61,6 +66,7 @@ function toDraft(bp?: HqBlueprint): Draft {
     price: (bp.price_cents / 100).toString(),
     checkout_url: bp.checkout_url ?? "",
     status: bp.status,
+    designer: bp.designer ?? "",
   };
 }
 
@@ -108,30 +114,26 @@ function Stepper({
   );
 }
 
-async function resizeImage(file: File): Promise<{ mime: string; b64: string }> {
-  const url = URL.createObjectURL(file);
-  try {
-    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const i = new Image();
-      i.onload = () => resolve(i);
-      i.onerror = reject;
-      i.src = url;
-    });
-    const scale = Math.min(1, 1400 / Math.max(img.width, img.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(img.width * scale);
-    canvas.height = Math.round(img.height * scale);
-    canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
-    return { mime: "image/jpeg", b64: dataUrl.split(",")[1] };
-  } finally {
-    URL.revokeObjectURL(url);
-  }
-}
-
-export default function BlueprintEditor({ blueprint, onDone }: { blueprint?: HqBlueprint; onDone: () => void }) {
+export default function BlueprintEditor({
+  blueprint,
+  blueprints,
+  seed,
+  onDone,
+  onSaved,
+}: {
+  blueprint?: HqBlueprint;
+  blueprints: HqBlueprint[];
+  seed?: EditorSeed;
+  onDone: () => void;
+  onSaved?: (id: string) => void;
+}) {
   const router = useRouter();
-  const [d, setD] = useState<Draft>(() => toDraft(blueprint));
+  const [d, setD] = useState<Draft>(() => toDraft(blueprint, seed));
+  const [origMsg, setOrigMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [origBusy, setOrigBusy] = useState(false);
+  const saved = blueprints.find((b) => b.id === d.id);
+  const rootRef = useRef<HTMLDivElement>(null);
+  useEffect(() => rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), []);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [photoMsg, setPhotoMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, start] = useTransition();
@@ -168,10 +170,12 @@ export default function BlueprintEditor({ blueprint, onDone }: { blueprint?: HqB
         price_cents: Math.round(Number(d.price) * 100),
         checkout_url: d.checkout_url,
         status: d.status,
+        designer: d.designer,
       });
       setMsg({ ok: res.ok, text: res.message });
       if (res.ok) {
         setD((p) => ({ ...p, id: res.id, slug: res.slug ?? p.slug }));
+        if (res.id) onSaved?.(res.id);
         router.refresh();
       }
     });
@@ -182,7 +186,7 @@ export default function BlueprintEditor({ blueprint, onDone }: { blueprint?: HqB
     setUploading(true);
     setPhotoMsg(null);
     try {
-      const { mime, b64 } = await resizeImage(file);
+      const { mime, b64 } = await shrinkImage(file);
       const res = await uploadPhoto(d.slug, mime, b64);
       setPhotoMsg({ ok: res.ok, text: res.message });
       if (res.ok) router.refresh();
@@ -193,8 +197,33 @@ export default function BlueprintEditor({ blueprint, onDone }: { blueprint?: HqB
     }
   }
 
+  async function onOriginal(file: File | undefined) {
+    if (!file || !d.slug) return;
+    setOrigBusy(true);
+    setOrigMsg(null);
+    try {
+      let res;
+      if (file.type === "application/pdf") {
+        if (file.size > 3_000_000) {
+          setOrigMsg({ ok: false, text: "That PDF is over 3 MB. Try saving it smaller." });
+          return;
+        }
+        res = await uploadOriginal(d.slug, "application/pdf", file.name, await fileToBase64(file), "");
+      } else {
+        const page = await pageWithPreview(file);
+        res = await uploadOriginal(d.slug, page.mime, file.name.replace(/\.\w+$/, ".jpg"), page.b64, page.previewB64);
+      }
+      setOrigMsg({ ok: res.ok, text: res.message });
+      if (res.ok) router.refresh();
+    } catch {
+      setOrigMsg({ ok: false, text: "Couldn't read that file." });
+    } finally {
+      setOrigBusy(false);
+    }
+  }
+
   return (
-    <div className="card overflow-hidden">
+    <div ref={rootRef} className="card scroll-mt-4 overflow-hidden">
       <div className="flex items-center justify-between border-b-[3px] border-navy bg-sun px-5 py-3">
         <h3 className="font-display text-2xl text-navy">{d.id ? `Edit: ${d.name || "Tower"}` : "Design a new tower"}</h3>
         <button type="button" onClick={onDone} className="btn btn-white btn-sm">
@@ -374,6 +403,19 @@ export default function BlueprintEditor({ blueprint, onDone }: { blueprint?: HqB
               </div>
             </div>
             <div className="sm:col-span-2">
+              <label className="label" htmlFor="bp-designer">
+                Designed by <span className="font-semibold normal-case">(only for a customer&apos;s tower)</span>
+              </label>
+              <input
+                id="bp-designer"
+                className="field"
+                value={d.designer}
+                maxLength={40}
+                placeholder="Leave empty for your own towers"
+                onChange={(e) => set("designer", e.target.value)}
+              />
+            </div>
+            <div className="sm:col-span-2">
               <label className="label" htmlFor="bp-fact">
                 Fun fact about the real building
               </label>
@@ -412,6 +454,63 @@ export default function BlueprintEditor({ blueprint, onDone }: { blueprint?: HqB
                 onChange={(e) => set("checkout_url", e.target.value)}
               />
             </div>
+          </div>
+
+          <div className="rounded-xl border-[3px] border-sun bg-sun/10 p-4">
+            <span className="label">Your original blueprint (what buyers get)</span>
+            {d.id && d.slug ? (
+              <>
+                {saved?.originals.length ? (
+                  <ul className="mb-3 space-y-2">
+                    {saved.originals.map((o) => (
+                      <li key={o.id} className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm">
+                        <span aria-hidden>{o.mime === "application/pdf" ? "📄" : "🖼️"}</span>
+                        <span className="min-w-0 flex-1 truncate font-bold text-navy">{o.filename || "Original"}</span>
+                        <button
+                          type="button"
+                          className="rounded-md px-2 text-ink hover:bg-ice"
+                          aria-label={`Remove ${o.filename}`}
+                          onClick={async () => {
+                            if (!window.confirm("Remove this file from the blueprint?")) return;
+                            await deleteOriginal(o.id);
+                            router.refresh();
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mb-3 text-sm text-ink">
+                    No original yet. Buyers will get the step-by-step blueprint made from your sections instead.
+                  </p>
+                )}
+                <div className="flex flex-wrap items-center gap-3">
+                  <label className="btn btn-white btn-sm cursor-pointer">
+                    {origBusy ? "Uploading…" : "📄 Upload PDF or photo"}
+                    <input
+                      type="file"
+                      accept="application/pdf,image/*"
+                      className="sr-only"
+                      disabled={origBusy}
+                      onChange={(e) => {
+                        onOriginal(e.target.files?.[0]);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  {origMsg ? (
+                    <span className={`text-sm font-bold ${origMsg.ok ? "text-[#15803d]" : "text-[#c2410c]"}`}>
+                      {origMsg.text}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="mt-2 text-xs text-ink">Tip: in Word or Google Docs, use File → Save as PDF (3 MB max).</p>
+              </>
+            ) : (
+              <p className="text-sm text-ink">Save your tower first, then upload the blueprint you made.</p>
+            )}
           </div>
 
           <div className="rounded-xl border-2 border-dashed border-navy/30 p-4">

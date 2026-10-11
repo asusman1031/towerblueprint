@@ -3,6 +3,7 @@ import Link from "next/link";
 
 const NAV = [
   { href: "/blueprints", label: "Blueprints" },
+  { href: "/your-design", label: "Your design" },
   { href: "/#how-it-works", label: "How it works" },
   { href: "/#architect", label: "The Architect" },
 ];
@@ -13,7 +14,7 @@ export default function SiteHeader() {
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2.5 sm:px-6">
         <Link href="/" className="wiggle flex shrink-0 items-center gap-2" aria-label="Tower Blueprints for Kids home">
           <Image src="/brand/mark.png" alt="" width={400} height={270} className="h-10 w-auto sm:h-11" priority />
-          <span className="font-display text-lg leading-[0.95] text-navy sm:text-xl">
+          <span className="hidden font-display text-lg leading-[0.95] text-navy min-[420px]:block sm:text-xl">
             Tower
             <br />
             <span className="text-brand">Blueprints</span>

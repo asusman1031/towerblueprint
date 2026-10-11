@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import OriginalPreview from "@/components/OriginalPreview";
 import SignupForm from "@/components/SignupForm";
 import { track } from "@/components/Track";
 import { formatPrice } from "@/lib/tower";
@@ -11,9 +12,10 @@ type Props = {
   priceCents: number;
   checkoutUrl: string | null;
   status: "draft" | "coming_soon" | "live";
+  previewUrl: string | null;
 };
 
-export default function BuyBox({ slug, name, priceCents, checkoutUrl, status }: Props) {
+export default function BuyBox({ slug, name, priceCents, checkoutUrl, status, previewUrl }: Props) {
   const [reserving, setReserving] = useState(false);
   const price = formatPrice(priceCents);
 
@@ -29,14 +31,13 @@ export default function BuyBox({ slug, name, priceCents, checkoutUrl, status }: 
 
   return (
     <div className="card p-6">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="label !mb-0">Official blueprint</p>
+          <p className="label !mb-0">Sawyer&apos;s original blueprint</p>
           <p className="font-display text-5xl text-navy">{price}</p>
+          <p className="mt-1 text-sm font-semibold text-ink">Made by Sawyer himself. Print it at home.</p>
         </div>
-        <span className="rounded-full border-2 border-navy bg-sun px-3 py-1 text-xs font-extrabold uppercase tracking-wide">
-          Printable PDF
-        </span>
+        {previewUrl ? <OriginalPreview src={previewUrl} name={name} size="sm" /> : null}
       </div>
 
       {checkoutUrl ? (
