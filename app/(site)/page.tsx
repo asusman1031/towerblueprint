@@ -9,6 +9,7 @@ import Photo from "@/components/Photo";
 import SignupForm from "@/components/SignupForm";
 import Track from "@/components/Track";
 import { getBlueprints, getSettings } from "@/lib/data";
+import { buildKind } from "@/lib/kind";
 import { designTotals } from "@/lib/structure";
 import { formatPrice, SAMPLE_CUSTOM_TOWER, theName } from "@/lib/tower";
 
@@ -47,12 +48,12 @@ export default async function Home() {
   const note = settings.architectNote;
   // The hero shows a tall tower next to its photo, so feature a tower when there is one.
   const featured =
-    blueprints.find((b) => b.status === "live" && !b.structure && !b.tiles && !b.bricks && !b.boxes) ??
+    blueprints.find((b) => b.status === "live" && buildKind(b) === "tower") ??
     blueprints.find((b) => b.status === "live") ??
     blueprints[0];
   const featuredTotals = featured ? designTotals(featured) : null;
-  // Block stats only; tile, brick and box builds count other pieces.
-  const blockBuilds = blueprints.filter((b) => !b.tiles && !b.bricks && !b.boxes);
+  // Block stats only; tile, brick, box and dice builds count other pieces.
+  const blockBuilds = blueprints.filter((b) => ["tower", "structure"].includes(buildKind(b)));
   const biggest = Math.max(0, ...blockBuilds.map((b) => designTotals(b).blocks));
   const tallest = Math.max(0, ...blockBuilds.map((b) => designTotals(b).height));
 
@@ -120,6 +121,7 @@ export default async function Home() {
                         tiles={featured.tiles}
                         bricks={featured.bricks}
                         boxes={featured.boxes}
+                        dice={featured.dice}
                         className="h-72 w-auto sm:h-[22rem]"
                         title={`${featured.name}, ${featuredTotals.blocks} blocks`}
                       />
@@ -240,6 +242,7 @@ export default async function Home() {
               tiles={featured.tiles}
               bricks={featured.bricks}
               boxes={featured.boxes}
+              dice={featured.dice}
               name={featured.name}
               number={featured.number}
             />

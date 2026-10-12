@@ -7,11 +7,13 @@ import PrintButton from "@/components/PrintButton";
 import { getOriginals, getPrint, RENAMED_SLUGS, type Blueprint, type OriginalFile } from "@/lib/data";
 import { buildBoxes } from "@/lib/boxes";
 import { buildBricks } from "@/lib/bricks";
+import { buildDice } from "@/lib/dice";
 import { buildStructure } from "@/lib/structure";
 import { buildTiles } from "@/lib/tiles";
 import { difficultyLabel, sectionStats, theName, towerTotals, type SectionStats } from "@/lib/tower";
 import BoxSheets, { boxStepPages, feet } from "./BoxSheets";
 import BrickSheets, { brickStepPages } from "./BrickSheets";
+import DiceSheets, { diceStepPages } from "./DiceSheets";
 import { Certificate, CountingTrick, TickBoxes, TitleBar } from "./sheets";
 import StructureSheets, { structureStepPages } from "./StructureSheets";
 import TileSheets, { tileStepPages } from "./TileSheets";
@@ -169,6 +171,19 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
       <PrintButton />
     </div>
   );
+
+  if (bp.dice) {
+    const built = buildDice(bp.dice);
+    const pages = 2 + diceStepPages(built).length + 1 + bonusPages;
+    return (
+      <main className="print-root bg-[#e9eef6] py-6">
+        {header}
+        <DiceSheets bp={bp} dice={bp.dice} built={built} pages={pages} />
+        <Certificate bp={bp} stats={`${built.count} dice · ${built.dots} dots facing out`} />
+        {originals.length ? <BonusOriginals bp={bp} files={originals} keyParam={keyParam} /> : null}
+      </main>
+    );
+  }
 
   if (bp.boxes) {
     const built = buildBoxes(bp.boxes);

@@ -3,6 +3,7 @@ import { db } from "@/lib/supabase";
 import { cleanStructure, type Structure } from "@/lib/structure";
 import { cleanBoxes, type BoxDesign } from "@/lib/boxes";
 import { cleanBricks, type BrickDesign } from "@/lib/bricks";
+import { cleanDice, type DiceDesign } from "@/lib/dice";
 import { cleanTiles, type TileDesign } from "@/lib/tiles";
 import { cleanSections, type Section } from "@/lib/tower";
 
@@ -22,6 +23,7 @@ export type Blueprint = {
   tiles: TileDesign | null; // set for magnetic tile builds; then `sections` is only a placeholder
   bricks: BrickDesign | null; // set for studded brick builds (LEGO); then `sections` is only a placeholder
   boxes: BoxDesign | null; // set for cardboard box builds; then `sections` is only a placeholder
+  dice: DiceDesign | null; // set for dice builds; then `sections` is only a placeholder
   difficulty: number;
   price_cents: number;
   checkout_url: string | null;
@@ -64,6 +66,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     tiles: null,
     bricks: null,
     boxes: null,
+    dice: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -153,6 +156,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     tiles: null,
     bricks: null,
     boxes: null,
+    dice: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -186,6 +190,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     tiles: null,
     bricks: null,
     boxes: null,
+    dice: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -218,6 +223,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     tiles: null,
     bricks: null,
     boxes: null,
+    dice: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -253,6 +259,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     },
     bricks: null,
     boxes: null,
+    dice: null,
     difficulty: 1,
     price_cents: 500,
     checkout_url: null,
@@ -291,6 +298,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     tiles: null,
     bricks: null,
     boxes: null,
+    dice: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -338,6 +346,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     tiles: null,
     bricks: null,
     boxes: null,
+    dice: null,
     difficulty: 1,
     price_cents: 200,
     checkout_url: null,
@@ -414,6 +423,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
       ],
     },
     boxes: null,
+    dice: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -549,6 +559,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
       ],
     },
     boxes: null,
+    dice: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -618,6 +629,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
         },
       ],
     },
+    dice: null,
     difficulty: 1,
     price_cents: 200,
     checkout_url: null,
@@ -627,6 +639,57 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     original_pages: 0,
     preview_url: null,
     sort_order: 10,
+  },
+  {
+    id: "seed-dice-wall",
+    slug: "dice-wall",
+    number: 11,
+    name: "Dice Wall",
+    tagline: "A little wall of 8 dice. Add up the dots to find its secret number!",
+    description:
+      "Sawyer's smallest blueprint yet, and the first one with math built in! Two rows of colorful dice, with every number facing out on purpose. Add up all the dots to find the wall's secret number.",
+    inspired_by: "",
+    fun_fact:
+      "On every regular die, the dots on opposite sides add up to 7: 1 is across from 6, 2 from 5, and 3 from 4. Check your dice!",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: null,
+    boxes: null,
+    dice: {
+      need: "8 dice: 2 red, 2 yellow, 2 blue and 2 green (any colors work)",
+      steps: [
+        {
+          label: "The Bottom Row",
+          note: "Line up 4 dice side by side. Turn each one so the right number faces you: 5, 5, 5 and 4.",
+          dice: [
+            { x: 0, y: 0, z: 0, color: "red", front: 5, top: 1 },
+            { x: 1, y: 0, z: 0, color: "blue", front: 5, top: 1 },
+            { x: 2, y: 0, z: 0, color: "blue", front: 5, top: 1 },
+            { x: 3, y: 0, z: 0, color: "green", front: 4, top: 1 },
+          ],
+        },
+        {
+          label: "The Top Row",
+          note: "Stack 4 more dice right on top: red on red, yellow on the blue ones, green on green. Turn them so 1, 6, 5 and 1 face you.",
+          dice: [
+            { x: 0, y: 0, z: 1, color: "red", front: 1, top: 2 },
+            { x: 1, y: 0, z: 1, color: "yellow", front: 6, top: 3 },
+            { x: 2, y: 0, z: 1, color: "yellow", front: 5, top: 1 },
+            { x: 3, y: 0, z: 1, color: "green", front: 1, top: 5 },
+          ],
+        },
+      ],
+    },
+    difficulty: 1,
+    price_cents: 200,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/dice-wall.jpg",
+    designer: "",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 11,
   },
 ];
 
@@ -651,6 +714,7 @@ function normalize(row: Record<string, unknown>): Blueprint {
     tiles: cleanTiles(row.tiles),
     bricks: cleanBricks(row.bricks),
     boxes: cleanBoxes(row.boxes),
+    dice: cleanDice(row.dice),
   };
 }
 

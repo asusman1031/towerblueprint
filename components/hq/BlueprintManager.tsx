@@ -56,6 +56,7 @@ export default function BlueprintManager({
             tiles={bp.tiles}
             bricks={bp.bricks}
             boxes={bp.boxes}
+            dice={bp.dice}
             className="h-36 w-auto max-w-full"
             title={bp.name}
           />

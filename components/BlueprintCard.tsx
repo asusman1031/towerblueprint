@@ -35,12 +35,15 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
               tiles={bp.tiles}
               bricks={bp.bricks}
               boxes={bp.boxes}
+              dice={bp.dice}
               className={
                 kind === "bricks"
                   ? "mx-auto h-40 w-auto max-w-full"
                   : kind === "structure"
                     ? "h-auto max-h-40 w-full"
-                    : "mx-auto h-28 w-auto max-w-full"
+                    : kind === "dice"
+                      ? "mx-auto h-20 w-auto max-w-full"
+                      : "mx-auto h-28 w-auto max-w-full"
               }
               title={`${bp.name} drawing`}
             />
