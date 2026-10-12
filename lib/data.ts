@@ -152,10 +152,10 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     sort_order: 2,
   },
   {
-    id: "seed-ring-tower",
-    slug: "ring-tower",
+    id: "seed-dragon-tower",
+    slug: "dragon-tower",
     number: 3,
-    name: "Ring Tower",
+    name: "The Dragon Tower",
     tagline: "A tall tower with a big ring around its middle.",
     description:
       "Our first guest architect! Sawyer's little brother Ashton designed this one. A big strong base, a skinny neck, a wide ring in the middle, then up, up, up to a pointy spire.",
@@ -175,7 +175,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     price_cents: 500,
     checkout_url: null,
     status: "live",
-    photo_url: "/photos/ring-tower.jpg",
+    photo_url: "/photos/dragon-tower.jpg",
     designer: "Ashton (age 5)",
     original_pages: 0,
     preview_url: null,
