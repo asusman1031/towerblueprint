@@ -5,10 +5,12 @@ import IsoTower from "@/components/IsoTower";
 import PlacementDiagram from "@/components/PlacementDiagram";
 import PrintButton from "@/components/PrintButton";
 import { getOriginals, getPrint, RENAMED_SLUGS, type Blueprint, type OriginalFile } from "@/lib/data";
+import { buildBoxes } from "@/lib/boxes";
 import { buildBricks } from "@/lib/bricks";
 import { buildStructure } from "@/lib/structure";
 import { buildTiles } from "@/lib/tiles";
 import { difficultyLabel, sectionStats, theName, towerTotals, type SectionStats } from "@/lib/tower";
+import BoxSheets, { boxStepPages, feet } from "./BoxSheets";
 import BrickSheets, { brickStepPages } from "./BrickSheets";
 import { Certificate, CountingTrick, TickBoxes, TitleBar } from "./sheets";
 import StructureSheets, { structureStepPages } from "./StructureSheets";
@@ -167,6 +169,19 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
       <PrintButton />
     </div>
   );
+
+  if (bp.boxes) {
+    const built = buildBoxes(bp.boxes);
+    const pages = 2 + boxStepPages(built).length + 1 + bonusPages;
+    return (
+      <main className="print-root bg-[#e9eef6] py-6">
+        {header}
+        <BoxSheets bp={bp} boxes={bp.boxes} built={built} pages={pages} />
+        <Certificate bp={bp} stats={`${built.count} boxes · about ${feet(built.feet)} tall`} />
+        {originals.length ? <BonusOriginals bp={bp} files={originals} keyParam={keyParam} /> : null}
+      </main>
+    );
+  }
 
   if (bp.bricks) {
     const built = buildBricks(bp.bricks);

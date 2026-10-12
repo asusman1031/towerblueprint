@@ -20,7 +20,7 @@ export default async function BlueprintsPage() {
         <h1 className="font-display text-5xl text-navy sm:text-6xl">The blueprints</h1>
         <p className="mt-3 max-w-2xl text-lg text-ink">
           Sawyer builds and tests every tower before it becomes an official blueprint. Most are his own designs, and
-          some come from guest architects. Pick one, count your blocks, tiles or bricks, and start building.
+          some come from guest architects. Pick one, count your pieces, and start building.
         </p>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {blueprints.map((bp) => (

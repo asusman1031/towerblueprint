@@ -4,6 +4,7 @@ import { useState } from "react";
 import CoverPreview from "@/components/CoverPreview";
 import SignupForm from "@/components/SignupForm";
 import { track } from "@/components/Track";
+import type { BoxDesign } from "@/lib/boxes";
 import type { BrickDesign } from "@/lib/bricks";
 import type { Structure } from "@/lib/structure";
 import type { TileDesign } from "@/lib/tiles";
@@ -19,6 +20,7 @@ type Props = {
   structure?: Structure | null;
   tiles?: TileDesign | null;
   bricks?: BrickDesign | null;
+  boxes?: BoxDesign | null;
   number: number;
 };
 
@@ -32,6 +34,7 @@ export default function BuyBox({
   structure,
   tiles,
   bricks,
+  boxes,
   number,
 }: Props) {
   const [reserving, setReserving] = useState(false);
@@ -62,6 +65,7 @@ export default function BuyBox({
           structure={structure}
           tiles={tiles}
           bricks={bricks}
+          boxes={boxes}
           name={name}
           number={number}
           size="sm"

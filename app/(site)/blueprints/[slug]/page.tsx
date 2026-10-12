@@ -6,7 +6,8 @@ import BuyBox from "@/components/BuyBox";
 import Photo from "@/components/Photo";
 import Track from "@/components/Track";
 import { getBlueprint, RENAMED_SLUGS } from "@/lib/data";
-import { designTotals } from "@/lib/structure";
+import { BLUEPRINT_KIND, buildKind, MATERIAL } from "@/lib/kind";
+import { designTotals, unitLabel } from "@/lib/structure";
 import { difficultyLabel } from "@/lib/tower";
 
 // Always read live data, so changes from HQ or the database show up right away.
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: PageProps<"/blueprints/[slug]
   const { slug } = await params;
   const bp = await getBlueprint(slug);
   if (!bp) return { title: "Blueprint not found" };
-  const kind = bp.tiles ? "magnetic tile" : bp.bricks ? "LEGO DUPLO" : "magnetic block tower";
+  const kind = BLUEPRINT_KIND[buildKind(bp)];
   return {
     title: `${bp.name} blueprint`,
     description: bp.designer
@@ -38,12 +39,13 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
   // Sideways builds that rest on furniture (chairs, a table) need it lined up first.
   const onFurniture = !!bp.structure?.parts.some((p) => p.on);
   const hasPillars = !!bp.structure?.parts.some((p) => p.kind === "pillar");
-  const photos = [bp.photo_url, ...((bp.structure ?? bp.tiles ?? bp.bricks)?.photos ?? [])]
+  const photos = [bp.photo_url, ...((bp.structure ?? bp.tiles ?? bp.bricks ?? bp.boxes)?.photos ?? [])]
     .filter((x): x is string => !!x)
     .slice(0, 2);
-  // Sideways, tile and brick builds show two photos with the drawing underneath.
-  const wide = bp.structure ?? bp.tiles ?? bp.bricks;
-  const material = bp.tiles ? "magnetic tiles" : bp.bricks ? "LEGO DUPLO bricks" : "magnetic blocks";
+  // Everything but a plain tower shows two photos with the drawing underneath.
+  const kind = buildKind(bp);
+  const wide = kind !== "tower";
+  const material = MATERIAL[kind];
 
   return (
     <>
@@ -85,11 +87,12 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                     structure={bp.structure}
                     tiles={bp.tiles}
                     bricks={bp.bricks}
+                    boxes={bp.boxes}
                     wide
                     className={
                       bp.bricks
                         ? "mx-auto h-80 w-auto max-w-full"
-                        : bp.tiles
+                        : bp.tiles || bp.boxes
                           ? "mx-auto h-64 w-auto max-w-full"
                           : "h-auto max-h-[22rem] w-full"
                     }
@@ -142,7 +145,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
 
               <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {[
-                  [t.unit === "tiles" ? "Tiles" : t.unit === "bricks" ? "Bricks" : "Blocks", String(t.blocks)],
+                  [unitLabel(t.unit), String(t.blocks)],
                   ["Tall", `${t.height}`],
                   [t.base.label, t.base.value],
                   ["Level", difficultyLabel(bp.difficulty)],
@@ -165,6 +168,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   structure={bp.structure}
                   tiles={bp.tiles}
                   bricks={bp.bricks}
+                  boxes={bp.boxes}
                   number={bp.number}
                 />
               </div>
@@ -178,10 +182,15 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
           <h2 className="font-display text-3xl text-navy">What you need</h2>
           <ul className="mt-4 space-y-3 text-lg text-ink">
             <li className="flex gap-3">
-              <span aria-hidden>{bp.tiles ? "🟦" : bp.bricks ? "🧱" : "🧊"}</span>
+              <span aria-hidden>{bp.tiles ? "🟦" : bp.bricks ? "🧱" : bp.boxes ? "📦" : "🧊"}</span>
               {bp.structure?.need ? (
                 <span>
                   <strong className="font-extrabold">{bp.structure.need}</strong>
+                </span>
+              ) : bp.boxes ? (
+                <span>
+                  <strong className="font-extrabold">{bp.boxes.need || `${t.blocks} cardboard boxes`}</strong> (any boxes
+                  close in shape work)
                 </span>
               ) : bp.bricks ? (
                 <span>
@@ -218,6 +227,8 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                     ? "A grown-up to hold the walls steady while the roofs click on"
                     : bp.bricks
                       ? "A grown-up to hold the tower steady while you press the top bricks on"
+                      : bp.boxes
+                        ? "A grown-up to open any taped-up flaps"
                       : "A grown-up to help reach the top if it gets taller than you"}
               </span>
             </li>

@@ -2,36 +2,45 @@ import Link from "next/link";
 import IsoTower from "@/components/IsoTower";
 import Photo from "@/components/Photo";
 import type { Blueprint } from "@/lib/data";
-import { designTotals } from "@/lib/structure";
+import { buildKind, MATERIAL, TOY_CHIP } from "@/lib/kind";
+import { designTotals, unitLabel } from "@/lib/structure";
 import { difficultyLabel, formatPrice } from "@/lib/tower";
 
 export default function BlueprintCard({ bp }: { bp: Blueprint }) {
   const t = designTotals(bp);
+  const kind = buildKind(bp);
+  // Brick and box builds are tall, so their whole photo shows (it's on matching paper).
+  const tallPhoto = kind === "bricks" || kind === "boxes";
   return (
     <Link href={`/blueprints/${bp.slug}`} className="card group flex flex-col overflow-hidden transition hover:-translate-y-1">
-      {bp.structure || bp.tiles || bp.bricks ? (
-        // Sideways, tile and brick builds: the photo fills the top, the drawing sits in a corner.
+      {kind !== "tower" ? (
+        // Everything but a plain tower: the photo fills the top, the drawing sits in a corner.
         <div className="bg-grid-light relative h-72 border-b-[3px] border-navy">
           {bp.photo_url ? (
             <Photo
               src={bp.photo_url}
-              alt={`${bp.name}, built with ${bp.bricks ? "LEGO DUPLO bricks" : bp.tiles ? "magnetic tiles" : "magnetic blocks"}`}
+              alt={`${bp.name}, built with ${MATERIAL[kind]}`}
               width={1200}
               height={1400}
               sizes="(max-width: 768px) 100vw, 400px"
-              // Brick towers are tall: show the whole photo (it's on matching paper), nudged left of the drawing.
-              className={`h-full w-full ${bp.bricks ? "object-contain object-[30%_50%] py-2" : "object-cover"}`}
+              // Nudged left, out from under the drawing.
+              className={`h-full w-full ${tallPhoto ? "object-contain object-[30%_50%] py-2" : "object-cover"}`}
             />
           ) : null}
           <div
-            className={`absolute right-3 bottom-3 rounded-xl border-2 border-navy bg-white/90 p-2 ${bp.tiles || bp.bricks ? "" : "w-[55%]"}`}
+            className={`absolute right-3 bottom-3 rounded-xl border-2 border-navy bg-white/90 p-2 ${kind === "structure" ? "w-[55%]" : ""}`}
           >
             <IsoTower
               structure={bp.structure}
               tiles={bp.tiles}
               bricks={bp.bricks}
+              boxes={bp.boxes}
               className={
-                bp.bricks ? "mx-auto h-40 w-auto max-w-full" : bp.tiles ? "mx-auto h-28 w-auto max-w-full" : "h-auto max-h-40 w-full"
+                kind === "bricks"
+                  ? "mx-auto h-40 w-auto max-w-full"
+                  : kind === "structure"
+                    ? "h-auto max-h-40 w-full"
+                    : "mx-auto h-28 w-auto max-w-full"
               }
               title={`${bp.name} drawing`}
             />
@@ -58,7 +67,7 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
         <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
           <div className="rounded-xl bg-ice p-2">
             <dt className="text-[0.65rem] font-extrabold tracking-wider text-ink uppercase">
-              {t.unit === "tiles" ? "Tiles" : t.unit === "bricks" ? "Bricks" : "Blocks"}
+              {unitLabel(t.unit)}
             </dt>
             <dd className="font-display text-xl text-navy">{t.blocks}</dd>
           </div>
@@ -90,10 +99,10 @@ function Badges({ bp }: { bp: Blueprint }) {
         <span className="absolute top-3 right-3 rounded-full border-2 border-navy bg-tangerine px-3 py-0.5 text-xs font-extrabold text-white uppercase">
           Coming soon
         </span>
-      ) : bp.tiles || bp.bricks ? (
+      ) : TOY_CHIP[buildKind(bp)] ? (
         // Tells buyers which toy they need.
         <span className="absolute top-3 right-3 rounded-full border-2 border-navy bg-sun px-3 py-0.5 text-xs font-extrabold uppercase">
-          {bp.bricks ? "LEGO DUPLO" : "Magnetic tiles"}
+          {TOY_CHIP[buildKind(bp)]}
         </span>
       ) : null}
     </>

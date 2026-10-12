@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { cleanBoxes } from "@/lib/boxes";
 import { cleanBricks } from "@/lib/bricks";
 import { db } from "@/lib/supabase";
 import { cleanStructure } from "@/lib/structure";
@@ -56,6 +57,7 @@ export type BlueprintInput = {
   structure?: unknown;
   tiles?: unknown;
   bricks?: unknown;
+  boxes?: unknown;
   difficulty: number;
   price_cents: number;
   checkout_url: string;
@@ -83,8 +85,11 @@ export async function saveBlueprint(input: BlueprintInput): Promise<{ ok: boolea
   if (input.tiles != null && !tiles) return { ok: false, message: "Something in the rooms isn't quite right." };
   const bricks = input.bricks == null ? null : cleanBricks(input.bricks);
   if (input.bricks != null && !bricks) return { ok: false, message: "Something in the bricks isn't quite right." };
-  // Structures, tile and brick builds keep a one-block placeholder in sections, because the column is required.
-  const sections = structure || tiles || bricks ? [{ w: 1, d: 1, count: 1 }] : cleanSections(input.sections);
+  const boxes = input.boxes == null ? null : cleanBoxes(input.boxes);
+  if (input.boxes != null && !boxes) return { ok: false, message: "Something in the boxes isn't quite right." };
+  // Structures, tile, brick and box builds keep a one-block placeholder in sections, because the column is required.
+  const sections =
+    structure || tiles || bricks || boxes ? [{ w: 1, d: 1, count: 1 }] : cleanSections(input.sections);
   if (sections.length === 0) return { ok: false, message: "Add at least one section to your tower." };
   const slug = slugify(input.slug || name);
   if (!slug) return { ok: false, message: "Try a name with some letters in it." };
@@ -108,6 +113,7 @@ export async function saveBlueprint(input: BlueprintInput): Promise<{ ok: boolea
       structure,
       tiles,
       bricks,
+      boxes,
       difficulty: Math.max(1, Math.min(3, Math.round(Number(input.difficulty) || 2))),
       price_cents: Math.max(0, Math.min(100000, Math.round(Number(input.price_cents) || 0))),
       checkout_url: checkout,

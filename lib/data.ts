@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "@/lib/supabase";
 import { cleanStructure, type Structure } from "@/lib/structure";
+import { cleanBoxes, type BoxDesign } from "@/lib/boxes";
 import { cleanBricks, type BrickDesign } from "@/lib/bricks";
 import { cleanTiles, type TileDesign } from "@/lib/tiles";
 import { cleanSections, type Section } from "@/lib/tower";
@@ -20,6 +21,7 @@ export type Blueprint = {
   structure: Structure | null; // set for sideways builds; then `sections` is only a placeholder
   tiles: TileDesign | null; // set for magnetic tile builds; then `sections` is only a placeholder
   bricks: BrickDesign | null; // set for studded brick builds (LEGO); then `sections` is only a placeholder
+  boxes: BoxDesign | null; // set for cardboard box builds; then `sections` is only a placeholder
   difficulty: number;
   price_cents: number;
   checkout_url: string | null;
@@ -61,6 +63,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     structure: null,
     tiles: null,
     bricks: null,
+    boxes: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -149,6 +152,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     },
     tiles: null,
     bricks: null,
+    boxes: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -181,6 +185,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     structure: null,
     tiles: null,
     bricks: null,
+    boxes: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -212,6 +217,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     structure: null,
     tiles: null,
     bricks: null,
+    boxes: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -246,6 +252,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
       ],
     },
     bricks: null,
+    boxes: null,
     difficulty: 1,
     price_cents: 500,
     checkout_url: null,
@@ -283,6 +290,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     structure: null,
     tiles: null,
     bricks: null,
+    boxes: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -329,6 +337,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     },
     tiles: null,
     bricks: null,
+    boxes: null,
     difficulty: 1,
     price_cents: 200,
     checkout_url: null,
@@ -404,6 +413,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
         },
       ],
     },
+    boxes: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -538,6 +548,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
         },
       ],
     },
+    boxes: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -547,6 +558,75 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     original_pages: 0,
     preview_url: null,
     sort_order: 9,
+  },
+  {
+    id: "seed-box-tower",
+    slug: "box-tower",
+    number: 10,
+    name: "Box Tower",
+    tagline: "A tower of cardboard boxes, with a lookout box poking out the top.",
+    description:
+      "Sawyer's first blueprint built from cardboard boxes! A big box upside down with its flaps spread out, a tall box on top, and a small box inside that pokes out like a lookout. All you need is 3 boxes from the recycling bin.",
+    inspired_by: "",
+    fun_fact:
+      "Cardboard boxes are strong because of the wavy layer hidden inside the cardboard. The waves work like lots of tiny arches holding up the weight!",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: null,
+    boxes: {
+      need: "3 cardboard boxes: one big, one tall, and one small enough to fit inside the tall one",
+      photos: ["/photos/box-tower-back.jpg"],
+      boxes: [
+        {
+          label: "The Base",
+          size: "A big box",
+          w: 18,
+          d: 14,
+          h: 9,
+          x: 0,
+          y: 0,
+          z: 0,
+          flaps: "floor",
+          tape: true,
+          note: "Turn the biggest box upside down. Open its 4 flaps and spread them flat on the floor, like a skirt. That keeps the tower steady!",
+        },
+        {
+          label: "The Tower Box",
+          size: "A tall box",
+          w: 8,
+          d: 8,
+          h: 10,
+          x: 5,
+          y: 3,
+          z: 9,
+          flaps: "up",
+          note: "Stand a tall box on top of the big box, right in the middle. Open its top flaps so they stick up.",
+        },
+        {
+          label: "The Lookout",
+          size: "A small box that fits inside the tall box",
+          w: 7,
+          d: 7,
+          h: 14,
+          x: 5.5,
+          y: 3.5,
+          z: 9,
+          flaps: "up",
+          inside: true,
+          note: "Stand a smaller box inside the tall box so it pokes out the top. Open its flaps too. Now it's a lookout!",
+        },
+      ],
+    },
+    difficulty: 1,
+    price_cents: 200,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/box-tower.jpg",
+    designer: "",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 10,
   },
 ];
 
@@ -570,6 +650,7 @@ function normalize(row: Record<string, unknown>): Blueprint {
     structure: cleanStructure(row.structure),
     tiles: cleanTiles(row.tiles),
     bricks: cleanBricks(row.bricks),
+    boxes: cleanBoxes(row.boxes),
   };
 }
 

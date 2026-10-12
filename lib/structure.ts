@@ -1,3 +1,4 @@
+import { buildBoxes, type BoxDesign } from "@/lib/boxes";
 import { buildBricks, type BrickDesign } from "@/lib/bricks";
 import { buildTiles, type TileDesign } from "@/lib/tiles";
 import { towerTotals, type Cube, type Section } from "@/lib/tower";
@@ -347,13 +348,24 @@ export function headingBefore(s: Structure, index: number): Dir | null {
 
 // The numbers every blueprint shows, whether it's a tower, a structure or a tile build.
 // `blocks` counts pieces: cube blocks, small tile squares when unit is "tiles", or
-// LEGO-style bricks (and plates) when unit is "bricks".
+// LEGO-style bricks (and plates) when unit is "bricks", or cardboard boxes.
 export function designTotals(d: {
   sections: Section[];
   structure?: Structure | null;
   tiles?: TileDesign | null;
   bricks?: BrickDesign | null;
+  boxes?: BoxDesign | null;
 }) {
+  if (d.boxes) {
+    const b = buildBoxes(d.boxes);
+    return {
+      blocks: b.count,
+      unit: "boxes" as const,
+      height: b.levels,
+      base: { label: "Flaps", value: `${b.flaps}` },
+      steps: b.count,
+    };
+  }
   if (d.bricks) {
     const b = buildBricks(d.bricks);
     return {
@@ -393,3 +405,6 @@ export function designTotals(d: {
     steps: d.sections.length,
   };
 }
+
+// "Blocks", "Tiles", "Bricks" or "Boxes", for stat labels.
+export const unitLabel = (unit: string) => unit.charAt(0).toUpperCase() + unit.slice(1);
