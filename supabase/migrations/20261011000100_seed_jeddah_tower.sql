@@ -1,7 +1,7 @@
 -- Blueprint No. 001: Sawyer's Jeddah Tower.
 insert into public.blueprints (
   slug, number, name, tagline, description, inspired_by, fun_fact, sections,
-  difficulty, price_cents, status, photo_url, preview_url, sort_order
+  difficulty, price_cents, status, photo_url, sort_order
 )
 values (
   'jeddah-tower',
@@ -21,7 +21,6 @@ values (
   500,
   'live',
   '/photos/jeddah-tower.jpg',
-  '/previews/jeddah-tower-original.jpg',
   1
 )
 on conflict (slug) do nothing;

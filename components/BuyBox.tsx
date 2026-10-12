@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import OriginalPreview from "@/components/OriginalPreview";
+import CoverPreview from "@/components/CoverPreview";
 import SignupForm from "@/components/SignupForm";
 import { track } from "@/components/Track";
-import { formatPrice } from "@/lib/tower";
+import { formatPrice, type Section } from "@/lib/tower";
 
 type Props = {
   slug: string;
@@ -12,10 +12,11 @@ type Props = {
   priceCents: number;
   checkoutUrl: string | null;
   status: "draft" | "coming_soon" | "live";
-  previewUrl: string | null;
+  sections: Section[];
+  number: number;
 };
 
-export default function BuyBox({ slug, name, priceCents, checkoutUrl, status, previewUrl }: Props) {
+export default function BuyBox({ slug, name, priceCents, checkoutUrl, status, sections, number }: Props) {
   const [reserving, setReserving] = useState(false);
   const price = formatPrice(priceCents);
 
@@ -33,11 +34,13 @@ export default function BuyBox({ slug, name, priceCents, checkoutUrl, status, pr
     <div className="card p-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="label !mb-0">Sawyer&apos;s original blueprint</p>
+          <p className="label !mb-0">Official blueprint</p>
           <p className="font-display text-5xl text-navy">{price}</p>
-          <p className="mt-1 text-sm font-semibold text-ink">Made by Sawyer himself. Print it at home.</p>
+          <p className="mt-1 text-sm font-semibold text-ink">
+            Printable step-by-step guide, designed by Sawyer. Print it or save it as a PDF.
+          </p>
         </div>
-        {previewUrl ? <OriginalPreview src={previewUrl} name={name} size="sm" /> : null}
+        <CoverPreview sections={sections} name={name} number={number} size="sm" />
       </div>
 
       {checkoutUrl ? (

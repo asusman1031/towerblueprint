@@ -3,7 +3,7 @@ import Link from "next/link";
 import BlueprintCard from "@/components/BlueprintCard";
 import BlueprintPeek from "@/components/BlueprintPeek";
 import BuildingTower from "@/components/BuildingTower";
-import OriginalPreview from "@/components/OriginalPreview";
+import CoverPreview from "@/components/CoverPreview";
 import Photo from "@/components/Photo";
 import SignupForm from "@/components/SignupForm";
 import Track from "@/components/Track";
@@ -23,19 +23,19 @@ const STEPS = [
     n: 2,
     color: "bg-sky",
     title: "Count your blocks",
-    body: "Each blueprint tells you how many blocks you need. Counting is part of the fun!",
+    body: "The parts list tells you exactly how many blocks you need. Counting is part of the fun!",
   },
   {
     n: 3,
     color: "bg-tangerine",
-    title: "Build it Sawyer's way",
-    body: "Follow Sawyer's own instructions, layer by layer, from the base all the way to the top.",
+    title: "Build layer by layer",
+    body: "Each step shows a map of one layer from the top, and how many times to stack it.",
   },
   {
     n: 4,
     color: "bg-[#22c063]",
     title: "Show it off",
-    body: "Snap a photo of your giant tower. Built your own design? Send it to Sawyer!",
+    body: "Fill in your “I built it!” certificate and snap a photo of your giant tower.",
   },
 ];
 
@@ -69,8 +69,7 @@ export default async function Home() {
               <span className="text-sun">One layer at a time.</span>
             </h1>
             <p className="mt-4 text-center text-lg font-semibold text-ice md:text-left">
-              Real blueprints for giant magnetic block towers, made by Sawyer, age 7. He designs every tower, builds it,
-              and writes the instructions himself.
+              Official step-by-step blueprints for giant magnetic block towers, designed and built by Sawyer, age 7.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3 md:justify-start">
               <Link href="/blueprints" className="btn btn-sun">
@@ -179,22 +178,23 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Sawyer originals */}
+      {/* What's inside */}
       {featured ? (
         <section className="bg-ice overflow-x-clip border-y-[3px] border-navy">
           <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 md:grid-cols-2">
             <div>
-              <h2 className="font-display text-4xl text-navy sm:text-5xl">Every blueprint is a Sawyer original</h2>
+              <h2 className="font-display text-4xl text-navy sm:text-5xl">What&apos;s in an official blueprint?</h2>
               <p className="mt-4 text-lg text-ink">
-                Sawyer builds every tower for real. Then he writes the blueprint himself: how big each layer is, how many
-                to stack, and a photo of the finished tower. That&apos;s exactly what you get.
+                Sawyer designs and builds every tower for real. Then it becomes a blueprint you can follow, one layer at
+                a time.
               </p>
               <ul className="mt-6 space-y-4 text-lg text-ink">
                 {[
-                  ["✍️", "Sawyer's own instructions, in his words"],
-                  ["📸", "A photo of his real, finished tower"],
-                  ["🧊", "How many blocks you'll need"],
-                  ["🖨️", "Print it at home and build it as many times as you want"],
+                  ["📐", "A cover drawing of the whole tower"],
+                  ["🧮", "A parts list with the block math worked out"],
+                  ["🗺️", "A top-down map of every layer, step by step"],
+                  ["✅", "Tick boxes so you never lose your place"],
+                  ["🏆", "An “I built it!” certificate signed by the architect"],
                 ].map(([icon, text]) => (
                   <li key={text} className="flex gap-3">
                     <span className="text-2xl" aria-hidden>
@@ -204,19 +204,12 @@ export default async function Home() {
                   </li>
                 ))}
               </ul>
-              <Link href={`/blueprints/${featured.slug}`} className="btn btn-sun mt-8">
+              <p className="mt-6 text-ink">Print it at home or save it as a PDF. Build it as many times as you want.</p>
+              <Link href={`/blueprints/${featured.slug}`} className="btn btn-sun mt-6">
                 Get the {featured.name} blueprint
               </Link>
             </div>
-            {featured.preview_url ? (
-              <OriginalPreview src={featured.preview_url} name={featured.name} />
-            ) : featured.photo_url ? (
-              <Photo
-                src={featured.photo_url}
-                alt={`Sawyer's ${featured.name}`}
-                className="mx-auto h-[28rem] w-56 rounded-2xl border-[3px] border-navy object-cover"
-              />
-            ) : null}
+            <CoverPreview sections={featured.sections} name={featured.name} number={featured.number} />
           </div>
         </section>
       ) : null}

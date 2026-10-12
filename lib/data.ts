@@ -59,7 +59,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     photo_url: "/photos/jeddah-tower.jpg",
     designer: "",
     original_pages: 0,
-    preview_url: "/previews/jeddah-tower-original.jpg",
+    preview_url: null,
     sort_order: 1,
   },
 ];

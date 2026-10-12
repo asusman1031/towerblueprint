@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageProps<"/blueprints/[slug]
   if (!bp) return { title: "Blueprint not found" };
   return {
     title: `${bp.name} blueprint`,
-    description: `${bp.tagline} An original magnetic block tower blueprint made by Sawyer, age 7.`,
+    description: `${bp.tagline} An official step-by-step magnetic block tower blueprint designed by Sawyer, age 7.`,
     openGraph: { images: bp.photo_url && !bp.photo_url.startsWith("/api/") ? [bp.photo_url] : ["/brand/logo.png"] },
   };
 }
@@ -90,7 +90,8 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   priceCents={bp.price_cents}
                   checkoutUrl={bp.checkout_url}
                   status={bp.status}
-                  previewUrl={bp.preview_url}
+                  sections={bp.sections}
+                  number={bp.number}
                 />
               </div>
             </div>
@@ -118,7 +119,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
             </li>
             <li className="flex gap-3">
               <span aria-hidden>🖨️</span>
-              <span>A printer for Sawyer&apos;s blueprint</span>
+              <span>A printer, or save the blueprint as a PDF</span>
             </li>
           </ul>
         </div>

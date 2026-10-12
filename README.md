@@ -9,17 +9,17 @@ Live at **towerblueprintsforkids.com** (once the domain is connected).
 | Route | What it is |
 | --- | --- |
 | `/` | Home: animated tower, how it works, Meet the Architect, Builders Club sign-up |
-| `/blueprints`, `/blueprints/[slug]` | Catalog and blueprint pages with price, order button, and a blurred peek at Sawyer's original |
+| `/blueprints`, `/blueprints/[slug]` | Catalog and blueprint pages with price, order button, and a cover preview |
 | `/your-design` | Custom blueprint requests: a grown-up sends a photo and description of their kid's tower |
-| `/print/[slug]?key=…` | Delivery page, opened only with the blueprint's secret key. Shows **Sawyer's original files** (PDF or photos) when uploaded; otherwise a generated 5-page blueprint (cover, parts-list math, layer-by-layer steps, certificate), which is what custom blueprints use. |
-| `/hq` | **Architect HQ**, Sawyer's passcode-protected dashboard: scoreboard, visitor-to-buyer funnel, tower designer with live 3D preview, original-file uploads, design-request inbox, cash register, custom-blueprint price, and his home-page note |
+| `/print/[slug]?key=…` | The product, opened only with the blueprint's secret key: the official 5-page blueprint (cover drawing, parts-list math, layer-by-layer steps, certificate), printable or saved as PDF. Optional bonus files from HQ appear at the end. |
+| `/hq` | **Architect HQ**, Sawyer's passcode-protected dashboard: scoreboard, visitor-to-buyer funnel, tower designer with live 3D preview, bonus-file uploads, design-request inbox, cash register, custom-blueprint price, and his home-page note |
 | `/grown-ups` | Parent info and privacy |
 
 Every tower is just data: a list of sections, bottom first (`{ w, d, count }`). The isometric drawings, block math, step pages, and placement maps are all generated from it (`lib/tower.ts`, `components/IsoTower.tsx`).
 
-## Sawyer's original files
+## Bonus files
 
-This repo is public, so originals are never committed. Upload them in HQ (Edit a tower, then "Upload PDF or photo"). PDFs up to 3 MB; photos are resized in the browser. A small blurred preview is made automatically from photos; for PDFs, add a blurred preview image under `public/previews/` and set the blueprint's `preview_url`.
+Buyers always get the official blueprint generated from the tower's sections. Sawyer can optionally attach his own notes (PDF or photos) in HQ (Edit a tower, then "Upload PDF or photo"); they appear at the end of the delivery page. PDFs up to 3 MB; photos are resized in the browser. This repo is public, so these files live only in the database, never in git.
 
 ## Custom blueprints ("Sawyer will make your design a blueprint too")
 

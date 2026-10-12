@@ -4,8 +4,7 @@ import Link from "next/link";
 import IsoTower from "@/components/IsoTower";
 import PlacementDiagram from "@/components/PlacementDiagram";
 import PrintButton from "@/components/PrintButton";
-import { getOriginals, getPrint, SEED_BLUEPRINTS, type Blueprint, type OriginalFile } from "@/lib/data";
-import { dbReady } from "@/lib/supabase";
+import { getOriginals, getPrint, type Blueprint, type OriginalFile } from "@/lib/data";
 import { difficultyLabel, sectionStats, towerTotals, type SectionStats } from "@/lib/tower";
 import "./print.css";
 
@@ -117,64 +116,38 @@ function StepCard({
   );
 }
 
-function OriginalsView({ bp, files, keyParam }: { bp: Blueprint; files: OriginalFile[]; keyParam: string }) {
+// Optional extras Sawyer adds in HQ, placed after the official blueprint.
+function BonusOriginals({ bp, files, keyParam }: { bp: Blueprint; files: OriginalFile[]; keyParam: string }) {
   const url = (f: OriginalFile, download = false) =>
     `/api/original/${bp.slug}/${f.id}?key=${encodeURIComponent(keyParam)}${download ? "&download=1" : ""}`;
   const images = files.filter((f) => f.mime.startsWith("image/"));
   const pdfs = files.filter((f) => f.mime === "application/pdf");
   return (
-    <main className="print-root bg-[#e9eef6] py-6">
-      <div className="no-print mx-auto mb-6 max-w-[8.5in] px-4">
-        <div className="card flex flex-wrap items-center gap-4 p-5">
-          <Image src="/brand/mark.png" alt="" width={400} height={270} className="h-12 w-auto" loading="eager" />
-          <div className="min-w-0 flex-1">
-            <p className="font-display text-2xl text-navy">Sawyer&apos;s original {bp.name} blueprint</p>
-            <p className="text-sm text-ink">Made by Sawyer himself. Keep this link to print it again anytime.</p>
-          </div>
-          {images.length && !pdfs.length ? <PrintButton /> : null}
-        </div>
-        {pdfs.length ? (
-          <div className="mt-4 flex flex-wrap gap-3">
-            {pdfs.map((f) => (
-              <span key={f.id} className="flex flex-wrap gap-3">
-                <a href={url(f)} target="_blank" rel="noopener" className="btn btn-sun">
-                  🖨️ Open &amp; print{pdfs.length > 1 ? ` ${f.filename || "PDF"}` : ""}
+    <>
+      {pdfs.length ? (
+        <div className="no-print mx-auto mb-6 max-w-[8.5in] px-4">
+          <div className="card p-5">
+            <p className="font-display text-xl text-navy">Bonus: Sawyer&apos;s original notes</p>
+            <div className="mt-3 flex flex-wrap gap-3">
+              {pdfs.map((f) => (
+                <a key={f.id} href={url(f, true)} className="btn btn-white btn-sm">
+                  ⬇️ {f.filename || "Download PDF"}
                 </a>
-                <a href={url(f, true)} className="btn btn-white">
-                  ⬇️ Download PDF
-                </a>
-              </span>
-            ))}
+              ))}
+            </div>
           </div>
-        ) : null}
-      </div>
-
-      {pdfs.map((f) => (
-        <div key={f.id} className="no-print mx-auto mb-6 max-w-[8.5in] px-4">
-          <object
-            data={url(f)}
-            type="application/pdf"
-            className="h-[11in] w-full rounded-xl border-[3px] border-navy bg-white"
-            aria-label={`${bp.name} original blueprint`}
-          >
-            <p className="p-6 text-center text-ink">
-              Your browser can&apos;t show the PDF here.{" "}
-              <a href={url(f)} className="font-bold text-brand underline">
-                Open it in a new tab
-              </a>
-              .
-            </p>
-          </object>
         </div>
-      ))}
-
+      ) : null}
       {images.map((f) => (
         <section key={f.id} className="sheet items-center justify-center">
+          <p className="mb-3 text-xs font-extrabold tracking-[0.25em] text-blueprint/70 uppercase">
+            Bonus: Sawyer&apos;s original
+          </p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={url(f)} alt={`${bp.name} original blueprint page`} className="max-h-[10in] max-w-full object-contain" />
+          <img src={url(f)} alt={`Sawyer's original ${bp.name} notes`} className="max-h-[9.6in] max-w-full object-contain" />
         </section>
       ))}
-    </main>
+    </>
   );
 }
 
@@ -182,11 +155,7 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
   const { slug } = await params;
   const { key } = await searchParams;
   const keyParam = typeof key === "string" ? key : "";
-  let bp = await getPrint(slug, keyParam);
-  // Local development without a database: preview the seed blueprint.
-  if (!bp && !dbReady() && process.env.NODE_ENV !== "production") {
-    bp = SEED_BLUEPRINTS.find((b) => b.slug === slug) ?? null;
-  }
+  const bp = await getPrint(slug, keyParam);
 
   if (!bp) {
     return (
@@ -206,14 +175,12 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
   }
 
   const originals = await getOriginals(bp.slug, keyParam);
-  if (originals.length) return <OriginalsView bp={bp} files={originals} keyParam={keyParam} />;
-
   const stats = sectionStats(bp.sections);
   const t = towerTotals(bp.sections);
   const footprint = { w: t.footprintW, d: t.footprintD };
   const stepPages: SectionStats[][] = [];
   for (let i = 0; i < stats.length; i += 2) stepPages.push(stats.slice(i, i + 2));
-  const pages = 2 + stepPages.length + 1;
+  const pages = 2 + stepPages.length + 1 + originals.filter((f) => f.mime.startsWith("image/")).length;
   const tens = Math.floor(t.blocks / 10);
   const extra = t.blocks % 10;
 
@@ -222,7 +189,9 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
       <div className="no-print mx-auto mb-6 flex max-w-[8.5in] flex-wrap items-center justify-between gap-4 px-4">
         <div>
           <p className="font-display text-2xl text-navy">Your official {bp.name} blueprint</p>
-          <p className="text-sm text-ink">Prints on regular letter paper. Keep this link to print it again.</p>
+          <p className="text-sm text-ink">
+            To download it, click the button and choose &ldquo;Save as PDF.&rdquo; Keep this link to print it again.
+          </p>
         </div>
         <PrintButton />
       </div>
@@ -397,6 +366,8 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
           <p className="mt-10 text-sm text-ink">Blueprint No. {pad3(bp.number)} · towerblueprintsforkids.com</p>
         </div>
       </section>
+
+      {originals.length ? <BonusOriginals bp={bp} files={originals} keyParam={keyParam} /> : null}
     </main>
   );
 }

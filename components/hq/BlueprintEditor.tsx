@@ -457,7 +457,11 @@ export default function BlueprintEditor({
           </div>
 
           <div className="rounded-xl border-[3px] border-sun bg-sun/10 p-4">
-            <span className="label">Your original blueprint (what buyers get)</span>
+            <span className="label">Bonus: your own notes (optional)</span>
+            <p className="mb-3 text-sm text-ink">
+              Buyers always get the official blueprint made from your sections. Anything you add here goes at the end as
+              a bonus.
+            </p>
             {d.id && d.slug ? (
               <>
                 {saved?.originals.length ? (
@@ -482,9 +486,7 @@ export default function BlueprintEditor({
                     ))}
                   </ul>
                 ) : (
-                  <p className="mb-3 text-sm text-ink">
-                    No original yet. Buyers will get the step-by-step blueprint made from your sections instead.
-                  </p>
+                  <p className="mb-3 text-sm text-ink">No bonus files yet.</p>
                 )}
                 <div className="flex flex-wrap items-center gap-3">
                   <label className="btn btn-white btn-sm cursor-pointer">
@@ -509,7 +511,7 @@ export default function BlueprintEditor({
                 <p className="mt-2 text-xs text-ink">Tip: in Word or Google Docs, use File → Save as PDF (3 MB max).</p>
               </>
             ) : (
-              <p className="text-sm text-ink">Save your tower first, then upload the blueprint you made.</p>
+              <p className="text-sm text-ink">Save your tower first, then you can add bonus files.</p>
             )}
           </div>
 

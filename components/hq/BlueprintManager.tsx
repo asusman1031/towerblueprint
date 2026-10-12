@@ -61,7 +61,7 @@ export default function BlueprintManager({
             </span>
             {bp.originals.length ? (
               <span className="rounded-full border-2 border-navy bg-sun px-2 py-0.5 text-[0.7rem] font-extrabold uppercase">
-                Original uploaded
+                Bonus file added
               </span>
             ) : null}
           </div>

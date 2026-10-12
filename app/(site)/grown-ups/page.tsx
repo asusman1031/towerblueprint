@@ -15,16 +15,17 @@ export default function GrownUpsPage() {
             <h2 className="font-display text-2xl text-navy">What this is</h2>
             <p className="mt-2">
               Tower Blueprints for Kids is a small business started by Sawyer, a 7-year-old who designs giant towers out
-              of magnetic cube blocks. He builds and tests every design and writes the blueprint himself, so other kids
-              can build it too. His parents run the grown-up parts: email, payments, and support.
+              of magnetic cube blocks. He builds and tests every design, and each one becomes a printable, step-by-step
+              blueprint that other kids can follow. His parents run the grown-up parts: email, payments, and support.
             </p>
           </section>
           <section>
             <h2 className="font-display text-2xl text-navy">What you&apos;re buying</h2>
             <p className="mt-2">
-              Each blueprint is Sawyer&apos;s original: the instructions he wrote and a photo of his finished tower, as
-              a printable file. Blocks are not included. The designs work with standard magnetic cube blocks; we are
-              not affiliated with any toy brand.
+              Each official blueprint is a printable guide (save it as a PDF or print it at home): a cover drawing, a
+              parts list with the block math, a layer-by-layer build guide, and an &ldquo;I built it!&rdquo;
+              certificate. Blocks are not included. The designs work with standard magnetic cube blocks; we are not
+              affiliated with any toy brand.
             </p>
             <p className="mt-3">
               <strong>Custom blueprints:</strong> kids can send Sawyer their own tower design. If he can make it, we
