@@ -51,8 +51,8 @@ export default function BricksEditor({ bricks, onChange }: { bricks: BrickDesign
     <div>
       <span className="label">Steps (in building order)</span>
       <p className="mb-2 text-sm text-ink">
-        Sizes are in studs. Across and back say where a brick sits. Up counts thin plates from the floor: a brick is 3
-        plates tall, a tall brick 6.
+        Sizes are in studs. Across and back say where a brick sits. Up counts from the floor in thirds of a brick: a brick
+        is 3, a tall brick 6.
       </p>
       <ol className="space-y-2">
         {bricks.steps.map((s, i) => (

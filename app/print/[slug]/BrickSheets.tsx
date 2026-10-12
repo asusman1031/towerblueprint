@@ -8,15 +8,18 @@ import { CountingTrick, TickBoxes, TitleBar } from "./sheets";
 // The official blueprint pages for a LEGO-style brick build (cover, parts list, steps).
 // The certificate and bonus pages come from the main print page.
 
-const MAX_LAYERS_PER_PAGE = 7;
+const PAGE_ROOM = 7; // about how many one-row layers fit on a page, with their step headers
+
+// A layer split into a back row and a front row takes more room.
+const stepSize = (s: StepStats) =>
+  s.layers.reduce((n, z) => n + (rowsOf(s.bricks.filter((b) => b.z === z)).length > 1 ? 1.4 : 1), 0);
 
 // One or two steps per page, as long as their layer maps fit.
 export function brickStepPages(built: BuiltBricks): StepStats[][] {
   const pages: StepStats[][] = [];
   for (const s of built.steps) {
     const last = pages[pages.length - 1];
-    if (last && last.length < 2 && last.reduce((n, x) => n + x.layers.length, 0) + s.layers.length <= MAX_LAYERS_PER_PAGE)
-      last.push(s);
+    if (last && last.length < 2 && last.reduce((n, x) => n + stepSize(x), 0) + stepSize(s) <= PAGE_ROOM) last.push(s);
     else pages.push([s]);
   }
   return pages;
@@ -127,6 +130,13 @@ function LayerMap({ z, built, box, className }: { z: number; built: BuiltBricks;
   );
 }
 
+// A layer that is exactly a back row and a front row reads easier split in two.
+function rowsOf(bricks: PlacedBrick[]) {
+  const ys = [...new Set(bricks.map((b) => b.y))].sort((a, b) => a - b);
+  if (ys.length !== 2 || bricks.some((b) => b.y === ys[0] && b.y + b.d > ys[1])) return [bricks];
+  return ys.map((y) => bricks.filter((b) => b.y === y).sort((a, b) => a.x - b.x));
+}
+
 function Swatch({ color }: { color: PlacedBrick["color"] }) {
   return (
     <span
@@ -176,11 +186,16 @@ function BrickStep({
                   </div>
                   <div className="text-[0.9rem] leading-snug text-navy">
                     <span className="font-display text-blueprint">Layer {layerNo.get(z)}:</span>{" "}
-                    {fresh.map((b, i) => (
-                      <span key={b.id}>
-                        {i ? " + " : ""}
-                        <Swatch color={b.color} /> {b.color} {brickName(b)}
-                        {sticksOut(b, below) ? <strong className="text-[#c2410c]"> (sticks out!)</strong> : null}
+                    {rowsOf(fresh).map((row, r, all) => (
+                      <span key={r} className={all.length > 1 ? "block" : undefined}>
+                        {all.length > 1 ? <strong>{r === 0 ? "Back row: " : "Front row: "}</strong> : null}
+                        {row.map((b, i) => (
+                          <span key={b.id}>
+                            {i ? " + " : ""}
+                            <Swatch color={b.color} /> {b.color} {brickName(b)}
+                            {sticksOut(b, below) ? <strong className="text-[#c2410c]"> (sticks out!)</strong> : null}
+                          </span>
+                        ))}
                       </span>
                     ))}
                   </div>
@@ -236,6 +251,7 @@ export default function BrickSheets({
   const rows = [...sizes.values()].sort((a, b) => b.count - a.count);
   const layerNo = new Map(layers.map((z, i) => [z, i + 1]));
   const hasPlate = built.bricks.some((b) => b.h === 1);
+  const basePlate = built.bricks.some((b) => b.h === 1 && b.z === 0);
   const hasTall = built.bricks.some((b) => b.h === 6);
   const overhang = built.bricks.some((b) =>
     sticksOut(
@@ -311,14 +327,13 @@ export default function BrickSheets({
         <h2 className="mt-5 font-display text-4xl text-blueprint">Parts list &amp; brick math</h2>
         <p className="mt-1 text-ink">
           {bricks.need ? <strong>{bricks.need}. </strong> : null}
-          Find these bricks before you build. Tick each one when you put it in your pile!
+          Find these bricks before you build and put them in a pile.
         </p>
         <table className="parts mt-5 w-full text-left">
           <thead>
             <tr>
               <th>Brick</th>
-              <th>Colors</th>
-              <th>Got it?</th>
+              <th>Colors (tick each one when you have them)</th>
               <th className="text-right">How many</th>
             </tr>
           </thead>
@@ -327,18 +342,12 @@ export default function BrickSheets({
               <tr key={r.label}>
                 <td className="font-bold whitespace-nowrap">{r.label}</td>
                 <td>
-                  <span className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+                  <span className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
                     {r.colors.map((k) => (
-                      <span key={k.key} className="whitespace-nowrap">
+                      <span key={k.key} className="flex items-center gap-1 whitespace-nowrap">
+                        <span className="size-4 shrink-0 rounded border-2 border-blueprint" />
                         <Swatch color={k.color} /> {k.count} {k.color}
                       </span>
-                    ))}
-                  </span>
-                </td>
-                <td>
-                  <span className="flex max-w-[1.6in] flex-wrap gap-1">
-                    {Array.from({ length: r.count }, (_, i) => (
-                      <span key={i} className="size-4 rounded border-2 border-blueprint" />
                     ))}
                   </span>
                 </td>
@@ -348,7 +357,7 @@ export default function BrickSheets({
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={3} className="font-bold">
+              <td colSpan={2} className="font-bold">
                 Total, step by step: {built.steps.map((s) => s.count).join(" + ")} =
               </td>
               <td className="text-right font-display text-3xl">{built.count}</td>
@@ -362,7 +371,7 @@ export default function BrickSheets({
             <p className="mt-2 text-navy">
               {hasPlate ? (
                 <>
-                  A <strong>plate</strong> is thin: <strong>3</strong> plates stack as tall as <strong>1</strong> brick.{" "}
+                  A <strong>plate</strong> is a thin, flat brick.{" "}
                 </>
               ) : null}
               {hasTall ? (
@@ -380,9 +389,13 @@ export default function BrickSheets({
           <p className="font-display text-xl text-blueprint">Builder tips</p>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-navy">
             <li>Press each brick down until it clicks, so the tower stays strong.</li>
-            <li>The maps show each layer from the top. Dashed squares are the bricks already there.</li>
+            <li>
+              The maps show each layer from the top, with the front at the bottom. Dashed squares are the bricks already
+              there.
+            </li>
             {hasTall ? <li>No tall brick? Stack two regular bricks of the same size instead.</li> : null}
-            {hasPlate ? <li>No thin plate? Leave it out and start the next layer right on the floor.</li> : null}
+            {basePlate ? <li>No thin plate? Leave it out and start the next layer right on the floor.</li> : null}
+            {hasPlate && !basePlate ? <li>No thin plates? Long bricks of the same size work too.</li> : null}
             {overhang ? <li>Bricks that stick out need a steady hand. Hold the tower while you press them on.</li> : null}
             <li>Any colors work. Swap in the colors you have and make it yours!</li>
           </ul>
