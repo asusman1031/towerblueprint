@@ -2,12 +2,13 @@ import type { Blueprint } from "@/lib/data";
 
 // Which kind of build a blueprint is, and the words the site uses for it.
 
-export type BuildKind = "tower" | "structure" | "tiles" | "bricks" | "boxes" | "dice" | "paper";
+export type BuildKind = "tower" | "structure" | "cubes" | "tiles" | "bricks" | "boxes" | "dice" | "paper";
 
 export function buildKind(
-  bp: Pick<Blueprint, "structure" | "tiles" | "bricks" | "boxes" | "dice" | "paper">,
+  bp: Pick<Blueprint, "structure" | "tiles" | "bricks" | "boxes" | "dice" | "paper" | "cubes">,
 ): BuildKind {
   if (bp.paper) return "paper";
+  if (bp.cubes) return "cubes";
   if (bp.dice) return "dice";
   if (bp.boxes) return "boxes";
   if (bp.bricks) return "bricks";
@@ -20,6 +21,7 @@ export function buildKind(
 export const MATERIAL: Record<BuildKind, string> = {
   tower: "magnetic blocks",
   structure: "magnetic blocks",
+  cubes: "magnetic blocks",
   tiles: "magnetic tiles",
   bricks: "LEGO DUPLO bricks",
   boxes: "cardboard boxes",
@@ -31,6 +33,7 @@ export const MATERIAL: Record<BuildKind, string> = {
 export const BLUEPRINT_KIND: Record<BuildKind, string> = {
   tower: "magnetic block tower",
   structure: "magnetic block tower",
+  cubes: "magnetic block",
   tiles: "magnetic tile",
   bricks: "LEGO DUPLO",
   boxes: "cardboard box",

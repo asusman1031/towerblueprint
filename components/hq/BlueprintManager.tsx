@@ -58,6 +58,7 @@ export default function BlueprintManager({
             boxes={bp.boxes}
             dice={bp.dice}
             paper={bp.paper}
+            cubes={bp.cubes}
             className="h-36 w-auto max-w-full"
             title={bp.name}
           />

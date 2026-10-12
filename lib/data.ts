@@ -4,6 +4,7 @@ import { cleanStructure, type Structure } from "@/lib/structure";
 import { cleanBoxes, type BoxDesign } from "@/lib/boxes";
 import { cleanBricks, type BrickDesign } from "@/lib/bricks";
 import { cleanDice, type DiceDesign } from "@/lib/dice";
+import { cleanCubes, type CubeDesign } from "@/lib/cubes";
 import { cleanPaper, type PaperDesign } from "@/lib/paper";
 import { cleanTiles, type TileDesign } from "@/lib/tiles";
 import { cleanSections, type Section } from "@/lib/tower";
@@ -26,12 +27,14 @@ export type Blueprint = {
   boxes: BoxDesign | null; // set for cardboard box builds; then `sections` is only a placeholder
   dice: DiceDesign | null; // set for dice builds; then `sections` is only a placeholder
   paper: PaperDesign | null; // set for packing paper builds; then `sections` is only a placeholder
+  cubes: CubeDesign | null; // set for free-form magnetic block builds; then `sections` is only a placeholder
   difficulty: number;
   price_cents: number;
   checkout_url: string | null;
   status: Status;
   photo_url: string | null;
   designer: string;
+  award?: string | null; // a prize the blueprint won, like "Best Design"
   original_pages: number;
   preview_url: string | null;
   sort_order: number;
@@ -70,6 +73,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     boxes: null,
     dice: null,
     paper: null,
+    cubes: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -161,6 +165,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     boxes: null,
     dice: null,
     paper: null,
+    cubes: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -196,6 +201,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     boxes: null,
     dice: null,
     paper: null,
+    cubes: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -230,6 +236,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     boxes: null,
     dice: null,
     paper: null,
+    cubes: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -267,6 +274,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     boxes: null,
     dice: null,
     paper: null,
+    cubes: null,
     difficulty: 1,
     price_cents: 500,
     checkout_url: null,
@@ -307,6 +315,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     boxes: null,
     dice: null,
     paper: null,
+    cubes: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -356,6 +365,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     boxes: null,
     dice: null,
     paper: null,
+    cubes: null,
     difficulty: 1,
     price_cents: 200,
     checkout_url: null,
@@ -434,6 +444,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     boxes: null,
     dice: null,
     paper: null,
+    cubes: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -571,6 +582,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     boxes: null,
     dice: null,
     paper: null,
+    cubes: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -642,6 +654,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     },
     dice: null,
     paper: null,
+    cubes: null,
     difficulty: 1,
     price_cents: 200,
     checkout_url: null,
@@ -694,6 +707,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
       ],
     },
     paper: null,
+    cubes: null,
     difficulty: 1,
     price_cents: 200,
     checkout_url: null,
@@ -748,6 +762,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
         },
       ],
     },
+    cubes: null,
     difficulty: 1,
     price_cents: 200,
     checkout_url: null,
@@ -924,6 +939,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     boxes: null,
     dice: null,
     paper: null,
+    cubes: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -933,6 +949,81 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     original_pages: 0,
     preview_url: null,
     sort_order: 13,
+  },
+  {
+    id: "seed-flying-ant-tower",
+    slug: "flying-ant-tower",
+    number: 14,
+    name: "The Flying Ant Tower",
+    tagline: "A giant flying ant with long arms, a big head, and a propeller on top!",
+    description:
+      "Sawyer's biggest blueprint ever, and the first one at Ultra Expert level! A huge ant made of 415 magnetic blocks: a wide body, long arms that reach way out, a collar, a big head, and a propeller on top so it can fly. Winner of the Best Design award!",
+    inspired_by: "",
+    fun_fact:
+      "Some ants really can fly! Young queen ants and male ants grow wings and fly off to start new colonies. Ants are super strong too: they can carry things many times heavier than they are.",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: null,
+    boxes: null,
+    dice: null,
+    paper: null,
+    cubes: {
+      need: "415 magnetic cube blocks (any pictures or colors)",
+      photos: ["/photos/flying-ant-tower-side.webp"],
+      steps: [
+        {
+          label: "The Body: Bottom Half",
+          note: "Make a wall of blocks 9 wide and 3 deep. Build the same layer 5 times.",
+          boxes: [{ x: 3, y: 0, z: 0, w: 9, d: 3, h: 5 }],
+        },
+        {
+          label: "The Body: Top Half",
+          note: "Five more layers just like the first ones. Now the body is 10 blocks tall!",
+          boxes: [{ x: 3, y: 0, z: 5, w: 9, d: 3, h: 5 }],
+        },
+        {
+          label: "The Long Arms",
+          note: "One long layer, 15 blocks wide. The arms hang out 3 blocks past each side of the body, so hold them while the magnets click.",
+          boxes: [{ x: 0, y: 0, z: 10, w: 15, d: 3, h: 1 }],
+        },
+        {
+          label: "The Chest",
+          note: "A 3 × 3 tower right in the middle, 3 layers tall.",
+          boxes: [{ x: 6, y: 0, z: 11, w: 3, d: 3, h: 3 }],
+        },
+        {
+          label: "The Collar",
+          note: "A 5 × 5 layer that sticks out one block on every side, like a collar.",
+          boxes: [{ x: 5, y: -1, z: 14, w: 5, d: 5, h: 1 }],
+        },
+        {
+          label: "The Head",
+          note: "Back to 3 × 3, for 4 layers.",
+          boxes: [{ x: 6, y: 0, z: 15, w: 3, d: 3, h: 4 }],
+        },
+        {
+          label: "The Neck",
+          note: "Three single blocks straight up from the middle of the head.",
+          boxes: [{ x: 7, y: 1, z: 19, w: 1, d: 1, h: 3 }],
+        },
+        {
+          label: "The Propeller",
+          note: "A plus sign on top: one block in the middle, with 2 more sticking out each way. Now it can fly!",
+          boxes: [{ x: 5, y: 1, z: 22, w: 5, d: 1, h: 1 }, { x: 7, y: -1, z: 22, w: 1, d: 5, h: 1 }],
+        },
+      ],
+    },
+    difficulty: 4,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/flying-ant-tower.webp",
+    designer: "",
+    award: "Best Design",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 14,
   },
 ];
 
@@ -959,6 +1050,7 @@ function normalize(row: Record<string, unknown>): Blueprint {
     boxes: cleanBoxes(row.boxes),
     dice: cleanDice(row.dice),
     paper: cleanPaper(row.paper),
+    cubes: cleanCubes(row.cubes),
   };
 }
 

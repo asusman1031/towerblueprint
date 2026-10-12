@@ -52,8 +52,8 @@ export default async function Home() {
     blueprints.find((b) => b.status === "live") ??
     blueprints[0];
   const featuredTotals = featured ? designTotals(featured) : null;
-  // Block stats only; tile, brick, box and dice builds count other pieces.
-  const blockBuilds = blueprints.filter((b) => ["tower", "structure"].includes(buildKind(b)));
+  // Block stats only; tile, brick, box, dice and paper builds count other pieces.
+  const blockBuilds = blueprints.filter((b) => ["tower", "structure", "cubes"].includes(buildKind(b)));
   const biggest = Math.max(0, ...blockBuilds.map((b) => designTotals(b).blocks));
   const tallest = Math.max(0, ...blockBuilds.map((b) => designTotals(b).height));
 
@@ -123,6 +123,7 @@ export default async function Home() {
                         boxes={featured.boxes}
                         dice={featured.dice}
                         paper={featured.paper}
+                        cubes={featured.cubes}
                         className="h-72 w-auto sm:h-[22rem]"
                         title={`${featured.name}, ${featuredTotals.blocks} blocks`}
                       />
@@ -245,6 +246,7 @@ export default async function Home() {
               boxes={featured.boxes}
               dice={featured.dice}
               paper={featured.paper}
+              cubes={featured.cubes}
               name={featured.name}
               number={featured.number}
             />

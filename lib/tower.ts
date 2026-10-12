@@ -103,8 +103,11 @@ export function buildCubes(sections: Section[]): (Cube & { section: number })[] 
   return cubes;
 }
 
+export const DIFFICULTIES = ["Easy", "Medium", "Expert", "Ultra Expert"];
+export const MAX_DIFFICULTY = DIFFICULTIES.length;
+
 export function difficultyLabel(n: number) {
-  return ["", "Easy", "Medium", "Expert"][Math.max(1, Math.min(3, n))];
+  return DIFFICULTIES[Math.max(1, Math.min(MAX_DIFFICULTY, Math.round(n))) - 1];
 }
 
 // "the Jeddah Tower", but "The Sims Tower" for names that already start with "The".

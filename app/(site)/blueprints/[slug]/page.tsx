@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import Award from "@/components/Award";
 import BuildingTower from "@/components/BuildingTower";
 import BuyBox from "@/components/BuyBox";
 import Photo from "@/components/Photo";
@@ -41,7 +42,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
   // Sideways builds that rest on furniture (chairs, a table) need it lined up first.
   const onFurniture = !!bp.structure?.parts.some((p) => p.on);
   const hasPillars = !!bp.structure?.parts.some((p) => p.kind === "pillar");
-  const photos = [bp.photo_url, ...((bp.structure ?? bp.tiles ?? bp.bricks ?? bp.boxes ?? bp.dice ?? bp.paper)?.photos ?? [])]
+  const photos = [bp.photo_url, ...((bp.structure ?? bp.cubes ?? bp.tiles ?? bp.bricks ?? bp.boxes ?? bp.dice ?? bp.paper)?.photos ?? [])]
     .filter((x): x is string => !!x)
     .slice(0, 2);
   // Everything but a plain tower shows two photos with the drawing underneath.
@@ -92,6 +93,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                     boxes={bp.boxes}
                     dice={bp.dice}
                     paper={bp.paper}
+                    cubes={bp.cubes}
                     wide
                     className={
                       bp.bricks || bp.paper
@@ -140,6 +142,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
               <span className="rounded-full border-2 border-navy bg-sun px-3 py-0.5 font-display text-sm">
                 Blueprint No. {String(bp.number).padStart(3, "0")}
               </span>
+              {bp.award ? <Award award={bp.award} className="ml-2 align-middle" /> : null}
               <h1 className="mt-3 font-display text-5xl leading-none text-navy sm:text-6xl">{bp.name}</h1>
               {bp.designer ? (
                 <p className="mt-2 font-extrabold text-brand">
@@ -158,7 +161,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                 ].map(([k, v]) => (
                   <div key={k} className="rounded-xl border-2 border-navy bg-white p-3 text-center">
                     <dt className="text-[0.7rem] font-extrabold tracking-wider text-ink uppercase">{k}</dt>
-                    <dd className="font-display text-2xl text-navy">{v}</dd>
+                    <dd className={`font-display text-navy ${v.length > 9 ? "text-xl leading-tight" : "text-2xl"}`}>{v}</dd>
                   </div>
                 ))}
               </dl>
@@ -177,6 +180,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   boxes={bp.boxes}
                   dice={bp.dice}
                   paper={bp.paper}
+                  cubes={bp.cubes}
                   number={bp.number}
                 />
               </div>

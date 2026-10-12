@@ -13,6 +13,7 @@ import { DEFAULT_ARCHITECT_NOTE, DEFAULT_CUSTOM_PRICE_CENTS } from "@/lib/data";
 import { cleanBoxes } from "@/lib/boxes";
 import { cleanBricks } from "@/lib/bricks";
 import { cleanDice } from "@/lib/dice";
+import { cleanCubes } from "@/lib/cubes";
 import { cleanPaper } from "@/lib/paper";
 import { db } from "@/lib/supabase";
 import { cleanStructure } from "@/lib/structure";
@@ -93,6 +94,7 @@ export default async function HQPage() {
     boxes: cleanBoxes(b.boxes),
     dice: cleanDice(b.dice),
     paper: cleanPaper(b.paper),
+    cubes: cleanCubes(b.cubes),
   }));
   const n = (v: unknown) => Number(v ?? 0);
   const visitsTotal = n(dash.total.visit);

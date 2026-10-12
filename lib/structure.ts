@@ -1,5 +1,6 @@
 import { buildBoxes, type BoxDesign } from "@/lib/boxes";
 import { buildBricks, type BrickDesign } from "@/lib/bricks";
+import { buildCubeDesign, type CubeDesign } from "@/lib/cubes";
 import { buildDice, type DiceDesign } from "@/lib/dice";
 import { buildPaper, type PaperDesign } from "@/lib/paper";
 import { buildTiles, type TileDesign } from "@/lib/tiles";
@@ -366,6 +367,7 @@ function pieceTotals(d: {
   boxes?: BoxDesign | null;
   dice?: DiceDesign | null;
   paper?: PaperDesign | null;
+  cubes?: CubeDesign | null;
 }): {
   blocks: number;
   unit: "blocks" | "tiles" | "bricks" | "boxes" | "dice" | "feet";
@@ -374,6 +376,16 @@ function pieceTotals(d: {
   base: { label: string; value: string };
   steps: number;
 } {
+  if (d.cubes) {
+    const b = buildCubeDesign(d.cubes);
+    return {
+      blocks: b.count,
+      unit: "blocks",
+      height: b.tall,
+      base: { label: "Base", value: `${b.base.w}×${b.base.d}` },
+      steps: b.steps.length,
+    };
+  }
   if (d.paper) {
     const b = buildPaper(d.paper);
     return {

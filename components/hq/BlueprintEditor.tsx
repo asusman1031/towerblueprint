@@ -7,13 +7,15 @@ import IsoTower from "@/components/IsoTower";
 import { buildBoxes, type BoxDesign } from "@/lib/boxes";
 import { buildBricks, type BrickDesign } from "@/lib/bricks";
 import { buildDice, type DiceDesign } from "@/lib/dice";
+import { buildCubeDesign, type CubeDesign } from "@/lib/cubes";
 import { buildPaper, type PaperDesign } from "@/lib/paper";
 import { fileToBase64, pageWithPreview, shrinkImage } from "@/lib/image-client";
 import { buildStructure, type Structure } from "@/lib/structure";
 import { buildTiles, type TileDesign } from "@/lib/tiles";
-import { MAX_LAYERS, MAX_SIDE, sectionStats, towerTotals, type Section } from "@/lib/tower";
+import { DIFFICULTIES, MAX_LAYERS, MAX_SIDE, sectionStats, towerTotals, type Section } from "@/lib/tower";
 import BoxesEditor from "./BoxesEditor";
 import BricksEditor from "./BricksEditor";
+import CubesEditor from "./CubesEditor";
 import DiceEditor from "./DiceEditor";
 import PaperEditor from "./PaperEditor";
 import StructureEditor from "./StructureEditor";
@@ -35,11 +37,13 @@ type Draft = {
   boxes: BoxDesign | null;
   dice: DiceDesign | null;
   paper: PaperDesign | null;
+  cubes: CubeDesign | null;
   difficulty: number;
   price: string;
   checkout_url: string;
   status: "draft" | "coming_soon" | "live";
   designer: string;
+  award: string;
 };
 
 export type EditorSeed = { name: string; designer: string; description: string };
@@ -70,11 +74,13 @@ function toDraft(bp?: HqBlueprint, seed?: EditorSeed): Draft {
       boxes: null,
       dice: null,
       paper: null,
+      cubes: null,
       difficulty: 2,
       price: "5",
       checkout_url: "",
       status: "draft",
       designer: seed?.designer ?? "",
+      award: "",
     };
   }
   return {
@@ -92,11 +98,13 @@ function toDraft(bp?: HqBlueprint, seed?: EditorSeed): Draft {
     boxes: bp.boxes,
     dice: bp.dice,
     paper: bp.paper,
+    cubes: bp.cubes,
     difficulty: bp.difficulty,
     price: (bp.price_cents / 100).toString(),
     checkout_url: bp.checkout_url ?? "",
     status: bp.status,
     designer: bp.designer ?? "",
+    award: bp.award ?? "",
   };
 }
 
@@ -188,7 +196,10 @@ export default function BlueprintEditor({
   const boxBuild = d.boxes ? buildBoxes(d.boxes) : null;
   const diceBuild = d.dice ? buildDice(d.dice) : null;
   const paperBuild = d.paper ? buildPaper(d.paper) : null;
-  const totals = paperBuild
+  const cubeBuild = d.cubes ? buildCubeDesign(d.cubes) : null;
+  const totals = cubeBuild
+    ? { blocks: cubeBuild.count, height: cubeBuild.tall }
+    : paperBuild
     ? { blocks: paperBuild.feet, height: paperBuild.sheets }
     : diceBuild
     ? { blocks: diceBuild.count, height: diceBuild.tall }
@@ -199,7 +210,9 @@ export default function BlueprintEditor({
       : tileBuild
       ? { blocks: tileBuild.tiles, height: tileBuild.height }
       : (built ?? towerTotals(d.sections));
-  const sums = paperBuild
+  const sums = cubeBuild
+    ? cubeBuild.steps.map((s) => s.count)
+    : paperBuild
     ? paperBuild.steps.map((s) => s.feet)
     : diceBuild
     ? diceBuild.steps.map((s) => s.dice.length)
@@ -231,11 +244,13 @@ export default function BlueprintEditor({
         boxes: d.boxes,
         dice: d.dice,
         paper: d.paper,
+        cubes: d.cubes,
         difficulty: d.difficulty,
         price_cents: Math.round(Number(d.price) * 100),
         checkout_url: d.checkout_url,
         status: d.status,
         designer: d.designer,
+        award: d.award,
       });
       setMsg({ ok: res.ok, text: res.message });
       if (res.ok) {
@@ -334,6 +349,8 @@ export default function BlueprintEditor({
 
           {d.paper ? (
             <PaperEditor paper={d.paper} onChange={(next) => set("paper", next)} />
+          ) : d.cubes ? (
+            <CubesEditor cubes={d.cubes} onChange={(next) => set("cubes", next)} />
           ) : d.dice ? (
             <DiceEditor dice={d.dice} onChange={(next) => set("dice", next)} />
           ) : d.boxes ? (
@@ -465,8 +482,8 @@ export default function BlueprintEditor({
             </div>
             <div>
               <span className="label">How hard?</span>
-              <div className="flex gap-2">
-                {["Easy", "Medium", "Expert"].map((l, i) => (
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {DIFFICULTIES.map((l, i) => (
                   <button
                     key={l}
                     type="button"
@@ -492,6 +509,19 @@ export default function BlueprintEditor({
                 maxLength={40}
                 placeholder="Leave empty for your own towers"
                 onChange={(e) => set("designer", e.target.value)}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="label" htmlFor="bp-award">
+                Award <span className="font-semibold normal-case">(shows a ribbon, like &quot;Best Design&quot;)</span>
+              </label>
+              <input
+                id="bp-award"
+                className="field"
+                value={d.award}
+                maxLength={40}
+                placeholder="Leave empty for no award"
+                onChange={(e) => set("award", e.target.value)}
               />
             </div>
             <div className="sm:col-span-2">
@@ -641,6 +671,7 @@ export default function BlueprintEditor({
             boxes={d.boxes}
             dice={d.dice}
             paper={d.paper}
+            cubes={d.cubes}
             className={d.structure ? "h-auto w-full" : "h-80 w-auto max-w-full"}
             title="Tower preview"
           />

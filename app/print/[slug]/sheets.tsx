@@ -84,6 +84,7 @@ export function Certificate({ bp, stats }: { bp: Blueprint; stats: string }) {
         <p className="font-display text-5xl text-blueprint">{bp.name}</p>
         <p className="mt-2 font-bold text-navy">{stats}</p>
         {bp.designer ? <p className="mt-1 text-ink">Designed by {bp.designer}</p> : null}
+        {bp.award ? <p className="mt-2 font-display text-2xl text-blueprint">🏆 {bp.award} winner</p> : null}
         <div className="mt-12 grid w-full grid-cols-2 gap-10">
           <div>
             <div className="h-10 border-b-[3px] border-blueprint" />

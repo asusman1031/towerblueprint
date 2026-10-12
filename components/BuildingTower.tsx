@@ -4,6 +4,7 @@ import { useState } from "react";
 import IsoTower from "@/components/IsoTower";
 import type { BoxDesign } from "@/lib/boxes";
 import type { DiceDesign } from "@/lib/dice";
+import type { CubeDesign } from "@/lib/cubes";
 import type { PaperDesign } from "@/lib/paper";
 import type { BrickDesign } from "@/lib/bricks";
 import type { Structure } from "@/lib/structure";
@@ -19,6 +20,7 @@ export default function BuildingTower({
   boxes,
   dice,
   paper,
+  cubes,
   className,
   title,
   stepMs = 65,
@@ -31,6 +33,7 @@ export default function BuildingTower({
   boxes?: BoxDesign | null;
   dice?: DiceDesign | null;
   paper?: PaperDesign | null;
+  cubes?: CubeDesign | null;
   className?: string;
   title?: string;
   stepMs?: number;
@@ -48,6 +51,7 @@ export default function BuildingTower({
         boxes={boxes}
         dice={dice}
         paper={paper}
+        cubes={cubes}
         animate
         stepMs={stepMs}
         className={className}

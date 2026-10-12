@@ -6,6 +6,7 @@ import TileDrawing from "@/components/TileDrawing";
 import type { BoxDesign } from "@/lib/boxes";
 import type { BrickDesign } from "@/lib/bricks";
 import type { DiceDesign } from "@/lib/dice";
+import { buildCubeDesign, type CubeDesign } from "@/lib/cubes";
 import type { PaperDesign } from "@/lib/paper";
 import { buildStructure, type Structure, type Surface } from "@/lib/structure";
 import type { TileDesign } from "@/lib/tiles";
@@ -24,6 +25,7 @@ type Props = {
   boxes?: BoxDesign | null; // a cardboard box build
   dice?: DiceDesign | null; // a dice build, drawn with dots
   paper?: PaperDesign | null; // a packing paper build, drawn from above
+  cubes?: CubeDesign | null; // a free-form magnetic block build
   variant?: Variant;
   highlight?: number; // section (or structure part) index to emphasise; others are ghosted
   animate?: boolean;
@@ -103,6 +105,7 @@ export default function IsoTower({
   boxes,
   dice,
   paper,
+  cubes: cubeDesign,
   variant = "blocks",
   highlight,
   animate = false,
@@ -178,7 +181,12 @@ export default function IsoTower({
     );
   }
   const built = structure ? buildStructure(structure) : null;
-  const cubes = built ? built.cubes : buildCubes(sections).map((c) => ({ ...c, group: c.section }));
+  // A free-form build's cubes are grouped by step, so a step can be highlighted like a section.
+  const cubes = cubeDesign
+    ? buildCubeDesign(cubeDesign).cubes
+    : built
+      ? built.cubes
+      : buildCubes(sections).map((c) => ({ ...c, group: c.section }));
   const surfaces: Surface[] = built?.surfaces ?? [];
   if (cubes.length === 0) return null;
 

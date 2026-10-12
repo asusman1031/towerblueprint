@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Award from "@/components/Award";
 import IsoTower from "@/components/IsoTower";
 import Photo from "@/components/Photo";
 import type { Blueprint } from "@/lib/data";
@@ -36,6 +37,7 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
               boxes={bp.boxes}
               dice={bp.dice}
               paper={bp.paper}
+              cubes={bp.cubes}
               className={
                 kind === "bricks" || kind === "paper"
                   ? "mx-auto h-40 w-auto max-w-full"
@@ -80,7 +82,9 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
           </div>
           <div className="rounded-xl bg-ice p-2">
             <dt className="text-[0.65rem] font-extrabold tracking-wider text-ink uppercase">Level</dt>
-            <dd className="font-display text-xl text-navy">{difficultyLabel(bp.difficulty)}</dd>
+            <dd className={`font-display text-navy ${bp.difficulty > 3 ? "text-base leading-tight" : "text-xl"}`}>
+              {difficultyLabel(bp.difficulty)}
+            </dd>
           </div>
         </dl>
         <div className="mt-5 flex items-center justify-between">
@@ -98,6 +102,7 @@ function Badges({ bp }: { bp: Blueprint }) {
       <span className="absolute top-3 left-3 rounded-full border-2 border-navy bg-white px-3 py-0.5 font-display text-sm">
         No. {String(bp.number).padStart(3, "0")}
       </span>
+      {bp.award ? <Award award={bp.award} className="absolute top-11 left-3" /> : null}
       {bp.status === "coming_soon" ? (
         <span className="absolute top-3 right-3 rounded-full border-2 border-navy bg-tangerine px-3 py-0.5 text-xs font-extrabold text-white uppercase">
           Coming soon

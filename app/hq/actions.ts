@@ -5,11 +5,12 @@ import { cookies } from "next/headers";
 import { cleanBoxes } from "@/lib/boxes";
 import { cleanBricks } from "@/lib/bricks";
 import { cleanDice } from "@/lib/dice";
+import { cleanCubes } from "@/lib/cubes";
 import { cleanPaper } from "@/lib/paper";
 import { db } from "@/lib/supabase";
 import { cleanStructure } from "@/lib/structure";
 import { cleanTiles } from "@/lib/tiles";
-import { cleanSections } from "@/lib/tower";
+import { cleanSections, MAX_DIFFICULTY } from "@/lib/tower";
 
 const COOKIE = "tb_hq";
 
@@ -62,11 +63,13 @@ export type BlueprintInput = {
   boxes?: unknown;
   dice?: unknown;
   paper?: unknown;
+  cubes?: unknown;
   difficulty: number;
   price_cents: number;
   checkout_url: string;
   status: string;
   designer: string;
+  award?: string;
 };
 
 function slugify(s: string) {
@@ -95,9 +98,11 @@ export async function saveBlueprint(input: BlueprintInput): Promise<{ ok: boolea
   if (input.dice != null && !dice) return { ok: false, message: "Something in the dice isn't quite right." };
   const paper = input.paper == null ? null : cleanPaper(input.paper);
   if (input.paper != null && !paper) return { ok: false, message: "Something in the paper rope isn't quite right." };
+  const cubes = input.cubes == null ? null : cleanCubes(input.cubes);
+  if (input.cubes != null && !cubes) return { ok: false, message: "Something in the blocks isn't quite right." };
   // Every build but a plain tower keeps a one-block placeholder in sections, because the column is required.
   const sections =
-    structure || tiles || bricks || boxes || dice || paper ? [{ w: 1, d: 1, count: 1 }] : cleanSections(input.sections);
+    structure || tiles || bricks || boxes || dice || paper || cubes ? [{ w: 1, d: 1, count: 1 }] : cleanSections(input.sections);
   if (sections.length === 0) return { ok: false, message: "Add at least one section to your tower." };
   const slug = slugify(input.slug || name);
   if (!slug) return { ok: false, message: "Try a name with some letters in it." };
@@ -124,11 +129,13 @@ export async function saveBlueprint(input: BlueprintInput): Promise<{ ok: boolea
       boxes,
       dice,
       paper,
-      difficulty: Math.max(1, Math.min(3, Math.round(Number(input.difficulty) || 2))),
+      cubes,
+      difficulty: Math.max(1, Math.min(MAX_DIFFICULTY, Math.round(Number(input.difficulty) || 2))),
       price_cents: Math.max(0, Math.min(100000, Math.round(Number(input.price_cents) || 0))),
       checkout_url: checkout,
       status,
       designer: String(input.designer ?? "").trim().slice(0, 40),
+      award: String(input.award ?? "").trim().slice(0, 40),
     },
   });
   if (error) {

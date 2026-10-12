@@ -1,6 +1,7 @@
 import IsoTower from "@/components/IsoTower";
 import type { BoxDesign } from "@/lib/boxes";
 import type { DiceDesign } from "@/lib/dice";
+import type { CubeDesign } from "@/lib/cubes";
 import type { PaperDesign } from "@/lib/paper";
 import type { BrickDesign } from "@/lib/bricks";
 import type { Structure } from "@/lib/structure";
@@ -17,6 +18,7 @@ export default function CoverPreview({
   boxes,
   dice,
   paper,
+  cubes,
   name,
   number,
   size = "lg",
@@ -28,6 +30,7 @@ export default function CoverPreview({
   boxes?: BoxDesign | null;
   dice?: DiceDesign | null;
   paper?: PaperDesign | null;
+  cubes?: CubeDesign | null;
   name: string;
   number: number;
   size?: "sm" | "lg";
@@ -52,6 +55,7 @@ export default function CoverPreview({
               boxes={boxes}
               dice={dice}
               paper={paper}
+              cubes={cubes}
               variant="ink"
               className="h-full w-auto max-w-full"
               title={`${name} cover`}
@@ -85,6 +89,7 @@ export default function CoverPreview({
             boxes={boxes}
             dice={dice}
             paper={paper}
+            cubes={cubes}
             variant="ink"
             className="h-full w-auto max-w-full"
             title={`${name} blueprint cover`}

@@ -8,12 +8,14 @@ import { getOriginals, getPrint, RENAMED_SLUGS, type Blueprint, type OriginalFil
 import { buildBoxes } from "@/lib/boxes";
 import { buildBricks } from "@/lib/bricks";
 import { buildDice } from "@/lib/dice";
+import { buildCubeDesign } from "@/lib/cubes";
 import { buildPaper } from "@/lib/paper";
 import { buildStructure } from "@/lib/structure";
 import { buildTiles } from "@/lib/tiles";
 import { difficultyLabel, sectionStats, theName, towerTotals, type SectionStats } from "@/lib/tower";
 import BoxSheets, { boxStepPages, feet } from "./BoxSheets";
 import BrickSheets, { brickStepPages } from "./BrickSheets";
+import CubeSheets, { cubeStepPages } from "./CubeSheets";
 import DiceSheets, { diceStepPages } from "./DiceSheets";
 import PaperSheets, { paperStepPages, ropeWord } from "./PaperSheets";
 import { Certificate, CountingTrick, TickBoxes, TitleBar } from "./sheets";
@@ -173,6 +175,19 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
       <PrintButton />
     </div>
   );
+
+  if (bp.cubes) {
+    const built = buildCubeDesign(bp.cubes);
+    const pages = 2 + cubeStepPages(built).length + 1 + bonusPages;
+    return (
+      <main className="print-root bg-[#e9eef6] py-6">
+        {header}
+        <CubeSheets bp={bp} cubes={bp.cubes} built={built} pages={pages} />
+        <Certificate bp={bp} stats={`${built.count} blocks · ${built.tall} blocks tall`} />
+        {originals.length ? <BonusOriginals bp={bp} files={originals} keyParam={keyParam} /> : null}
+      </main>
+    );
+  }
 
   if (bp.paper) {
     const built = buildPaper(bp.paper);

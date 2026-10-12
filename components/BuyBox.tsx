@@ -6,6 +6,7 @@ import SignupForm from "@/components/SignupForm";
 import { track } from "@/components/Track";
 import type { BoxDesign } from "@/lib/boxes";
 import type { DiceDesign } from "@/lib/dice";
+import type { CubeDesign } from "@/lib/cubes";
 import type { PaperDesign } from "@/lib/paper";
 import type { BrickDesign } from "@/lib/bricks";
 import type { Structure } from "@/lib/structure";
@@ -25,6 +26,7 @@ type Props = {
   boxes?: BoxDesign | null;
   dice?: DiceDesign | null;
   paper?: PaperDesign | null;
+  cubes?: CubeDesign | null;
   number: number;
 };
 
@@ -41,6 +43,7 @@ export default function BuyBox({
   boxes,
   dice,
   paper,
+  cubes,
   number,
 }: Props) {
   const [reserving, setReserving] = useState(false);
@@ -74,6 +77,7 @@ export default function BuyBox({
           boxes={boxes}
           dice={dice}
           paper={paper}
+          cubes={cubes}
           name={name}
           number={number}
           size="sm"

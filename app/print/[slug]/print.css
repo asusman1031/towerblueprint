@@ -57,6 +57,9 @@
   border-bottom: 1.5px dashed rgba(17, 70, 184, 0.35);
   padding: 0.55rem 0.5rem;
 }
+.parts.compact td {
+  padding: 0.28rem 0.5rem;
+}
 .parts tfoot td {
   border-bottom: none;
   border-top: 2.5px solid var(--color-blueprint);
