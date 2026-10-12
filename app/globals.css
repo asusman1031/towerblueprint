@@ -122,6 +122,14 @@ body {
   box-shadow: 0 1px 0 var(--color-navy);
 }
 
+/* Sideways scrollers that have their own arrows. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .card {
   background: #fff;
   border: 3px solid var(--color-navy);

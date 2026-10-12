@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import BlueprintCard from "@/components/BlueprintCard";
+import BlueprintCarousel from "@/components/BlueprintCarousel";
 import BlueprintPeek from "@/components/BlueprintPeek";
 import BuildingTower from "@/components/BuildingTower";
 import CoverPreview from "@/components/CoverPreview";
@@ -171,28 +172,33 @@ export default async function Home() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="font-display text-4xl text-navy sm:text-5xl">The blueprints</h2>
-            <p className="mt-2 text-lg text-ink">The newest ones. Every one is built for real before it goes on sale.</p>
+            <p className="mt-2 text-lg text-ink">
+              Newest first. Use the arrows to see them all. Every one is built for real before it goes on sale.
+            </p>
           </div>
           <Link href="/blueprints" className="btn btn-white btn-sm">
             See all →
           </Link>
         </div>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {/* The newest three; the full list is one click away. */}
-          {[...blueprints]
-            .sort((a, b) => b.number - a.number)
-            .slice(0, 3)
-            .map((bp) => (
-              <BlueprintCard key={bp.id} bp={bp} />
-            ))}
-          {/* Fills the row until there are three blueprints to show. */}
-          {blueprints.length < 3 ? (
-            <div className="flex flex-col items-center justify-center rounded-[1.5rem] border-[3px] border-dashed border-navy/40 p-8 text-center">
+        <div className="mt-8">
+          {/* Every blueprint, newest first, three at a time. The last card teases the next one. */}
+          <BlueprintCarousel label="The blueprints">
+            {[...blueprints]
+              .sort((a, b) => b.number - a.number)
+              .map((bp) => (
+                <BlueprintCard key={bp.id} bp={bp} />
+              ))}
+            <a
+              href="#club"
+              className="flex min-h-72 flex-col items-center justify-center rounded-[1.5rem] border-[3px] border-dashed border-navy/40 p-8 text-center transition hover:border-navy hover:bg-white"
+            >
               <span className="font-display text-6xl text-navy/30">?</span>
-              <p className="mt-2 font-display text-2xl text-navy">Next blueprint</p>
+              <p className="mt-2 font-display text-2xl text-navy">
+                Blueprint No. {String(Math.max(0, ...blueprints.map((b) => b.number)) + 1).padStart(3, "0")}
+              </p>
               <p className="mt-1 text-ink">Sawyer is designing it right now. Join the club to see it first.</p>
-            </div>
-          ) : null}
+            </a>
+          </BlueprintCarousel>
         </div>
       </section>
 
