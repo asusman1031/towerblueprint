@@ -5,7 +5,8 @@ import Track from "@/components/Track";
 import { getSettings } from "@/lib/data";
 import { formatPrice, SAMPLE_CUSTOM_TOWER } from "@/lib/tower";
 
-export const revalidate = 60;
+// Always read live data, so changes from HQ or the database show up right away.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Sawyer will make your design a blueprint",

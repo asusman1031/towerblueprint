@@ -9,7 +9,8 @@ import { getBlueprint, RENAMED_SLUGS } from "@/lib/data";
 import { designTotals } from "@/lib/structure";
 import { difficultyLabel } from "@/lib/tower";
 
-export const revalidate = 60;
+// Always read live data, so changes from HQ or the database show up right away.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps<"/blueprints/[slug]">): Promise<Metadata> {
   const { slug } = await params;

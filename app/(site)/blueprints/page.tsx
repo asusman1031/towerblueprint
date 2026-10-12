@@ -3,7 +3,8 @@ import BlueprintCard from "@/components/BlueprintCard";
 import Track from "@/components/Track";
 import { getBlueprints } from "@/lib/data";
 
-export const revalidate = 60;
+// Always read live data, so changes from HQ or the database show up right away.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "All blueprints",

@@ -11,7 +11,8 @@ import { getBlueprints, getSettings } from "@/lib/data";
 import { designTotals } from "@/lib/structure";
 import { formatPrice, SAMPLE_CUSTOM_TOWER, theName } from "@/lib/tower";
 
-export const revalidate = 60;
+// Always read live data, so changes from HQ or the database show up right away.
+export const dynamic = "force-dynamic";
 
 const STEPS = [
   {
@@ -166,21 +167,28 @@ export default async function Home() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="font-display text-4xl text-navy sm:text-5xl">The blueprints</h2>
-            <p className="mt-2 text-lg text-ink">Every one built for real, by Sawyer, before it goes on sale.</p>
+            <p className="mt-2 text-lg text-ink">The newest ones. Every one is built for real before it goes on sale.</p>
           </div>
           <Link href="/blueprints" className="btn btn-white btn-sm">
             See all →
           </Link>
         </div>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {blueprints.slice(0, 3).map((bp) => (
-            <BlueprintCard key={bp.id} bp={bp} />
-          ))}
-          <div className="flex flex-col items-center justify-center rounded-[1.5rem] border-[3px] border-dashed border-navy/40 p-8 text-center">
-            <span className="font-display text-6xl text-navy/30">?</span>
-            <p className="mt-2 font-display text-2xl text-navy">Next blueprint</p>
-            <p className="mt-1 text-ink">Sawyer is designing it right now. Join the club to see it first.</p>
-          </div>
+          {/* The newest three; the full list is one click away. */}
+          {[...blueprints]
+            .sort((a, b) => b.number - a.number)
+            .slice(0, 3)
+            .map((bp) => (
+              <BlueprintCard key={bp.id} bp={bp} />
+            ))}
+          {/* Fills the row until there are three blueprints to show. */}
+          {blueprints.length < 3 ? (
+            <div className="flex flex-col items-center justify-center rounded-[1.5rem] border-[3px] border-dashed border-navy/40 p-8 text-center">
+              <span className="font-display text-6xl text-navy/30">?</span>
+              <p className="mt-2 font-display text-2xl text-navy">Next blueprint</p>
+              <p className="mt-1 text-ink">Sawyer is designing it right now. Join the club to see it first.</p>
+            </div>
+          ) : null}
         </div>
       </section>
 
