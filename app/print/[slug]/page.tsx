@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import IsoTower from "@/components/IsoTower";
 import PlacementDiagram from "@/components/PlacementDiagram";
 import PrintButton from "@/components/PrintButton";
-import { getOriginals, getPrint, type Blueprint, type OriginalFile } from "@/lib/data";
+import { getOriginals, getPrint, RENAMED_SLUGS, type Blueprint, type OriginalFile } from "@/lib/data";
 import { buildStructure } from "@/lib/structure";
 import { difficultyLabel, sectionStats, towerTotals, type SectionStats } from "@/lib/tower";
 import { Certificate, CountingTrick, TickBoxes, TitleBar } from "./sheets";
@@ -131,6 +132,7 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
   const keyParam = typeof key === "string" ? key : "";
   const bp = await getPrint(slug, keyParam);
 
+  if (!bp && RENAMED_SLUGS[slug]) redirect(`/print/${RENAMED_SLUGS[slug]}?key=${encodeURIComponent(keyParam)}`);
   if (!bp) {
     return (
       <main className="bg-grid-light flex min-h-screen items-center justify-center p-6">

@@ -17,7 +17,7 @@ Live at **towerblueprintsforkids.com** (once the domain is connected).
 
 Every tower is just data: a list of sections, bottom first (`{ w, d, count }`). The isometric drawings, block math, step pages, and placement maps are all generated from it (`lib/tower.ts`, `components/IsoTower.tsx`).
 
-Sideways builds, like the Snaking Pillar Structure, are "structures" instead (`lib/structure.ts`): one long path of blocks that starts some blocks up and moves in runs (across, away, down...), plus pillars (a rectangular base and a one-block column) that hold up chosen path blocks. Parts can name the furniture they rest on (`on: "table"`), which the drawings show as dashed shapes. In HQ, Sawyer can change every number of a structure (base sizes, which block a pillar holds, run lengths, turns); the column heights and block math update automatically. New structures are added in code or SQL for now (see `supabase/migrations/20261012000000_structures.sql`).
+Sideways builds, like The Snake Rope, are "structures" instead (`lib/structure.ts`): one long path of blocks that starts some blocks up and moves in runs (across, away, down...), plus pillars (a rectangular base and a one-block column) that hold up chosen path blocks. Parts can name the furniture they rest on (`on: "table"`), which the drawings show as dashed shapes. In HQ, Sawyer can change every number of a structure (base sizes, which block a pillar holds, run lengths, turns); the column heights and block math update automatically. New structures are added in code or SQL for now (see `supabase/migrations/20261012000000_structures.sql`).
 
 Photos of builds look best with a plain background. The ones in `public/photos` had the room cut out and were put on blueprint paper.
 

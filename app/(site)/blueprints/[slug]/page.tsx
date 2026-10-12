@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import BuildingTower from "@/components/BuildingTower";
 import BuyBox from "@/components/BuyBox";
 import Photo from "@/components/Photo";
 import Track from "@/components/Track";
-import { getBlueprint } from "@/lib/data";
+import { getBlueprint, RENAMED_SLUGS } from "@/lib/data";
 import { designTotals } from "@/lib/structure";
 import { difficultyLabel } from "@/lib/tower";
 
@@ -27,7 +27,10 @@ export async function generateMetadata({ params }: PageProps<"/blueprints/[slug]
 export default async function BlueprintPage({ params }: PageProps<"/blueprints/[slug]">) {
   const { slug } = await params;
   const bp = await getBlueprint(slug);
-  if (!bp) notFound();
+  if (!bp) {
+    if (RENAMED_SLUGS[slug]) redirect(`/blueprints/${RENAMED_SLUGS[slug]}`);
+    notFound();
+  }
   const t = designTotals(bp);
   const sideways = bp.structure;
 

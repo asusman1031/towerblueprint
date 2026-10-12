@@ -66,10 +66,10 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     sort_order: 1,
   },
   {
-    id: "seed-snaking-pillar",
-    slug: "snaking-pillar-structure",
+    id: "seed-snake-rope",
+    slug: "snake-rope",
     number: 2,
-    name: "Snaking Pillar Structure",
+    name: "The Snake Rope",
     tagline: "A bridge on pillars that leaps across two chairs and snakes over the table.",
     description:
       "Sawyer's second blueprint, and his first one that goes sideways! Three pillars hold up a long beam. It crosses two chairs, drops down, and turns into a zig-zag snake on the table.",
@@ -182,6 +182,14 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     sort_order: 3,
   },
 ];
+
+// Old web addresses of renamed blueprints, so links people already have keep working.
+// Pages only redirect when the old address no longer finds a blueprint, so the
+// database can be renamed before or after a deploy.
+export const RENAMED_SLUGS: Record<string, string> = {
+  "ring-tower": "dragon-tower",
+  "snaking-pillar-structure": "snake-rope",
+};
 
 export const DEFAULT_ARCHITECT_NOTE =
   "Hi! I'm Sawyer and I'm 7. I love building really tall towers with magnetic blocks. I design every tower myself, test it to make sure it stands up, and then turn it into a blueprint so you can build it too. My first one is the Jeddah Tower. It has 327 blocks! Built your own tower? Send it to me and I can make it a blueprint too.";
