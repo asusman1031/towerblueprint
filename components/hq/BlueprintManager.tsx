@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { setRequest } from "@/app/hq/actions";
 import IsoTower from "@/components/IsoTower";
-import { formatPrice, towerTotals } from "@/lib/tower";
+import { designTotals } from "@/lib/structure";
+import { formatPrice } from "@/lib/tower";
 import BlueprintEditor, { type EditorSeed } from "./BlueprintEditor";
 import CopyButton from "./CopyButton";
 import type { HqBlueprint, HqRequest } from "./types";
@@ -44,12 +45,12 @@ export default function BlueprintManager({
   const openRequests = requests.filter((r) => r.status === "new" || r.status === "making");
 
   function card(bp: HqBlueprint) {
-    const t = towerTotals(bp.sections);
+    const t = designTotals(bp);
     const link = printUrl(bp);
     return (
       <li key={bp.id} className="card flex gap-4 p-4">
         <div className="bg-grid-light flex w-24 shrink-0 items-end justify-center rounded-xl border-2 border-navy/20 p-2">
-          <IsoTower sections={bp.sections} className="h-36 w-auto max-w-full" title={bp.name} />
+          <IsoTower sections={bp.sections} structure={bp.structure} className="h-36 w-auto max-w-full" title={bp.name} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">

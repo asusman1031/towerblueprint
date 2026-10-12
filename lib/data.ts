@@ -1,5 +1,6 @@
 import "server-only";
 import { db } from "@/lib/supabase";
+import { cleanStructure, type Structure } from "@/lib/structure";
 import { cleanSections, type Section } from "@/lib/tower";
 
 export type Status = "draft" | "coming_soon" | "live";
@@ -14,6 +15,7 @@ export type Blueprint = {
   inspired_by: string;
   fun_fact: string;
   sections: Section[];
+  structure: Structure | null; // set for sideways builds; then `sections` is only a placeholder
   difficulty: number;
   price_cents: number;
   checkout_url: string | null;
@@ -52,15 +54,102 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
       { w: 2, d: 2, count: 12, label: "The Upper Tower" },
       { w: 1, d: 1, count: 21, label: "The Spire" },
     ],
+    structure: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
     status: "live",
-    photo_url: "/photos/jeddah-tower.jpg",
+    photo_url: "/photos/jeddah-tower-v2.jpg",
     designer: "",
     original_pages: 0,
     preview_url: null,
     sort_order: 1,
+  },
+  {
+    id: "seed-snaking-pillar",
+    slug: "snaking-pillar-structure",
+    number: 2,
+    name: "Snaking Pillar Structure",
+    tagline: "A bridge on pillars that leaps across two chairs and snakes over the table.",
+    description:
+      "Sawyer's second blueprint, and his first one that goes sideways! Three pillars hold up a long beam. It crosses two chairs, drops down, and turns into a zig-zag snake on the table.",
+    inspired_by: "Sawyer's imagination",
+    fun_fact:
+      "Bridges and buildings use pillars (engineers call them columns) to carry weight down to the ground. The longer the beam between two pillars, the stronger it has to be. That's why Pillar C stands right under the lower beam.",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: {
+      startLayer: 19,
+      photos: ["/photos/snaking-pillar-structure-chairs.jpg"],
+      parts: [
+        {
+          kind: "pillar",
+          label: "Pillar A",
+          on: "first chair",
+          base: { w: 3, d: 2, layers: 4 },
+          holds: { part: 2, block: 1 },
+          note: "Build it on the seat of the first chair, near the back.",
+        },
+        {
+          kind: "pillar",
+          label: "Pillar B",
+          on: "first chair",
+          base: { w: 3, d: 2, layers: 4 },
+          holds: { part: 2, block: 9 },
+          note: "Build it on the same chair seat, next to Pillar A.",
+        },
+        {
+          kind: "path",
+          label: "The Top Beam",
+          runs: [{ dir: "E", n: 13 }],
+          note: "Start on top of Pillar A. The beam sits right on top of Pillar B, then keeps going until it reaches the back of the second chair.",
+        },
+        {
+          kind: "path",
+          label: "The Drop",
+          runs: [{ dir: "D", n: 4 }],
+          note: "Hang blocks straight down from the end of the top beam. Sawyer used a TNT block here!",
+        },
+        {
+          kind: "pillar",
+          label: "Pillar C",
+          on: "second chair",
+          base: { w: 3, d: 2, layers: 7 },
+          holds: { part: 5, block: 3 },
+          note: "Build it on the seat of the second chair, between the chair back and the table.",
+        },
+        {
+          kind: "path",
+          label: "The Lower Beam",
+          runs: [{ dir: "E", n: 8 }],
+          note: "Stick it to the side of the last block of the drop and head for the table. Pillar C holds it up.",
+        },
+        {
+          kind: "path",
+          label: "The Snake",
+          on: "table",
+          runs: [
+            { dir: "E", n: 7 },
+            { dir: "N", n: 10 },
+            { dir: "E", n: 5 },
+            { dir: "N", n: 8 },
+            { dir: "E", n: 2 },
+            { dir: "N", n: 1 },
+            { dir: "E", n: 16 },
+            { dir: "N", n: 11 },
+          ],
+          note: "Keep going onto the table and zig-zag like a snake!",
+        },
+      ],
+    },
+    difficulty: 3,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/snaking-pillar-structure.jpg",
+    designer: "",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 2,
   },
 ];
 
@@ -68,7 +157,11 @@ export const DEFAULT_ARCHITECT_NOTE =
   "Hi! I'm Sawyer and I'm 7. I love building really tall towers with magnetic blocks. I design every tower myself, test it to make sure it stands up, and then turn it into a blueprint so you can build it too. My first one is the Jeddah Tower. It has 327 blocks! Built your own tower? Send it to me and I can make it a blueprint too.";
 
 function normalize(row: Record<string, unknown>): Blueprint {
-  return { ...(row as unknown as Blueprint), sections: cleanSections(row.sections) };
+  return {
+    ...(row as unknown as Blueprint),
+    sections: cleanSections(row.sections),
+    structure: cleanStructure(row.structure),
+  };
 }
 
 export async function getBlueprints(): Promise<Blueprint[]> {

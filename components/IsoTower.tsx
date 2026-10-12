@@ -1,14 +1,16 @@
+import { buildStructure, type Structure, type Surface } from "@/lib/structure";
 import { buildCubes, type Section } from "@/lib/tower";
 
-// Isometric SVG drawing of a tower. Pure render, works on server and client.
+// Isometric SVG drawing of a tower or a structure. Pure render, works on server and client.
 // Painter's order: layer by layer from the bottom, then back to front.
 
 type Variant = "blocks" | "brand" | "ink";
 
 type Props = {
-  sections: Section[];
+  sections?: Section[];
+  structure?: Structure | null; // drawn instead of sections when set
   variant?: Variant;
-  highlight?: number; // section index to emphasise; others are ghosted
+  highlight?: number; // section (or structure part) index to emphasise; others are ghosted
   animate?: boolean;
   stepMs?: number;
   seed?: number;
@@ -79,7 +81,8 @@ const U_Y = proj(0, 1, 0);
 const U_Z = proj(0, 0, 1);
 
 export default function IsoTower({
-  sections,
+  sections = [],
+  structure,
   variant = "blocks",
   highlight,
   animate = false,
@@ -88,7 +91,9 @@ export default function IsoTower({
   className,
   title,
 }: Props) {
-  const cubes = buildCubes(sections);
+  const built = structure ? buildStructure(structure) : null;
+  const cubes = built ? built.cubes : buildCubes(sections).map((c) => ({ ...c, group: c.section }));
+  const surfaces: Surface[] = built?.surfaces ?? [];
   if (cubes.length === 0) return null;
 
   const filled = new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`));
@@ -98,6 +103,20 @@ export default function IsoTower({
     minY = Infinity,
     maxX = -Infinity,
     maxY = -Infinity;
+  for (const f of surfaces) {
+    for (const [x, y] of [
+      [f.x0, f.y0],
+      [f.x1, f.y0],
+      [f.x0, f.y1],
+      [f.x1, f.y1],
+    ]) {
+      const [px, py] = proj(x, y, f.z);
+      minX = Math.min(minX, px);
+      maxX = Math.max(maxX, px);
+      minY = Math.min(minY, py);
+      maxY = Math.max(maxY, py + 13);
+    }
+  }
   for (const c of cubes) {
     for (const [dx, dy, dz] of [
       [0, 0, 1],
@@ -127,7 +146,7 @@ export default function IsoTower({
   const strokeWidth = variant === "ink" ? 0.7 : 0.5;
 
   function colorsFor(c: (typeof cubes)[number]) {
-    const ghost = highlight !== undefined && c.section !== highlight;
+    const ghost = highlight !== undefined && c.group !== highlight;
     if (ghost) return { top: "#F7FAFF", left: "#EEF4FF", right: "#E2ECFC", ghost: true };
     if (highlight !== undefined) return { top: "#A9CBFF", left: "#5E97F2", right: "#3A76DB", ghost: false };
     if (variant === "ink") return { top: "#FFFFFF", left: "#DCEAFF", right: "#B9D4FF", ghost: false };
@@ -136,10 +155,45 @@ export default function IsoTower({
     return { top: shade(base, 0.22), left: base, right: shade(base, -0.22), ghost: false };
   }
 
-  const groups = [...layers.keys()]
+  // Furniture (a chair seat, the table) is a dashed shape drawn just before the blocks resting on it.
+  // Its name goes under the front corner, on top of everything.
+  function surface(f: Surface, i: number) {
+    const pts = [proj(f.x0, f.y0, f.z), proj(f.x1, f.y0, f.z), proj(f.x1, f.y1, f.z), proj(f.x0, f.y1, f.z)];
+    return (
+      <polygon
+        key={`surface-${i}`}
+        points={pts.map(fmt).join(" ")}
+        fill={variant === "ink" ? "#F4F8FF" : "rgba(255,255,255,0.55)"}
+        stroke={variant === "ink" ? "#8DB3EE" : "rgba(17,70,184,0.45)"}
+        strokeWidth={0.8}
+        strokeDasharray="3 2"
+      />
+    );
+  }
+  const labels = surfaces.map((f, i) => {
+    const [lx, ly] = proj(f.x1, f.y1, f.z);
+    return (
+      <text
+        key={`label-${i}`}
+        x={lx}
+        y={ly + 11}
+        textAnchor="middle"
+        fontSize={9}
+        fontWeight={800}
+        fill={variant === "ink" ? "#5F86C9" : "rgba(17,70,184,0.75)"}
+        fontFamily="Nunito, sans-serif"
+      >
+        {f.label.charAt(0).toUpperCase() + f.label.slice(1)}
+      </text>
+    );
+  });
+
+  const zs = new Set([...layers.keys(), ...surfaces.map((f) => f.z)]);
+  const groups = [...zs]
     .sort((a, b) => a - b)
     .map((z) => {
-      const row = layers.get(z)!.sort((a, b) => a.x + a.y - (b.x + b.y) || a.x - b.x);
+      const under = surfaces.flatMap((f, i) => (f.z === z ? [surface(f, i)] : []));
+      const row = (layers.get(z) ?? []).sort((a, b) => a.x + a.y - (b.x + b.y) || a.x - b.x);
       const polys: React.ReactElement[] = [];
       for (const c of row) {
         const col = colorsFor(c);
@@ -154,7 +208,7 @@ export default function IsoTower({
             const j = jitter(fi * 4 + pi);
             polys.push(
               <polygon
-                key={`${c.x}-${c.y}-${fi}-${pi}`}
+                key={`${c.x}_${c.y}-${fi}-${pi}`}
                 points={pts}
                 fill={j ? shade(fill, j) : fill}
                 stroke={parts.length > 1 ? "none" : col.ghost ? "#C9DAF5" : stroke}
@@ -165,7 +219,7 @@ export default function IsoTower({
           if (parts.length > 1) {
             polys.push(
               <polygon
-                key={`${c.x}-${c.y}-${fi}-edge`}
+                key={`${c.x}_${c.y}-${fi}-edge`}
                 points={facePolys(o, u, v, false)[0]}
                 fill="none"
                 stroke={stroke}
@@ -181,6 +235,7 @@ export default function IsoTower({
           className={animate ? "iso-drop" : undefined}
           style={animate ? { animationDelay: `${z * stepMs}ms` } : undefined}
         >
+          {under}
           {polys}
         </g>
       );
@@ -198,6 +253,7 @@ export default function IsoTower({
     >
       {title ? <title>{title}</title> : null}
       {groups}
+      {labels}
     </svg>
   );
 }

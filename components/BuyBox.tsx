@@ -4,6 +4,7 @@ import { useState } from "react";
 import CoverPreview from "@/components/CoverPreview";
 import SignupForm from "@/components/SignupForm";
 import { track } from "@/components/Track";
+import type { Structure } from "@/lib/structure";
 import { formatPrice, type Section } from "@/lib/tower";
 
 type Props = {
@@ -13,10 +14,11 @@ type Props = {
   checkoutUrl: string | null;
   status: "draft" | "coming_soon" | "live";
   sections: Section[];
+  structure?: Structure | null;
   number: number;
 };
 
-export default function BuyBox({ slug, name, priceCents, checkoutUrl, status, sections, number }: Props) {
+export default function BuyBox({ slug, name, priceCents, checkoutUrl, status, sections, structure, number }: Props) {
   const [reserving, setReserving] = useState(false);
   const price = formatPrice(priceCents);
 
@@ -40,7 +42,7 @@ export default function BuyBox({ slug, name, priceCents, checkoutUrl, status, se
             Printable step-by-step guide, designed by Sawyer. Print it or save it as a PDF.
           </p>
         </div>
-        <CoverPreview sections={sections} name={name} number={number} size="sm" />
+        <CoverPreview sections={sections} structure={structure} name={name} number={number} size="sm" />
       </div>
 
       {checkoutUrl ? (

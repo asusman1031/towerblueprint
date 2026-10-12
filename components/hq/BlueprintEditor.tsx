@@ -5,7 +5,9 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { deleteOriginal, saveBlueprint, uploadOriginal, uploadPhoto } from "@/app/hq/actions";
 import IsoTower from "@/components/IsoTower";
 import { fileToBase64, pageWithPreview, shrinkImage } from "@/lib/image-client";
+import { buildStructure, type Structure } from "@/lib/structure";
 import { MAX_LAYERS, MAX_SIDE, sectionStats, towerTotals, type Section } from "@/lib/tower";
+import StructureEditor from "./StructureEditor";
 import type { HqBlueprint } from "./types";
 
 type Draft = {
@@ -17,6 +19,7 @@ type Draft = {
   inspired_by: string;
   fun_fact: string;
   sections: Section[];
+  structure: Structure | null;
   difficulty: number;
   price: string;
   checkout_url: string;
@@ -46,6 +49,7 @@ function toDraft(bp?: HqBlueprint, seed?: EditorSeed): Draft {
         { w: 2, d: 2, count: 8 },
         { w: 1, d: 1, count: 10 },
       ],
+      structure: null,
       difficulty: 2,
       price: "5",
       checkout_url: "",
@@ -62,6 +66,7 @@ function toDraft(bp?: HqBlueprint, seed?: EditorSeed): Draft {
     inspired_by: bp.inspired_by,
     fun_fact: bp.fun_fact,
     sections: bp.sections,
+    structure: bp.structure,
     difficulty: bp.difficulty,
     price: (bp.price_cents / 100).toString(),
     checkout_url: bp.checkout_url ?? "",
@@ -152,7 +157,9 @@ export default function BlueprintEditor({
     });
 
   const stats = sectionStats(d.sections);
-  const totals = towerTotals(d.sections);
+  const built = d.structure ? buildStructure(d.structure) : null;
+  const totals = built ?? towerTotals(d.sections);
+  const sums = built ? built.parts.map((p) => p.blocks) : stats.map((s) => s.blocks);
 
   function save() {
     setMsg(null);
@@ -166,6 +173,7 @@ export default function BlueprintEditor({
         inspired_by: d.inspired_by,
         fun_fact: d.fun_fact,
         sections: d.sections,
+        structure: d.structure,
         difficulty: d.difficulty,
         price_cents: Math.round(Number(d.price) * 100),
         checkout_url: d.checkout_url,
@@ -267,82 +275,86 @@ export default function BlueprintEditor({
             </div>
           </div>
 
-          <div>
-            <span className="label">Sections (bottom first)</span>
-            <ol className="space-y-2">
-              {d.sections.map((s, i) => (
-                <li key={i} className="rounded-xl border-2 border-navy/25 bg-paper p-3">
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                    <span className="font-display text-lg text-brand">#{i + 1}</span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-extrabold text-ink uppercase">Wide</span>
-                      <Stepper label="wide" value={s.w} min={1} max={MAX_SIDE} onChange={(n) => setSection(i, { w: n })} />
+          {d.structure ? (
+            <StructureEditor structure={d.structure} onChange={(next) => set("structure", next)} />
+          ) : (
+            <div>
+              <span className="label">Sections (bottom first)</span>
+              <ol className="space-y-2">
+                {d.sections.map((s, i) => (
+                  <li key={i} className="rounded-xl border-2 border-navy/25 bg-paper p-3">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <span className="font-display text-lg text-brand">#{i + 1}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-extrabold text-ink uppercase">Wide</span>
+                        <Stepper label="wide" value={s.w} min={1} max={MAX_SIDE} onChange={(n) => setSection(i, { w: n })} />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-extrabold text-ink uppercase">Deep</span>
+                        <Stepper label="deep" value={s.d} min={1} max={MAX_SIDE} onChange={(n) => setSection(i, { d: n })} />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-extrabold text-ink uppercase">Layers</span>
+                        <Stepper
+                          label="layers"
+                          value={s.count}
+                          min={1}
+                          max={MAX_LAYERS}
+                          onChange={(n) => setSection(i, { count: n })}
+                        />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-extrabold text-ink uppercase">Deep</span>
-                      <Stepper label="deep" value={s.d} min={1} max={MAX_SIDE} onChange={(n) => setSection(i, { d: n })} />
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-extrabold text-ink uppercase">Layers</span>
-                      <Stepper
-                        label="layers"
-                        value={s.count}
-                        min={1}
-                        max={MAX_LAYERS}
-                        onChange={(n) => setSection(i, { count: n })}
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <input
+                        className="field !w-auto flex-1 !py-1.5 text-sm"
+                        placeholder={`Name this part (optional), e.g. ${stats[i]?.name ?? "The Base"}`}
+                        value={s.label ?? ""}
+                        maxLength={40}
+                        onChange={(e) => setSection(i, { label: e.target.value })}
+                        aria-label={`Name for section ${i + 1}`}
                       />
+                      <span className="text-sm font-bold text-ink">
+                        {s.w}×{s.d}×{s.count} = <span className="font-display text-base text-navy">{s.w * s.d * s.count}</span>
+                      </span>
+                      <div className="ml-auto flex gap-1">
+                        <button type="button" className="btn btn-white btn-sm !px-2" onClick={() => moveSection(i, -1)} aria-label="Move down">
+                          ↓
+                        </button>
+                        <button type="button" className="btn btn-white btn-sm !px-2" onClick={() => moveSection(i, 1)} aria-label="Move up">
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-white btn-sm !px-2"
+                          disabled={d.sections.length <= 1}
+                          onClick={() => setD((p) => ({ ...p, sections: p.sections.filter((_, j) => j !== i) }))}
+                          aria-label="Remove section"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <input
-                      className="field !w-auto flex-1 !py-1.5 text-sm"
-                      placeholder={`Name this part (optional), e.g. ${stats[i]?.name ?? "The Base"}`}
-                      value={s.label ?? ""}
-                      maxLength={40}
-                      onChange={(e) => setSection(i, { label: e.target.value })}
-                      aria-label={`Name for section ${i + 1}`}
-                    />
-                    <span className="text-sm font-bold text-ink">
-                      {s.w}×{s.d}×{s.count} = <span className="font-display text-base text-navy">{s.w * s.d * s.count}</span>
-                    </span>
-                    <div className="ml-auto flex gap-1">
-                      <button type="button" className="btn btn-white btn-sm !px-2" onClick={() => moveSection(i, -1)} aria-label="Move down">
-                        ↓
-                      </button>
-                      <button type="button" className="btn btn-white btn-sm !px-2" onClick={() => moveSection(i, 1)} aria-label="Move up">
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-white btn-sm !px-2"
-                        disabled={d.sections.length <= 1}
-                        onClick={() => setD((p) => ({ ...p, sections: p.sections.filter((_, j) => j !== i) }))}
-                        aria-label="Remove section"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <button
-              type="button"
-              className="btn btn-blue btn-sm mt-3"
-              disabled={d.sections.length >= 20}
-              onClick={() =>
-                setD((p) => {
-                  const top = p.sections[p.sections.length - 1] ?? { w: 3, d: 3, count: 3 };
-                  return {
-                    ...p,
-                    sections: [...p.sections, { w: Math.max(1, top.w - 1), d: Math.max(1, top.d - 1), count: 5 }],
-                  };
-                })
-              }
-            >
-              + Add a section on top
-            </button>
-          </div>
+                  </li>
+                ))}
+              </ol>
+              <button
+                type="button"
+                className="btn btn-blue btn-sm mt-3"
+                disabled={d.sections.length >= 20}
+                onClick={() =>
+                  setD((p) => {
+                    const top = p.sections[p.sections.length - 1] ?? { w: 3, d: 3, count: 3 };
+                    return {
+                      ...p,
+                      sections: [...p.sections, { w: Math.max(1, top.w - 1), d: Math.max(1, top.d - 1), count: 5 }],
+                    };
+                  })
+                }
+              >
+                + Add a section on top
+              </button>
+            </div>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
@@ -554,7 +566,12 @@ export default function BlueprintEditor({
 
         <aside className="bg-grid-light flex flex-col items-center rounded-2xl border-2 border-navy/20 p-4 lg:sticky lg:top-24 lg:self-start">
           <p className="label">Live preview</p>
-          <IsoTower sections={d.sections} className="h-80 w-auto max-w-full" title="Tower preview" />
+          <IsoTower
+            sections={d.sections}
+            structure={d.structure}
+            className={d.structure ? "h-auto w-full" : "h-80 w-auto max-w-full"}
+            title="Tower preview"
+          />
           <div className="mt-4 grid w-full grid-cols-2 gap-2 text-center">
             <div className="rounded-xl bg-white p-2">
               <div className="font-display text-3xl text-navy">{totals.blocks}</div>
@@ -566,7 +583,7 @@ export default function BlueprintEditor({
             </div>
           </div>
           <p className="mt-3 text-center text-sm font-bold text-ink">
-            {stats.map((s) => s.blocks).join(" + ")} = {totals.blocks}
+            {sums.join(" + ")} = {totals.blocks}
           </p>
         </aside>
       </div>

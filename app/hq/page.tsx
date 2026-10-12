@@ -11,6 +11,7 @@ import SaleForm from "@/components/hq/SaleForm";
 import type { HqDashboard } from "@/components/hq/types";
 import { DEFAULT_ARCHITECT_NOTE, DEFAULT_CUSTOM_PRICE_CENTS } from "@/lib/data";
 import { db } from "@/lib/supabase";
+import { cleanStructure } from "@/lib/structure";
 import { cleanSections, formatPrice } from "@/lib/tower";
 
 export const dynamic = "force-dynamic";
@@ -78,7 +79,11 @@ export default async function HQPage() {
   const note = dash.settings?.architect_note?.trim() || DEFAULT_ARCHITECT_NOTE;
   const customPrice = Number(dash.settings?.custom_price_cents ?? DEFAULT_CUSTOM_PRICE_CENTS);
   const customOpen = dash.settings?.custom_open !== "false";
-  const blueprints = dash.blueprints.map((b) => ({ ...b, sections: cleanSections(b.sections) }));
+  const blueprints = dash.blueprints.map((b) => ({
+    ...b,
+    sections: cleanSections(b.sections),
+    structure: cleanStructure(b.structure),
+  }));
   const n = (v: unknown) => Number(v ?? 0);
   const visitsTotal = n(dash.total.visit);
   const funnel = [

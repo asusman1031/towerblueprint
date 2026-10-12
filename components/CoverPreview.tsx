@@ -1,15 +1,18 @@
 import IsoTower from "@/components/IsoTower";
+import type { Structure } from "@/lib/structure";
 import type { Section } from "@/lib/tower";
 
 // A mini cover page of the official blueprint. Shows only the drawing, never
 // the layer math, so it is safe to show before someone buys.
 export default function CoverPreview({
   sections,
+  structure,
   name,
   number,
   size = "lg",
 }: {
   sections: Section[];
+  structure?: Structure | null;
   name: string;
   number: number;
   size?: "sm" | "lg";
@@ -26,7 +29,13 @@ export default function CoverPreview({
             <span>{no}</span>
           </div>
           <div className="flex h-24 items-end justify-center pt-1">
-            <IsoTower sections={sections} variant="ink" className="h-full w-auto" title={`${name} cover`} />
+            <IsoTower
+              sections={sections}
+              structure={structure}
+              variant="ink"
+              className="h-full w-auto max-w-full"
+              title={`${name} cover`}
+            />
           </div>
         </div>
       </div>
@@ -48,7 +57,13 @@ export default function CoverPreview({
         </div>
         <p className="mt-3 text-center font-display text-3xl text-blueprint">{name}</p>
         <div className="mt-3 flex h-72 items-end justify-center">
-          <IsoTower sections={sections} variant="ink" className="h-full w-auto" title={`${name} blueprint cover`} />
+          <IsoTower
+            sections={sections}
+            structure={structure}
+            variant="ink"
+            className="h-full w-auto max-w-full"
+            title={`${name} blueprint cover`}
+          />
         </div>
         <div className="mt-3 grid grid-cols-2 border-2 border-blueprint text-[0.65rem] font-bold text-navy">
           <span className="border-r-2 border-blueprint bg-ice px-2 py-1 tracking-wider text-blueprint uppercase">

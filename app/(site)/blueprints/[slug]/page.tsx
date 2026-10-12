@@ -6,7 +6,8 @@ import BuyBox from "@/components/BuyBox";
 import Photo from "@/components/Photo";
 import Track from "@/components/Track";
 import { getBlueprint } from "@/lib/data";
-import { difficultyLabel, towerTotals } from "@/lib/tower";
+import { designTotals } from "@/lib/structure";
+import { difficultyLabel } from "@/lib/tower";
 
 export const revalidate = 60;
 
@@ -25,7 +26,8 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
   const { slug } = await params;
   const bp = await getBlueprint(slug);
   if (!bp) notFound();
-  const t = towerTotals(bp.sections);
+  const t = designTotals(bp);
+  const sideways = bp.structure;
 
   return (
     <>
@@ -36,30 +38,66 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
             ← All blueprints
           </Link>
           <div className="mt-6 grid gap-10 md:grid-cols-[1fr_1.05fr]">
-            <div className="card bg-grid-light grid grid-cols-2 items-end gap-4 p-5">
-              <figure className="flex flex-col items-center">
-                {bp.photo_url ? (
-                  <Photo
-                    src={bp.photo_url}
-                    alt={`Sawyer's real ${bp.name}, built from magnetic blocks`}
-                    className="h-[26rem] w-52 rounded-xl border-[3px] border-navy object-cover"
+            {sideways ? (
+              <div className="card bg-grid-light space-y-5 p-5">
+                <div className="grid grid-cols-2 gap-4">
+                  {[bp.photo_url, ...(sideways.photos ?? [])].slice(0, 2).map((src, i) =>
+                    src ? (
+                      <figure key={src} className="flex flex-col items-center">
+                        <Photo
+                          src={src}
+                          alt={i === 0 ? `Sawyer's real ${bp.name}, built from magnetic blocks` : `Another view of Sawyer's ${bp.name}`}
+                          width={1200}
+                          height={1400}
+                          sizes="(max-width: 768px) 50vw, 280px"
+                          className="aspect-[6/7] w-full rounded-xl border-[3px] border-navy object-cover"
+                        />
+                        <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
+                          {i === 0 ? "The real build" : "Another view"}
+                        </figcaption>
+                      </figure>
+                    ) : null,
+                  )}
+                </div>
+                <figure className="flex w-full flex-col items-center">
+                  <BuildingTower
+                    sections={bp.sections}
+                    structure={sideways}
+                    wide
+                    className="h-auto w-full"
+                    title={`${bp.name} drawing`}
                   />
-                ) : (
-                  <div className="flex h-[26rem] w-52 items-center justify-center rounded-xl border-[3px] border-dashed border-navy/30 p-4 text-center text-sm font-bold text-ink">
-                    Photo coming soon
-                  </div>
-                )}
-                <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
-                  The real build
-                </figcaption>
-              </figure>
-              <figure className="flex flex-col items-center">
-                <BuildingTower sections={bp.sections} className="h-[22rem] w-auto" title={`${bp.name} drawing`} />
-                <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
-                  The blueprint
-                </figcaption>
-              </figure>
-            </div>
+                  <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
+                    The blueprint
+                  </figcaption>
+                </figure>
+              </div>
+            ) : (
+              <div className="card bg-grid-light grid grid-cols-2 items-end gap-4 p-5">
+                <figure className="flex flex-col items-center">
+                  {bp.photo_url ? (
+                    <Photo
+                      src={bp.photo_url}
+                      alt={`Sawyer's real ${bp.name}, built from magnetic blocks`}
+                      className="h-[26rem] w-52 rounded-xl border-[3px] border-navy object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-[26rem] w-52 items-center justify-center rounded-xl border-[3px] border-dashed border-navy/30 p-4 text-center text-sm font-bold text-ink">
+                      Photo coming soon
+                    </div>
+                  )}
+                  <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
+                    The real build
+                  </figcaption>
+                </figure>
+                <figure className="flex flex-col items-center">
+                  <BuildingTower sections={bp.sections} className="h-[22rem] w-auto" title={`${bp.name} drawing`} />
+                  <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
+                    The blueprint
+                  </figcaption>
+                </figure>
+              </div>
+            )}
 
             <div>
               <span className="rounded-full border-2 border-navy bg-sun px-3 py-0.5 font-display text-sm">
@@ -73,7 +111,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                 {[
                   ["Blocks", String(t.blocks)],
                   ["Tall", `${t.height}`],
-                  ["Base", `${t.footprintW}×${t.footprintD}`],
+                  [t.base.label, t.base.value],
                   ["Level", difficultyLabel(bp.difficulty)],
                 ].map(([k, v]) => (
                   <div key={k} className="rounded-xl border-2 border-navy bg-white p-3 text-center">
@@ -91,6 +129,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   checkoutUrl={bp.checkout_url}
                   status={bp.status}
                   sections={bp.sections}
+                  structure={bp.structure}
                   number={bp.number}
                 />
               </div>
@@ -110,12 +149,20 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
               </span>
             </li>
             <li className="flex gap-3">
-              <span aria-hidden>🟫</span>
-              <span>A hard, flat floor so your tower stands straight</span>
+              <span aria-hidden>{sideways ? "🪑" : "🟫"}</span>
+              <span>
+                {sideways
+                  ? "Two chairs and a table, lined up next to each other"
+                  : "A hard, flat floor so your tower stands straight"}
+              </span>
             </li>
             <li className="flex gap-3">
               <span aria-hidden>🙋</span>
-              <span>A grown-up to help reach the top if it gets taller than you</span>
+              <span>
+                {sideways
+                  ? "A grown-up to help hold the beams while the magnets click together"
+                  : "A grown-up to help reach the top if it gets taller than you"}
+              </span>
             </li>
             <li className="flex gap-3">
               <span aria-hidden>🖨️</span>
@@ -125,8 +172,8 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
         </div>
         {bp.fun_fact ? (
           <div className="card bg-sun/20 p-6">
-            <h2 className="font-display text-3xl text-navy">The real building</h2>
-            {bp.inspired_by ? <p className="mt-1 font-extrabold text-brand">{bp.inspired_by}</p> : null}
+            <h2 className="font-display text-3xl text-navy">{sideways ? "Did you know?" : "The real building"}</h2>
+            {bp.inspired_by && !sideways ? <p className="mt-1 font-extrabold text-brand">{bp.inspired_by}</p> : null}
             <p className="mt-3 text-lg text-ink">{bp.fun_fact}</p>
           </div>
         ) : null}

@@ -8,18 +8,20 @@ export default function Photo({
   className,
   width = 600,
   height = 1200,
+  sizes = "(max-width: 768px) 50vw, 320px",
 }: {
   src: string;
   alt: string;
   className?: string;
   width?: number;
   height?: number;
+  sizes?: string;
 }) {
   if (src.startsWith("/api/")) {
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={src} alt={alt} className={className} loading="lazy" />;
   }
   return (
-    <Image src={src} alt={alt} width={width} height={height} className={className} sizes="(max-width: 768px) 50vw, 320px" />
+    <Image src={src} alt={alt} width={width} height={height} className={className} sizes={sizes} />
   );
 }

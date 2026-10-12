@@ -8,7 +8,8 @@ import Photo from "@/components/Photo";
 import SignupForm from "@/components/SignupForm";
 import Track from "@/components/Track";
 import { getBlueprints, getSettings } from "@/lib/data";
-import { formatPrice, SAMPLE_CUSTOM_TOWER, towerTotals } from "@/lib/tower";
+import { designTotals } from "@/lib/structure";
+import { formatPrice, SAMPLE_CUSTOM_TOWER } from "@/lib/tower";
 
 export const revalidate = 60;
 
@@ -42,10 +43,14 @@ const STEPS = [
 export default async function Home() {
   const [blueprints, settings] = await Promise.all([getBlueprints(), getSettings()]);
   const note = settings.architectNote;
-  const featured = blueprints.find((b) => b.status === "live") ?? blueprints[0];
-  const featuredTotals = featured ? towerTotals(featured.sections) : null;
-  const biggest = Math.max(0, ...blueprints.map((b) => towerTotals(b.sections).blocks));
-  const tallest = Math.max(0, ...blueprints.map((b) => towerTotals(b.sections).height));
+  // The hero shows a tall tower next to its photo, so feature a tower when there is one.
+  const featured =
+    blueprints.find((b) => b.status === "live" && !b.structure) ??
+    blueprints.find((b) => b.status === "live") ??
+    blueprints[0];
+  const featuredTotals = featured ? designTotals(featured) : null;
+  const biggest = Math.max(0, ...blueprints.map((b) => designTotals(b).blocks));
+  const tallest = Math.max(0, ...blueprints.map((b) => designTotals(b).height));
 
   return (
     <>
@@ -107,6 +112,7 @@ export default async function Home() {
                     <div className="flex items-stretch gap-2">
                       <BuildingTower
                         sections={featured.sections}
+                        structure={featured.structure}
                         className="h-72 w-auto sm:h-[22rem]"
                         title={`${featured.name}, ${featuredTotals.blocks} blocks`}
                       />
@@ -209,7 +215,12 @@ export default async function Home() {
                 Get the {featured.name} blueprint
               </Link>
             </div>
-            <CoverPreview sections={featured.sections} name={featured.name} number={featured.number} />
+            <CoverPreview
+              sections={featured.sections}
+              structure={featured.structure}
+              name={featured.name}
+              number={featured.number}
+            />
           </div>
         </section>
       ) : null}

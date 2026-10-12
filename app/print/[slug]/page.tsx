@@ -1,41 +1,19 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import IsoTower from "@/components/IsoTower";
 import PlacementDiagram from "@/components/PlacementDiagram";
 import PrintButton from "@/components/PrintButton";
 import { getOriginals, getPrint, type Blueprint, type OriginalFile } from "@/lib/data";
+import { buildStructure } from "@/lib/structure";
 import { difficultyLabel, sectionStats, towerTotals, type SectionStats } from "@/lib/tower";
+import { Certificate, CountingTrick, TickBoxes, TitleBar } from "./sheets";
+import StructureSheets, { structureStepPages } from "./StructureSheets";
 import "./print.css";
 
 export const metadata: Metadata = {
   title: "Official blueprint",
   robots: { index: false, follow: false },
 };
-
-function pad3(n: number) {
-  return String(n).padStart(3, "0");
-}
-
-function TitleBar({ bp, page, pages }: { bp: Blueprint; page: number; pages: number }) {
-  return (
-    <div className="flex items-center gap-3 border-b-[3px] border-blueprint pb-3">
-      <Image src="/brand/mark.png" alt="" width={400} height={270} className="h-10 w-auto" loading="eager" />
-      <div className="leading-tight">
-        <div className="text-[0.62rem] font-extrabold tracking-[0.25em] text-blueprint uppercase">
-          Tower Blueprints for Kids · Official Blueprint
-        </div>
-        <div className="font-display text-xl text-blueprint">{bp.name}</div>
-      </div>
-      <div className="ml-auto text-right leading-tight">
-        <div className="font-display text-xl text-blueprint">No. {pad3(bp.number)}</div>
-        <div className="text-[0.62rem] font-extrabold tracking-widest text-blueprint/70 uppercase">
-          Page {page} of {pages}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function StepCard({
   s,
@@ -86,16 +64,7 @@ function StepCard({
             <p className="text-[0.7rem] font-extrabold tracking-widest text-blueprint uppercase">
               Tick a box for every layer you finish
             </p>
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
-              {Array.from({ length: s.count }, (_, i) => (
-                <span
-                  key={i}
-                  className="flex size-6 items-center justify-center rounded border-2 border-blueprint text-[0.6rem] font-bold text-blueprint/50"
-                >
-                  {i + 1}
-                </span>
-              ))}
-            </div>
+            <TickBoxes count={s.count} />
           </div>
           <p className="mt-3 rounded-lg bg-ice px-3 py-1.5 text-sm font-bold text-navy">
             Tower so far: {s.heightAfter} block{s.heightAfter === 1 ? "" : "s"} tall · {s.blocksAfter} blocks used
@@ -175,26 +144,42 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
   }
 
   const originals = await getOriginals(bp.slug, keyParam);
+  const bonusPages = originals.filter((f) => f.mime.startsWith("image/")).length;
+  const header = (
+    <div className="no-print mx-auto mb-6 flex max-w-[8.5in] flex-wrap items-center justify-between gap-4 px-4">
+      <div>
+        <p className="font-display text-2xl text-navy">Your official {bp.name} blueprint</p>
+        <p className="text-sm text-ink">
+          To download it, click the button and choose &ldquo;Save as PDF.&rdquo; Keep this link to print it again.
+        </p>
+      </div>
+      <PrintButton />
+    </div>
+  );
+
+  if (bp.structure) {
+    const built = buildStructure(bp.structure);
+    const pages = 2 + structureStepPages(built).length + 1 + bonusPages;
+    return (
+      <main className="print-root bg-[#e9eef6] py-6">
+        {header}
+        <StructureSheets bp={bp} structure={bp.structure} built={built} pages={pages} />
+        <Certificate bp={bp} stats={`${built.blocks} blocks · ${built.length} blocks long`} />
+        {originals.length ? <BonusOriginals bp={bp} files={originals} keyParam={keyParam} /> : null}
+      </main>
+    );
+  }
+
   const stats = sectionStats(bp.sections);
   const t = towerTotals(bp.sections);
   const footprint = { w: t.footprintW, d: t.footprintD };
   const stepPages: SectionStats[][] = [];
   for (let i = 0; i < stats.length; i += 2) stepPages.push(stats.slice(i, i + 2));
-  const pages = 2 + stepPages.length + 1 + originals.filter((f) => f.mime.startsWith("image/")).length;
-  const tens = Math.floor(t.blocks / 10);
-  const extra = t.blocks % 10;
+  const pages = 2 + stepPages.length + 1 + bonusPages;
 
   return (
     <main className="print-root bg-[#e9eef6] py-6">
-      <div className="no-print mx-auto mb-6 flex max-w-[8.5in] flex-wrap items-center justify-between gap-4 px-4">
-        <div>
-          <p className="font-display text-2xl text-navy">Your official {bp.name} blueprint</p>
-          <p className="text-sm text-ink">
-            To download it, click the button and choose &ldquo;Save as PDF.&rdquo; Keep this link to print it again.
-          </p>
-        </div>
-        <PrintButton />
-      </div>
+      {header}
 
       {/* Cover */}
       <section className="sheet">
@@ -293,24 +278,7 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
               blocks tall
             </p>
           </div>
-          <div className="rounded-2xl border-[2.5px] border-blueprint p-4">
-            <p className="font-display text-xl text-blueprint">Counting trick</p>
-            <p className="mt-2 text-navy">
-              Make piles of 10. You need <strong>{tens}</strong> pile{tens === 1 ? "" : "s"} of 10
-              {extra ? (
-                <>
-                  {" "}
-                  and <strong>{extra}</strong> extra
-                </>
-              ) : null}
-              .
-            </p>
-            <div className="mt-2 flex flex-wrap gap-1">
-              {Array.from({ length: Math.min(tens, 60) }, (_, i) => (
-                <span key={i} className="size-3.5 rounded-sm border-2 border-blueprint" />
-              ))}
-            </div>
-          </div>
+          <CountingTrick blocks={t.blocks} />
         </div>
 
         <div className="mt-6 rounded-2xl bg-ice p-4">
@@ -336,36 +304,7 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
         </section>
       ))}
 
-      {/* Certificate */}
-      <section className="sheet">
-        <div className="certificate flex flex-1 flex-col items-center justify-center rounded-3xl border-[6px] border-double border-blueprint p-10 text-center">
-          <Image src="/brand/logo.png" alt="Tower Blueprints for Kids" width={900} height={948} className="h-36 w-auto" loading="eager" />
-          <p className="mt-6 text-sm font-extrabold tracking-[0.35em] text-blueprint/70 uppercase">Certificate of</p>
-          <h2 className="font-display text-6xl text-blueprint">Awesome Building</h2>
-          <p className="mt-8 text-lg text-ink">This certifies that</p>
-          <div className="mt-8 w-4/5 border-b-[3px] border-blueprint" />
-          <p className="mt-2 text-xs font-extrabold tracking-widest text-blueprint/60 uppercase">Builder&apos;s name</p>
-          <p className="mt-8 text-lg text-ink">built the</p>
-          <p className="font-display text-5xl text-blueprint">{bp.name}</p>
-          <p className="mt-2 font-bold text-navy">
-            {t.blocks} blocks · {t.height} blocks tall
-          </p>
-          {bp.designer ? <p className="mt-1 text-ink">Designed by {bp.designer}</p> : null}
-          <div className="mt-12 grid w-full grid-cols-2 gap-10">
-            <div>
-              <div className="h-10 border-b-[3px] border-blueprint" />
-              <p className="mt-2 text-xs font-extrabold tracking-widest text-blueprint/60 uppercase">Date</p>
-            </div>
-            <div>
-              <div className="flex h-10 items-end justify-center border-b-[3px] border-blueprint font-display text-3xl text-blueprint">
-                Sawyer
-              </div>
-              <p className="mt-2 text-xs font-extrabold tracking-widest text-blueprint/60 uppercase">Chief Architect</p>
-            </div>
-          </div>
-          <p className="mt-10 text-sm text-ink">Blueprint No. {pad3(bp.number)} · towerblueprintsforkids.com</p>
-        </div>
-      </section>
+      <Certificate bp={bp} stats={`${t.blocks} blocks · ${t.height} blocks tall`} />
 
       {originals.length ? <BonusOriginals bp={bp} files={originals} keyParam={keyParam} /> : null}
     </main>
