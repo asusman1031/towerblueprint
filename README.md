@@ -36,14 +36,14 @@ The browser never talks to Supabase. The Next.js server uses the anon key; publi
 
 ## Environment variables
 
-Set automatically by the Vercel Supabase integration:
+The production Supabase project ("towerbuild") URL and anon key are built into `lib/supabase.ts`. The anon key is public by design; private data is only reachable through validated database functions. To point at a different database, set:
 
 - `SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_URL`
 - `SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, or `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 
 Optional: `NEXT_PUBLIC_SITE_URL` (defaults to `https://towerblueprintsforkids.com`).
 
-Without a database the site still runs, using the built-in Jeddah Tower and with sign-ups and HQ switched off.
+If the database can't be reached, public pages fall back to the built-in Jeddah Tower.
 
 ## Local development
 
@@ -52,7 +52,7 @@ npm install
 npm run dev
 ```
 
-In development without a database, `/print/jeddah-tower` previews the blueprint without a key.
+Local runs use the production database unless you set the variables above.
 
 ## HQ passcode
 
