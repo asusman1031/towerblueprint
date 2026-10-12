@@ -39,7 +39,7 @@ export default function BuyBox({ slug, name, priceCents, checkoutUrl, status, se
           <p className="label !mb-0">Official blueprint</p>
           <p className="font-display text-5xl text-navy">{price}</p>
           <p className="mt-1 text-sm font-semibold text-ink">
-            Printable step-by-step guide, designed by Sawyer. Print it or save it as a PDF.
+            Printable step-by-step guide, made by Sawyer. Print it or save it as a PDF.
           </p>
         </div>
         <CoverPreview sections={sections} structure={structure} name={name} number={number} size="sm" />

@@ -18,19 +18,26 @@ export default function PlacementDiagram({
     x: Math.floor((footprint.w - s.w) / 2),
     y: Math.floor((footprint.d - s.d) / 2),
   });
-  const area = below ?? current;
-  const a = off(area);
+  // The map covers both layers, so a layer that sticks out past the one below still fits.
   const c = off(current);
+  const b = below ? off(below) : c;
+  const a = { x: Math.min(b.x, c.x), y: Math.min(b.y, c.y) };
+  const area = {
+    w: Math.max(b.x + (below?.w ?? 0), c.x + current.w) - a.x,
+    d: Math.max(b.y + (below?.d ?? 0), c.y + current.d) - a.y,
+  };
   const cells: React.ReactElement[] = [];
 
-  if (below) {
+  // A wider layer hides the one below, so that one is drawn as a dashed outline on top instead.
+  const overhang = !!below && (current.w > below.w || current.d > below.d);
+  if (below && !overhang) {
     for (let y = 0; y < below.d; y++)
       for (let x = 0; x < below.w; x++)
         cells.push(
           <rect
             key={`b-${x}-${y}`}
-            x={x * cell + 0.6}
-            y={y * cell + 0.6}
+            x={(x + b.x - a.x) * cell + 0.6}
+            y={(y + b.y - a.y) * cell + 0.6}
             width={cell - 1.2}
             height={cell - 1.2}
             rx={1.2}
@@ -73,6 +80,23 @@ export default function PlacementDiagram({
         </g>,
       );
     }
+
+  if (below && overhang) {
+    cells.push(
+      <rect
+        key="below-outline"
+        x={(b.x - a.x) * cell + 0.3}
+        y={(b.y - a.y) * cell + 0.3}
+        width={below.w * cell - 0.6}
+        height={below.d * cell - 0.6}
+        rx={1.6}
+        fill="none"
+        stroke="#0B1F4D"
+        strokeWidth={0.9}
+        strokeDasharray="2 1.4"
+      />,
+    );
+  }
 
   return (
     <svg

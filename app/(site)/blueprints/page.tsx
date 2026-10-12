@@ -7,7 +7,7 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "All blueprints",
-  description: "Every official Tower Blueprints for Kids magnetic block tower, designed and tested by Sawyer.",
+  description: "Every official Tower Blueprints for Kids magnetic block tower, tested and published by Sawyer.",
 };
 
 export default async function BlueprintsPage() {
@@ -18,8 +18,8 @@ export default async function BlueprintsPage() {
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <h1 className="font-display text-5xl text-navy sm:text-6xl">The blueprints</h1>
         <p className="mt-3 max-w-2xl text-lg text-ink">
-          Each tower is designed, built, and tested by Sawyer before it becomes an official blueprint. Pick one, count
-          your blocks, and start stacking.
+          Sawyer builds and tests every tower before it becomes an official blueprint. Most are his own designs, and
+          some come from guest architects. Pick one, count your blocks, and start stacking.
         </p>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {blueprints.map((bp) => (

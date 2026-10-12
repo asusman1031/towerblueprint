@@ -151,6 +151,36 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     preview_url: null,
     sort_order: 2,
   },
+  {
+    id: "seed-ring-tower",
+    slug: "ring-tower",
+    number: 3,
+    name: "Ring Tower",
+    tagline: "A tall tower with a big ring around its middle.",
+    description:
+      "Our first guest architect! Sawyer's little brother Ashton designed this one. A big strong base, a skinny neck, a wide ring in the middle, then up, up, up to a pointy spire.",
+    inspired_by: "",
+    fun_fact:
+      "Lots of tall towers have a ring partway up where people can look out. The CN Tower in Toronto has a glass floor up in its ring, 342 meters (more than 1,100 feet) above the ground, and you can stand right on it!",
+    sections: [
+      { w: 4, d: 4, count: 9, label: "The Big Base" },
+      { w: 2, d: 2, count: 5, label: "The Neck" },
+      { w: 4, d: 4, count: 2, label: "The Ring" },
+      { w: 2, d: 2, count: 7, label: "The Tower" },
+      { w: 2, d: 1, count: 5, label: "The Skinny Part" },
+      { w: 1, d: 1, count: 4, label: "The Spire" },
+    ],
+    structure: null,
+    difficulty: 2,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/ring-tower.jpg",
+    designer: "Ashton (age 5)",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 3,
+  },
 ];
 
 export const DEFAULT_ARCHITECT_NOTE =

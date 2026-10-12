@@ -42,6 +42,7 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
       )}
       <div className="flex flex-1 flex-col p-5">
         <h3 className="font-display text-3xl text-navy group-hover:text-brand">{bp.name}</h3>
+        {bp.designer ? <p className="text-sm font-extrabold text-brand">Guest architect: {bp.designer}</p> : null}
         <p className="mt-1 text-ink">{bp.tagline}</p>
         <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
           <div className="rounded-xl bg-ice p-2">

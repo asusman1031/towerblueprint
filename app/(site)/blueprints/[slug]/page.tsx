@@ -17,7 +17,9 @@ export async function generateMetadata({ params }: PageProps<"/blueprints/[slug]
   if (!bp) return { title: "Blueprint not found" };
   return {
     title: `${bp.name} blueprint`,
-    description: `${bp.tagline} An official step-by-step magnetic block tower blueprint designed by Sawyer, age 7.`,
+    description: bp.designer
+      ? `${bp.tagline} An official step-by-step magnetic block tower blueprint, designed by ${bp.designer} and made by Sawyer, age 7.`
+      : `${bp.tagline} An official step-by-step magnetic block tower blueprint designed by Sawyer, age 7.`,
     openGraph: { images: bp.photo_url && !bp.photo_url.startsWith("/api/") ? [bp.photo_url] : ["/brand/logo.png"] },
   };
 }
@@ -104,6 +106,11 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                 Blueprint No. {String(bp.number).padStart(3, "0")}
               </span>
               <h1 className="mt-3 font-display text-5xl leading-none text-navy sm:text-6xl">{bp.name}</h1>
+              {bp.designer ? (
+                <p className="mt-2 font-extrabold text-brand">
+                  Designed by {bp.designer} · Blueprint by Sawyer (age 7)
+                </p>
+              ) : null}
               <p className="mt-3 text-xl font-semibold text-ink">{bp.tagline}</p>
               {bp.description ? <p className="mt-4 text-lg text-ink">{bp.description}</p> : null}
 
@@ -172,7 +179,9 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
         </div>
         {bp.fun_fact ? (
           <div className="card bg-sun/20 p-6">
-            <h2 className="font-display text-3xl text-navy">{sideways ? "Did you know?" : "The real building"}</h2>
+            <h2 className="font-display text-3xl text-navy">
+              {sideways || !bp.inspired_by ? "Did you know?" : "The real building"}
+            </h2>
             {bp.inspired_by && !sideways ? <p className="mt-1 font-extrabold text-brand">{bp.inspired_by}</p> : null}
             <p className="mt-3 text-lg text-ink">{bp.fun_fact}</p>
           </div>

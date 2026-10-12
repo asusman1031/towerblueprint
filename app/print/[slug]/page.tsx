@@ -50,7 +50,12 @@ function StepCard({
                 <strong>Stack it {s.count} time{s.count === 1 ? "" : "s"}:</strong> {s.perLayer} × {s.count} ={" "}
                 <strong>{s.blocks}</strong> blocks
               </p>
-              {below ? (
+              {below && (s.w > below.w || s.d > below.d) ? (
+                <p className="text-sm text-ink">
+                  This layer is wider than the {below.w} × {below.d} layer under it, so it sticks out. The dashed box shows
+                  the layer underneath. The magnets hold the rest!
+                </p>
+              ) : below ? (
                 <p className="text-sm text-ink">
                   Put it on top of the {below.w} × {below.d} layer, right where the map shows. The dashed squares are the
                   layer underneath.

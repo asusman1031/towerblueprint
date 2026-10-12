@@ -71,7 +71,7 @@ export default function BlueprintManager({
             {bp.designer ? `Designed by ${bp.designer} · ` : ""}
             {t.blocks} blocks · {t.height} tall · {formatPrice(bp.price_cents)}
           </p>
-          {!bp.designer ? (
+          {!bp.designer || bp.status !== "draft" ? (
             <p className="mt-1 text-sm text-ink">
               👀 {bp.views} looks · 🛒 {bp.buy_clicks} buy clicks · 📝 {bp.preorders} reserved · 💰 {bp.sales} sold
             </p>
@@ -230,8 +230,11 @@ export default function BlueprintManager({
 
       {custom.length ? (
         <div>
-          <h2 className="font-display text-2xl text-navy">Custom blueprints you made</h2>
-          <p className="mb-4 text-ink">These stay secret. Only the person with the link can open them.</p>
+          <h2 className="font-display text-2xl text-navy">Guest architects and custom blueprints</h2>
+          <p className="mb-4 text-ink">
+            Towers other builders designed. Secret drafts stay private (only the person with the link can open them). Set
+            one to Live to put it in the shop.
+          </p>
           <ul className="grid gap-4 md:grid-cols-2">{custom.map(card)}</ul>
         </div>
       ) : null}
