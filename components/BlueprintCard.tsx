@@ -2,15 +2,14 @@ import Link from "next/link";
 import IsoTower from "@/components/IsoTower";
 import Photo from "@/components/Photo";
 import type { Blueprint } from "@/lib/data";
-import { buildKind, MATERIAL, TOY_CHIP } from "@/lib/kind";
+import { buildKind, isCutout, MATERIAL, TOY_CHIP } from "@/lib/kind";
 import { designTotals, unitLabel } from "@/lib/structure";
 import { difficultyLabel, formatPrice } from "@/lib/tower";
 
 export default function BlueprintCard({ bp }: { bp: Blueprint }) {
   const t = designTotals(bp);
   const kind = buildKind(bp);
-  // Brick and box builds are tall, so their whole photo shows (it's on matching paper).
-  const tallPhoto = kind === "bricks" || kind === "boxes";
+  const cutout = isCutout(bp.photo_url);
   return (
     <Link href={`/blueprints/${bp.slug}`} className="card group flex flex-col overflow-hidden transition hover:-translate-y-1">
       {kind !== "tower" ? (
@@ -23,8 +22,8 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
               width={1200}
               height={1400}
               sizes="(max-width: 768px) 100vw, 400px"
-              // Nudged left, out from under the drawing.
-              className={`h-full w-full ${tallPhoto ? "object-contain object-[30%_50%] py-2" : "object-cover"}`}
+              // A cutout shows whole, nudged left out from under the drawing.
+              className={`h-full w-full ${cutout ? "object-contain object-[30%_50%] p-3" : "object-cover"}`}
             />
           ) : null}
           <div

@@ -6,7 +6,7 @@ import BuyBox from "@/components/BuyBox";
 import Photo from "@/components/Photo";
 import Track from "@/components/Track";
 import { getBlueprint, RENAMED_SLUGS } from "@/lib/data";
-import { BLUEPRINT_KIND, buildKind, MATERIAL } from "@/lib/kind";
+import { BLUEPRINT_KIND, buildKind, isCutout, MATERIAL } from "@/lib/kind";
 import { designTotals, unitLabel } from "@/lib/structure";
 import { difficultyLabel } from "@/lib/tower";
 
@@ -72,7 +72,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                           width={1200}
                           height={1400}
                           sizes="(max-width: 768px) 50vw, 280px"
-                          className={`w-full rounded-xl border-[3px] border-navy ${photos.length > 1 ? "aspect-[6/7] object-cover" : "h-auto"}`}
+                          className={`w-full rounded-xl border-[3px] border-navy ${photos.length > 1 ? `aspect-[6/7] ${isCutout(src) ? "object-contain" : "object-cover"}` : "h-auto"}`}
                         />
                         <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
                           {i === 0 ? "The real build" : "Another view"}

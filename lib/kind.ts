@@ -33,6 +33,10 @@ export const BLUEPRINT_KIND: Record<BuildKind, string> = {
   dice: "dice",
 };
 
+// Photos cut out onto a see-through background (WebP or PNG) sit right on the
+// page, so they're shown whole instead of cropped to fill their frame.
+export const isCutout = (src: string | null | undefined) => !!src && /\.(webp|png)$/.test(src);
+
 // The toy a buyer needs, shown as a chip on cards. Magnetic blocks are the default, so they get none.
 export const TOY_CHIP: Partial<Record<BuildKind, string>> = {
   tiles: "Magnetic tiles",

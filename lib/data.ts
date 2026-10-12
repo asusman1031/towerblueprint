@@ -373,7 +373,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     tiles: null,
     bricks: {
       need: "21 DUPLO-size bricks, including one thin 2×4 plate",
-      photos: ["/photos/crazy-lego-tower-back.jpg"],
+      photos: ["/photos/crazy-lego-tower-back.webp"],
       steps: [
         {
           label: "The Base",
@@ -428,7 +428,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     price_cents: 500,
     checkout_url: null,
     status: "live",
-    photo_url: "/photos/crazy-lego-tower.jpg",
+    photo_url: "/photos/crazy-lego-tower.webp",
     designer: "Ashton (age 5)",
     original_pages: 0,
     preview_url: null,
@@ -449,7 +449,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     tiles: null,
     bricks: {
       need: "69 DUPLO-size bricks, including two thin 2×4 plates",
-      photos: ["/photos/james-tower-back.jpg"],
+      photos: ["/photos/james-tower-back.webp"],
       steps: [
         {
           label: "The Rainbow Base",
@@ -564,7 +564,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     price_cents: 500,
     checkout_url: null,
     status: "live",
-    photo_url: "/photos/james-tower.jpg",
+    photo_url: "/photos/james-tower.webp",
     designer: "",
     original_pages: 0,
     preview_url: null,
@@ -587,7 +587,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     bricks: null,
     boxes: {
       need: "3 cardboard boxes: one big, one tall, and one small enough to fit inside the tall one",
-      photos: ["/photos/box-tower-back.jpg"],
+      photos: ["/photos/box-tower-back.webp"],
       boxes: [
         {
           label: "The Base",
@@ -634,7 +634,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     price_cents: 200,
     checkout_url: null,
     status: "live",
-    photo_url: "/photos/box-tower.jpg",
+    photo_url: "/photos/box-tower.webp",
     designer: "",
     original_pages: 0,
     preview_url: null,
@@ -685,7 +685,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     price_cents: 200,
     checkout_url: null,
     status: "live",
-    photo_url: "/photos/dice-wall.jpg",
+    photo_url: "/photos/dice-wall.webp",
     designer: "",
     original_pages: 0,
     preview_url: null,
