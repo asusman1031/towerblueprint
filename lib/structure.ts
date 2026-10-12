@@ -1,3 +1,4 @@
+import { buildBricks, type BrickDesign } from "@/lib/bricks";
 import { buildTiles, type TileDesign } from "@/lib/tiles";
 import { towerTotals, type Cube, type Section } from "@/lib/tower";
 
@@ -345,8 +346,24 @@ export function headingBefore(s: Structure, index: number): Dir | null {
 }
 
 // The numbers every blueprint shows, whether it's a tower, a structure or a tile build.
-// `blocks` counts pieces: cube blocks, or small tile squares when unit is "tiles".
-export function designTotals(d: { sections: Section[]; structure?: Structure | null; tiles?: TileDesign | null }) {
+// `blocks` counts pieces: cube blocks, small tile squares when unit is "tiles", or
+// LEGO-style bricks (and plates) when unit is "bricks".
+export function designTotals(d: {
+  sections: Section[];
+  structure?: Structure | null;
+  tiles?: TileDesign | null;
+  bricks?: BrickDesign | null;
+}) {
+  if (d.bricks) {
+    const b = buildBricks(d.bricks);
+    return {
+      blocks: b.count,
+      unit: "bricks" as const,
+      height: b.tall,
+      base: { label: "Base", value: `${b.base.w}×${b.base.d}` },
+      steps: b.steps.length,
+    };
+  }
   if (d.tiles) {
     const b = buildTiles(d.tiles);
     return {

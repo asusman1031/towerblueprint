@@ -10,6 +10,7 @@ import NoteForm from "@/components/hq/NoteForm";
 import SaleForm from "@/components/hq/SaleForm";
 import type { HqDashboard } from "@/components/hq/types";
 import { DEFAULT_ARCHITECT_NOTE, DEFAULT_CUSTOM_PRICE_CENTS } from "@/lib/data";
+import { cleanBricks } from "@/lib/bricks";
 import { db } from "@/lib/supabase";
 import { cleanStructure } from "@/lib/structure";
 import { cleanTiles } from "@/lib/tiles";
@@ -85,6 +86,7 @@ export default async function HQPage() {
     sections: cleanSections(b.sections),
     structure: cleanStructure(b.structure),
     tiles: cleanTiles(b.tiles),
+    bricks: cleanBricks(b.bricks),
   }));
   const n = (v: unknown) => Number(v ?? 0);
   const visitsTotal = n(dash.total.visit);

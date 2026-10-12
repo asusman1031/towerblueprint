@@ -54,6 +54,7 @@ export default function BlueprintManager({
             sections={bp.sections}
             structure={bp.structure}
             tiles={bp.tiles}
+            bricks={bp.bricks}
             className="h-36 w-auto max-w-full"
             title={bp.name}
           />

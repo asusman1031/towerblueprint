@@ -1,4 +1,5 @@
 import IsoTower from "@/components/IsoTower";
+import type { BrickDesign } from "@/lib/bricks";
 import type { Structure } from "@/lib/structure";
 import type { TileDesign } from "@/lib/tiles";
 import type { Section } from "@/lib/tower";
@@ -9,6 +10,7 @@ export default function CoverPreview({
   sections,
   structure,
   tiles,
+  bricks,
   name,
   number,
   size = "lg",
@@ -16,6 +18,7 @@ export default function CoverPreview({
   sections: Section[];
   structure?: Structure | null;
   tiles?: TileDesign | null;
+  bricks?: BrickDesign | null;
   name: string;
   number: number;
   size?: "sm" | "lg";
@@ -36,6 +39,7 @@ export default function CoverPreview({
               sections={sections}
               structure={structure}
               tiles={tiles}
+              bricks={bricks}
               variant="ink"
               className="h-full w-auto max-w-full"
               title={`${name} cover`}
@@ -65,6 +69,7 @@ export default function CoverPreview({
             sections={sections}
             structure={structure}
             tiles={tiles}
+            bricks={bricks}
             variant="ink"
             className="h-full w-auto max-w-full"
             title={`${name} blueprint cover`}

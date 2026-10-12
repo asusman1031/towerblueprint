@@ -16,11 +16,12 @@ export async function generateMetadata({ params }: PageProps<"/blueprints/[slug]
   const { slug } = await params;
   const bp = await getBlueprint(slug);
   if (!bp) return { title: "Blueprint not found" };
+  const kind = bp.tiles ? "magnetic tile" : bp.bricks ? "LEGO DUPLO" : "magnetic block tower";
   return {
     title: `${bp.name} blueprint`,
     description: bp.designer
-      ? `${bp.tagline} An official step-by-step ${bp.tiles ? "magnetic tile" : "magnetic block tower"} blueprint, designed by ${bp.designer} and made by Sawyer, age 7.`
-      : `${bp.tagline} An official step-by-step ${bp.tiles ? "magnetic tile" : "magnetic block tower"} blueprint designed by Sawyer, age 7.`,
+      ? `${bp.tagline} An official step-by-step ${kind} blueprint, designed by ${bp.designer} and made by Sawyer, age 7.`
+      : `${bp.tagline} An official step-by-step ${kind} blueprint designed by Sawyer, age 7.`,
     openGraph: { images: bp.photo_url && !bp.photo_url.startsWith("/api/") ? [bp.photo_url] : ["/brand/logo.png"] },
   };
 }
@@ -37,9 +38,12 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
   // Sideways builds that rest on furniture (chairs, a table) need it lined up first.
   const onFurniture = !!bp.structure?.parts.some((p) => p.on);
   const hasPillars = !!bp.structure?.parts.some((p) => p.kind === "pillar");
-  const photos = [bp.photo_url, ...((bp.structure ?? bp.tiles)?.photos ?? [])].filter((x): x is string => !!x).slice(0, 2);
-  // Sideways and tile builds show two photos with a wide drawing underneath.
-  const wide = bp.structure ?? bp.tiles;
+  const photos = [bp.photo_url, ...((bp.structure ?? bp.tiles ?? bp.bricks)?.photos ?? [])]
+    .filter((x): x is string => !!x)
+    .slice(0, 2);
+  // Sideways, tile and brick builds show two photos with the drawing underneath.
+  const wide = bp.structure ?? bp.tiles ?? bp.bricks;
+  const material = bp.tiles ? "magnetic tiles" : bp.bricks ? "LEGO DUPLO bricks" : "magnetic blocks";
 
   return (
     <>
@@ -60,7 +64,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                           src={src}
                           alt={
                             i === 0
-                              ? `${bp.name}, built from magnetic ${bp.tiles ? "tiles" : "blocks"}`
+                              ? `${bp.name}, built from ${material}`
                               : `Another view of ${bp.name}`
                           }
                           width={1200}
@@ -80,8 +84,15 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                     sections={bp.sections}
                     structure={bp.structure}
                     tiles={bp.tiles}
+                    bricks={bp.bricks}
                     wide
-                    className={bp.tiles ? "mx-auto h-64 w-auto max-w-full" : "h-auto max-h-[22rem] w-full"}
+                    className={
+                      bp.bricks
+                        ? "mx-auto h-80 w-auto max-w-full"
+                        : bp.tiles
+                          ? "mx-auto h-64 w-auto max-w-full"
+                          : "h-auto max-h-[22rem] w-full"
+                    }
                     title={`${bp.name} drawing`}
                   />
                   <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
@@ -131,7 +142,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
 
               <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {[
-                  [t.unit === "tiles" ? "Tiles" : "Blocks", String(t.blocks)],
+                  [t.unit === "tiles" ? "Tiles" : t.unit === "bricks" ? "Bricks" : "Blocks", String(t.blocks)],
                   ["Tall", `${t.height}`],
                   [t.base.label, t.base.value],
                   ["Level", difficultyLabel(bp.difficulty)],
@@ -153,6 +164,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   sections={bp.sections}
                   structure={bp.structure}
                   tiles={bp.tiles}
+                  bricks={bp.bricks}
                   number={bp.number}
                 />
               </div>
@@ -166,10 +178,15 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
           <h2 className="font-display text-3xl text-navy">What you need</h2>
           <ul className="mt-4 space-y-3 text-lg text-ink">
             <li className="flex gap-3">
-              <span aria-hidden>{bp.tiles ? "🟦" : "🧊"}</span>
+              <span aria-hidden>{bp.tiles ? "🟦" : bp.bricks ? "🧱" : "🧊"}</span>
               {bp.structure?.need ? (
                 <span>
                   <strong className="font-extrabold">{bp.structure.need}</strong>
+                </span>
+              ) : bp.bricks ? (
+                <span>
+                  <strong className="font-extrabold">{bp.bricks.need || `${t.blocks} LEGO DUPLO bricks`}</strong> (the
+                  parts list shows every size and color, but any colors work)
                 </span>
               ) : bp.tiles ? (
                 <span>
@@ -199,7 +216,9 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   ? "A grown-up to help hold the beams while the magnets click together"
                   : bp.tiles
                     ? "A grown-up to hold the walls steady while the roofs click on"
-                    : "A grown-up to help reach the top if it gets taller than you"}
+                    : bp.bricks
+                      ? "A grown-up to hold the tower steady while you press the top bricks on"
+                      : "A grown-up to help reach the top if it gets taller than you"}
               </span>
             </li>
             <li className="flex gap-3">

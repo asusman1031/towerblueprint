@@ -9,26 +9,30 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
   const t = designTotals(bp);
   return (
     <Link href={`/blueprints/${bp.slug}`} className="card group flex flex-col overflow-hidden transition hover:-translate-y-1">
-      {bp.structure || bp.tiles ? (
-        // Sideways and tile builds are wide: the photo fills the top, the drawing sits in a corner.
+      {bp.structure || bp.tiles || bp.bricks ? (
+        // Sideways, tile and brick builds: the photo fills the top, the drawing sits in a corner.
         <div className="bg-grid-light relative h-72 border-b-[3px] border-navy">
           {bp.photo_url ? (
             <Photo
               src={bp.photo_url}
-              alt={`${bp.name}, built with magnetic blocks`}
+              alt={`${bp.name}, built with ${bp.bricks ? "LEGO DUPLO bricks" : bp.tiles ? "magnetic tiles" : "magnetic blocks"}`}
               width={1200}
               height={1400}
               sizes="(max-width: 768px) 100vw, 400px"
-              className="h-full w-full object-cover"
+              // Brick towers are tall: show the whole photo (it's on matching paper), nudged left of the drawing.
+              className={`h-full w-full ${bp.bricks ? "object-contain object-[30%_50%] py-2" : "object-cover"}`}
             />
           ) : null}
           <div
-            className={`absolute right-3 bottom-3 rounded-xl border-2 border-navy bg-white/90 p-2 ${bp.tiles ? "" : "w-[55%]"}`}
+            className={`absolute right-3 bottom-3 rounded-xl border-2 border-navy bg-white/90 p-2 ${bp.tiles || bp.bricks ? "" : "w-[55%]"}`}
           >
             <IsoTower
               structure={bp.structure}
               tiles={bp.tiles}
-              className={bp.tiles ? "mx-auto h-28 w-auto max-w-full" : "h-auto max-h-40 w-full"}
+              bricks={bp.bricks}
+              className={
+                bp.bricks ? "mx-auto h-40 w-auto max-w-full" : bp.tiles ? "mx-auto h-28 w-auto max-w-full" : "h-auto max-h-40 w-full"
+              }
               title={`${bp.name} drawing`}
             />
           </div>
@@ -54,7 +58,7 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
         <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
           <div className="rounded-xl bg-ice p-2">
             <dt className="text-[0.65rem] font-extrabold tracking-wider text-ink uppercase">
-              {t.unit === "tiles" ? "Tiles" : "Blocks"}
+              {t.unit === "tiles" ? "Tiles" : t.unit === "bricks" ? "Bricks" : "Blocks"}
             </dt>
             <dd className="font-display text-xl text-navy">{t.blocks}</dd>
           </div>
@@ -86,10 +90,10 @@ function Badges({ bp }: { bp: Blueprint }) {
         <span className="absolute top-3 right-3 rounded-full border-2 border-navy bg-tangerine px-3 py-0.5 text-xs font-extrabold text-white uppercase">
           Coming soon
         </span>
-      ) : bp.tiles ? (
+      ) : bp.tiles || bp.bricks ? (
         // Tells buyers which toy they need.
         <span className="absolute top-3 right-3 rounded-full border-2 border-navy bg-sun px-3 py-0.5 text-xs font-extrabold uppercase">
-          Magnetic tiles
+          {bp.bricks ? "LEGO DUPLO" : "Magnetic tiles"}
         </span>
       ) : null}
     </>

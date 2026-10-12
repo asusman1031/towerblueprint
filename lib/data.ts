@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "@/lib/supabase";
 import { cleanStructure, type Structure } from "@/lib/structure";
+import { cleanBricks, type BrickDesign } from "@/lib/bricks";
 import { cleanTiles, type TileDesign } from "@/lib/tiles";
 import { cleanSections, type Section } from "@/lib/tower";
 
@@ -18,6 +19,7 @@ export type Blueprint = {
   sections: Section[];
   structure: Structure | null; // set for sideways builds; then `sections` is only a placeholder
   tiles: TileDesign | null; // set for magnetic tile builds; then `sections` is only a placeholder
+  bricks: BrickDesign | null; // set for studded brick builds (LEGO); then `sections` is only a placeholder
   difficulty: number;
   price_cents: number;
   checkout_url: string | null;
@@ -58,6 +60,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     ],
     structure: null,
     tiles: null,
+    bricks: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -145,6 +148,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
       ],
     },
     tiles: null,
+    bricks: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -176,6 +180,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     ],
     structure: null,
     tiles: null,
+    bricks: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -206,6 +211,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     ],
     structure: null,
     tiles: null,
+    bricks: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -239,6 +245,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
         { label: "The Tower", x: 1, y: 0, z: 3, w: 1, d: 1, h: 2, roof: true, floor: false, note: "Stand it on the left side of the gallery roof. Go slow, it gets tall!" },
       ],
     },
+    bricks: null,
     difficulty: 1,
     price_cents: 500,
     checkout_url: null,
@@ -275,6 +282,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     ],
     structure: null,
     tiles: null,
+    bricks: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -320,6 +328,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
       ],
     },
     tiles: null,
+    bricks: null,
     difficulty: 1,
     price_cents: 200,
     checkout_url: null,
@@ -329,6 +338,81 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     original_pages: 0,
     preview_url: null,
     sort_order: 7,
+  },
+  {
+    id: "seed-crazy-lego-tower",
+    slug: "crazy-lego-tower",
+    number: 8,
+    name: "Crazy Lego Tower",
+    tagline: "A rainbow brick tower with a zig-zag top that sticks way out.",
+    description:
+      "Ashton's third blueprint, built with big LEGO DUPLO bricks! A strong yellow base, a patchwork middle, rainbow stripes, and a crazy zig-zag top that sticks way out to the side.",
+    inspired_by: "",
+    fun_fact:
+      "DUPLO bricks are exactly twice as long, twice as wide and twice as tall as regular LEGO bricks, and the two kinds can even click together!",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: {
+      need: "21 DUPLO-size bricks, including one thin 2×4 plate",
+      photos: ["/photos/crazy-lego-tower-back.jpg"],
+      steps: [
+        {
+          label: "The Base",
+          note: "Start with the thin green plate. Then stack the yellow layers: two small bricks, one long brick, two small, one long. Switching keeps the tower strong!",
+          bricks: [
+            { x: 0, y: 0, z: 0, w: 4, d: 2, h: 1, color: "lime" },
+            { x: 0, y: 0, z: 1, w: 2, d: 2, h: 3, color: "yellow" },
+            { x: 2, y: 0, z: 1, w: 2, d: 2, h: 3, color: "yellow" },
+            { x: 0, y: 0, z: 4, w: 4, d: 2, h: 3, color: "yellow" },
+            { x: 0, y: 0, z: 7, w: 2, d: 2, h: 3, color: "yellow" },
+            { x: 2, y: 0, z: 7, w: 2, d: 2, h: 3, color: "yellow" },
+            { x: 0, y: 0, z: 10, w: 4, d: 2, h: 3, color: "yellow" },
+          ],
+        },
+        {
+          label: "The Patchwork",
+          note: "Two small bricks side by side on each layer. The yellow star brick is two bricks tall, so the top layer only needs one small blue brick next to it.",
+          bricks: [
+            { x: 0, y: 0, z: 13, w: 2, d: 2, h: 3, color: "green" },
+            { x: 2, y: 0, z: 13, w: 2, d: 2, h: 3, color: "red" },
+            { x: 0, y: 0, z: 16, w: 2, d: 2, h: 3, color: "lime" },
+            { x: 2, y: 0, z: 16, w: 2, d: 2, h: 3, color: "orange" },
+            { x: 0, y: 0, z: 19, w: 2, d: 2, h: 3, color: "red" },
+            { x: 2, y: 0, z: 19, w: 2, d: 2, h: 6, color: "yellow" },
+            { x: 0, y: 0, z: 22, w: 2, d: 2, h: 3, color: "blue" },
+          ],
+        },
+        {
+          label: "The Stripes",
+          note: "Three long bricks, each one lined up right on top of the last.",
+          bricks: [
+            { x: 0, y: 0, z: 25, w: 4, d: 2, h: 3, color: "lime" },
+            { x: 0, y: 0, z: 28, w: 4, d: 2, h: 3, color: "sky" },
+            { x: 0, y: 0, z: 31, w: 4, d: 2, h: 3, color: "lime" },
+          ],
+        },
+        {
+          label: "The Crazy Top",
+          note: "The extra-long blue brick sits on just half of the top and sticks way out. Then zig-zag: orange over the tower, orange shifted back, red on top. Hold it while you press!",
+          bricks: [
+            { x: -6, y: 0, z: 34, w: 8, d: 2, h: 3, color: "blue" },
+            { x: 0, y: 0, z: 37, w: 4, d: 2, h: 3, color: "orange" },
+            { x: -2, y: 0, z: 40, w: 4, d: 2, h: 3, color: "orange" },
+            { x: 0, y: 0, z: 43, w: 4, d: 2, h: 3, color: "red" },
+          ],
+        },
+      ],
+    },
+    difficulty: 2,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/crazy-lego-tower.jpg",
+    designer: "Ashton (age 5)",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 8,
   },
 ];
 
@@ -351,6 +435,7 @@ function normalize(row: Record<string, unknown>): Blueprint {
     sections: cleanSections(row.sections),
     structure: cleanStructure(row.structure),
     tiles: cleanTiles(row.tiles),
+    bricks: cleanBricks(row.bricks),
   };
 }
 

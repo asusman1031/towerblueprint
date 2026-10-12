@@ -4,10 +4,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { deleteOriginal, saveBlueprint, uploadOriginal, uploadPhoto } from "@/app/hq/actions";
 import IsoTower from "@/components/IsoTower";
+import { buildBricks, type BrickDesign } from "@/lib/bricks";
 import { fileToBase64, pageWithPreview, shrinkImage } from "@/lib/image-client";
 import { buildStructure, type Structure } from "@/lib/structure";
 import { buildTiles, type TileDesign } from "@/lib/tiles";
 import { MAX_LAYERS, MAX_SIDE, sectionStats, towerTotals, type Section } from "@/lib/tower";
+import BricksEditor from "./BricksEditor";
 import StructureEditor from "./StructureEditor";
 import TilesEditor from "./TilesEditor";
 import type { HqBlueprint } from "./types";
@@ -23,6 +25,7 @@ type Draft = {
   sections: Section[];
   structure: Structure | null;
   tiles: TileDesign | null;
+  bricks: BrickDesign | null;
   difficulty: number;
   price: string;
   checkout_url: string;
@@ -54,6 +57,7 @@ function toDraft(bp?: HqBlueprint, seed?: EditorSeed): Draft {
       ],
       structure: null,
       tiles: null,
+      bricks: null,
       difficulty: 2,
       price: "5",
       checkout_url: "",
@@ -72,6 +76,7 @@ function toDraft(bp?: HqBlueprint, seed?: EditorSeed): Draft {
     sections: bp.sections,
     structure: bp.structure,
     tiles: bp.tiles,
+    bricks: bp.bricks,
     difficulty: bp.difficulty,
     price: (bp.price_cents / 100).toString(),
     checkout_url: bp.checkout_url ?? "",
@@ -164,12 +169,17 @@ export default function BlueprintEditor({
   const stats = sectionStats(d.sections);
   const built = d.structure ? buildStructure(d.structure) : null;
   const tileBuild = d.tiles ? buildTiles(d.tiles) : null;
-  const totals = tileBuild
-    ? { blocks: tileBuild.tiles, height: tileBuild.height }
-    : (built ?? towerTotals(d.sections));
-  const sums = tileBuild
-    ? tileBuild.rooms.map((r) => r.tiles)
-    : built
+  const brickBuild = d.bricks ? buildBricks(d.bricks) : null;
+  const totals = brickBuild
+    ? { blocks: brickBuild.count, height: brickBuild.tall }
+    : tileBuild
+      ? { blocks: tileBuild.tiles, height: tileBuild.height }
+      : (built ?? towerTotals(d.sections));
+  const sums = brickBuild
+    ? brickBuild.steps.map((s) => s.count)
+    : tileBuild
+      ? tileBuild.rooms.map((r) => r.tiles)
+      : built
       ? built.parts.map((p) => p.blocks)
       : stats.map((s) => s.blocks);
 
@@ -187,6 +197,7 @@ export default function BlueprintEditor({
         sections: d.sections,
         structure: d.structure,
         tiles: d.tiles,
+        bricks: d.bricks,
         difficulty: d.difficulty,
         price_cents: Math.round(Number(d.price) * 100),
         checkout_url: d.checkout_url,
@@ -288,7 +299,9 @@ export default function BlueprintEditor({
             </div>
           </div>
 
-          {d.tiles ? (
+          {d.bricks ? (
+            <BricksEditor bricks={d.bricks} onChange={(next) => set("bricks", next)} />
+          ) : d.tiles ? (
             <TilesEditor tiles={d.tiles} onChange={(next) => set("tiles", next)} />
           ) : d.structure ? (
             <StructureEditor structure={d.structure} onChange={(next) => set("structure", next)} />
@@ -585,13 +598,14 @@ export default function BlueprintEditor({
             sections={d.sections}
             structure={d.structure}
             tiles={d.tiles}
+            bricks={d.bricks}
             className={d.structure ? "h-auto w-full" : "h-80 w-auto max-w-full"}
             title="Tower preview"
           />
           <div className="mt-4 grid w-full grid-cols-2 gap-2 text-center">
             <div className="rounded-xl bg-white p-2">
               <div className="font-display text-3xl text-navy">{totals.blocks}</div>
-              <div className="text-xs font-extrabold text-ink uppercase">{tileBuild ? "tiles" : "blocks"}</div>
+              <div className="text-xs font-extrabold text-ink uppercase">{brickBuild ? "bricks" : tileBuild ? "tiles" : "blocks"}</div>
             </div>
             <div className="rounded-xl bg-white p-2">
               <div className="font-display text-3xl text-navy">{totals.height}</div>

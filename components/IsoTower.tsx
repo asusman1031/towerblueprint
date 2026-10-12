@@ -1,4 +1,6 @@
+import BrickDrawing from "@/components/BrickDrawing";
 import TileDrawing from "@/components/TileDrawing";
+import type { BrickDesign } from "@/lib/bricks";
 import { buildStructure, type Structure, type Surface } from "@/lib/structure";
 import type { TileDesign } from "@/lib/tiles";
 import { buildCubes, type Section } from "@/lib/tower";
@@ -12,6 +14,7 @@ type Props = {
   sections?: Section[];
   structure?: Structure | null; // drawn instead of sections when set
   tiles?: TileDesign | null; // a magnetic tile build, drawn as see-through panels
+  bricks?: BrickDesign | null; // a LEGO-style brick build, drawn with studs
   variant?: Variant;
   highlight?: number; // section (or structure part) index to emphasise; others are ghosted
   animate?: boolean;
@@ -87,6 +90,7 @@ export default function IsoTower({
   sections = [],
   structure,
   tiles,
+  bricks,
   variant = "blocks",
   highlight,
   animate = false,
@@ -95,6 +99,19 @@ export default function IsoTower({
   className,
   title,
 }: Props) {
+  if (bricks) {
+    return (
+      <BrickDrawing
+        bricks={bricks}
+        variant={variant}
+        highlight={highlight}
+        animate={animate}
+        stepMs={stepMs}
+        className={className}
+        title={title}
+      />
+    );
+  }
   if (tiles) {
     return (
       <TileDrawing
