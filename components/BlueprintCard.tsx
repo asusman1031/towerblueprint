@@ -28,7 +28,7 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
             <IsoTower
               structure={bp.structure}
               tiles={bp.tiles}
-              className={bp.tiles ? "mx-auto h-28 w-auto max-w-full" : "h-auto w-full"}
+              className={bp.tiles ? "mx-auto h-28 w-auto max-w-full" : "h-auto max-h-40 w-full"}
               title={`${bp.name} drawing`}
             />
           </div>

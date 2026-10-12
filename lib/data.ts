@@ -285,6 +285,51 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     preview_url: null,
     sort_order: 6,
   },
+  {
+    id: "seed-tic-tac-toe-twin-towers",
+    slug: "tic-tac-toe-twin-towers",
+    number: 7,
+    name: "Tic Tac Toe Twin Towers",
+    tagline: "Two little towers, one for X and one for O. Who wins?",
+    description:
+      "Sawyer built this one with tic-tac-toe pieces! Two towers stand side by side: the X Tower and the O Tower. It's his smallest blueprint yet, perfect for little builders.",
+    inspired_by: "",
+    fun_fact:
+      "Tic-tac-toe is really old: the ancient Romans played a game like it called terni lapilli. And if both players make the best move every time, nobody can win. It always ends in a tie!",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: {
+      startLayer: 1,
+      need: "8 tic-tac-toe pieces (or any 8 blocks), with an X and an O for the tops",
+      parts: [
+        {
+          kind: "path",
+          label: "The X Tower",
+          start: { x: 0, y: 0, z: 0 },
+          runs: [{ dir: "U", n: 3 }],
+          mark: "X",
+          note: "Stack 4 pieces. Put the X on top!",
+        },
+        {
+          kind: "path",
+          label: "The O Tower",
+          start: { x: 2, y: 0, z: 0 },
+          runs: [{ dir: "U", n: 3 }],
+          mark: "O",
+          note: "Leave one empty space next to the X Tower, then stack 4 more. Put the O on top!",
+        },
+      ],
+    },
+    tiles: null,
+    difficulty: 1,
+    price_cents: 200,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/tic-tac-toe-twin-towers.jpg",
+    designer: "",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 7,
+  },
 ];
 
 // Old web addresses of renamed blueprints, so links people already have keep working.

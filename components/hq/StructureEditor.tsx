@@ -123,6 +123,32 @@ export default function StructureEditor({
                 </div>
               ) : (
                 <div className="mt-2 space-y-1.5">
+                  {p.start ? (
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <span className="text-xs font-extrabold text-ink uppercase">Starts at</span>
+                      <Num
+                        label="Across"
+                        value={p.start.x}
+                        min={0}
+                        max={60}
+                        onChange={(n) => setPart(i, { ...p, start: { ...p.start!, x: n } })}
+                      />
+                      <Num
+                        label="Back"
+                        value={p.start.y}
+                        min={0}
+                        max={60}
+                        onChange={(n) => setPart(i, { ...p, start: { ...p.start!, y: n } })}
+                      />
+                      <Num
+                        label="Up"
+                        value={p.start.z}
+                        min={0}
+                        max={MAX_START}
+                        onChange={(n) => setPart(i, { ...p, start: { ...p.start!, z: n } })}
+                      />
+                    </div>
+                  ) : null}
                   {p.runs.map((r, k) => (
                     <div key={k} className="flex flex-wrap items-center gap-2">
                       <select

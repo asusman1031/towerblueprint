@@ -53,6 +53,7 @@ function partMath(p: PartStats) {
 
 function partKind(p: PartStats) {
   if (p.kind === "pillar") return "Base + column";
+  if (p.runs.length && p.runs.every((r) => r.dir === "U")) return "Tower";
   return p.runs.some((r) => r.dir === "U" || r.dir === "D") ? "Hanging blocks" : "Beam";
 }
 
@@ -159,7 +160,11 @@ function PathStep({
             {p.hasStart ? (
               <>
                 <strong>Start block:</strong>{" "}
-                {onPillar ? `put it on top of ${onPillar.label}.` : `put it ${structure.startLayer} blocks up.`}
+                {onPillar
+                  ? `put it on top of ${onPillar.label}.`
+                  : p.cubes[0][2] === 0
+                    ? "put it right on the floor."
+                    : `put it ${p.cubes[0][2] + 1} blocks up.`}
               </>
             ) : (
               <>
@@ -345,8 +350,14 @@ export default function StructureSheets({
             <p className="font-display text-xl text-blueprint">How big will it be?</p>
             <p className="mt-2 text-navy">
               <strong className="font-display text-2xl">{built.length}</strong> blocks long and{" "}
-              <strong className="font-display text-2xl">{built.height}</strong> blocks tall at the top beam, with{" "}
-              {pillars} pillar{pillars === 1 ? "" : "s"} holding it up.
+              <strong className="font-display text-2xl">{built.height}</strong> blocks tall
+              {pillars ? (
+                <>
+                  {" "}
+                  at the top beam, with {pillars} pillar{pillars === 1 ? "" : "s"} holding it up
+                </>
+              ) : null}
+              .
             </p>
           </div>
           <CountingTrick blocks={built.blocks} />
@@ -356,9 +367,12 @@ export default function StructureSheets({
           <p className="font-display text-xl text-blueprint">Builder tips from Sawyer</p>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-navy">
             {furniture.length ? <li>Line up the {furniture.join(", ")} first, just like the photo on the cover.</li> : null}
-            <li>Build the pillars before the beams. Beams need something to sit on!</li>
-            <li>Ask a grown-up to hold long beams while the magnets click together.</li>
-            <li>Your chairs might be a little different. Add or take away a block or two so it fits.</li>
+            {pillars ? <li>Build the pillars before the beams. Beams need something to sit on!</li> : null}
+            {pillars ? <li>Ask a grown-up to hold long beams while the magnets click together.</li> : null}
+            {furniture.length ? (
+              <li>Your furniture might be a little different. Add or take away a block or two so it fits.</li>
+            ) : null}
+            {!pillars ? <li>Stack each piece right on top of the one below so it stays straight.</li> : null}
             <li>Any colors work. Mix them up and make it yours!</li>
           </ul>
         </div>

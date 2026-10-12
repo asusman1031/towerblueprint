@@ -8,11 +8,23 @@ import { towerTotals, type Cube, type Section } from "@/lib/tower";
 //   on top that reaches up to the path block it holds.
 // `on` names the furniture a part rests on ("first chair", "table"); the
 // drawings show it as a dashed shape under those blocks.
+// A path part with `start` begins a new chain at that spot instead of growing
+// from the last block, so one structure can hold separate towers side by side.
+// `mark` draws an X or an O on the top of a path part's last block.
 
 export type Dir = "E" | "W" | "N" | "S" | "U" | "D";
 export type Run = { dir: Dir; n: number };
 
-export type PathPart = { kind: "path"; label: string; note?: string; on?: string; runs: Run[] };
+export type Mark = "X" | "O";
+export type PathPart = {
+  kind: "path";
+  label: string;
+  note?: string;
+  on?: string;
+  runs: Run[];
+  start?: { x: number; y: number; z: number };
+  mark?: Mark;
+};
 export type PillarPart = {
   kind: "pillar";
   label: string;
@@ -27,6 +39,7 @@ export type Structure = {
   startLayer: number;
   parts: Part[];
   photos?: string[]; // more photos of the real build, shown on the blueprint page
+  need?: string; // what to build it with, when it isn't plain magnetic blocks
 };
 
 export type StructureCube = Cube & { group: number };
@@ -41,7 +54,7 @@ export type PathStats = {
   note: string;
   on: string;
   blocks: number;
-  hasStart: boolean; // the very first path part also places the start block
+  hasStart: boolean; // the first path part, and any with its own start, places a start block
   runs: Run[];
   cubes: Pos[]; // in build order
   attach: Pos | null; // the block this part grows from
@@ -68,6 +81,7 @@ export type PartStats = PathStats | PillarStats;
 
 export type BuiltStructure = {
   cubes: StructureCube[];
+  marks: { x: number; y: number; z: number; mark: Mark }[];
   parts: PartStats[];
   surfaces: Surface[];
   blocks: number;
@@ -127,29 +141,46 @@ export function cleanStructure(input: unknown): Structure | null {
           const run = (x ?? {}) as Record<string, unknown>;
           return { dir: DIRS.includes(run.dir as Dir) ? (run.dir as Dir) : "E", n: int(run.n, 1, MAX_RUN, 1) };
         });
-      parts.push({ kind: "path", label, ...extra, runs });
+      const st = p.start && typeof p.start === "object" ? (p.start as Record<string, unknown>) : null;
+      const mark = p.mark === "X" || p.mark === "O" ? p.mark : null;
+      parts.push({
+        kind: "path",
+        label,
+        ...extra,
+        runs,
+        ...(st ? { start: { x: int(st.x, 0, 60), y: int(st.y, 0, 60), z: int(st.z, 0, MAX_START) } } : {}),
+        ...(mark ? { mark } : {}),
+      });
     }
   }
   if (!parts.some((p) => p.kind === "path")) return null;
   const photos = (Array.isArray(r.photos) ? r.photos : [])
     .filter((x): x is string => typeof x === "string" && /^\/photos\/[a-z0-9-]+\.(jpg|png|webp)$/.test(x))
     .slice(0, 4);
-  return { startLayer: int(r.startLayer, 1, MAX_START, 1), parts, ...(photos.length ? { photos } : {}) };
+  const need = text(r.need, 160);
+  return {
+    startLayer: int(r.startLayer, 1, MAX_START, 1),
+    parts,
+    ...(photos.length ? { photos } : {}),
+    ...(need ? { need } : {}),
+  };
 }
 
 export function buildStructure(s: Structure): BuiltStructure {
   // 1. Walk the path, part by part.
   const pathCubes = new Map<number, Pos[]>();
   const attachOf = new Map<number, Pos | null>();
+  const starts = new Set<number>();
   let cursor: Pos | null = null;
   let first = true;
   s.parts.forEach((p, i) => {
     if (p.kind !== "path") return;
     const out: Pos[] = [];
-    attachOf.set(i, cursor);
-    if (first) {
-      cursor = [0, 0, s.startLayer - 1];
+    attachOf.set(i, p.start ? null : cursor);
+    if (p.start || first) {
+      cursor = p.start ? [p.start.x, p.start.y, p.start.z] : [0, 0, s.startLayer - 1];
       out.push(cursor);
+      starts.add(i);
       first = false;
     }
     for (const run of p.runs) {
@@ -191,7 +222,7 @@ export function buildStructure(s: Structure): BuiltStructure {
         note,
         on,
         blocks: list.length,
-        hasStart: index === firstPath,
+        hasStart: starts.has(index),
         runs: p.runs,
         cubes: list,
         attach: attachOf.get(index) ?? null,
@@ -265,8 +296,15 @@ export function buildStructure(s: Structure): BuiltStructure {
   }
 
   const xs = cubes.map((c) => c.x);
+  const marks: BuiltStructure["marks"] = [];
+  s.parts.forEach((p, i) => {
+    const last = pathCubes.get(i)?.at(-1);
+    if (p.kind === "path" && p.mark && last) marks.push({ x: last[0], y: last[1], z: last[2], mark: p.mark });
+  });
+
   return {
     cubes,
+    marks,
     parts,
     surfaces,
     blocks: parts.reduce((n, p) => n + p.blocks, 0),

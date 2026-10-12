@@ -34,6 +34,10 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
   }
   const t = designTotals(bp);
   const sideways = bp.structure;
+  // Sideways builds that rest on furniture (chairs, a table) need it lined up first.
+  const onFurniture = !!bp.structure?.parts.some((p) => p.on);
+  const hasPillars = !!bp.structure?.parts.some((p) => p.kind === "pillar");
+  const photos = [bp.photo_url, ...((bp.structure ?? bp.tiles)?.photos ?? [])].filter((x): x is string => !!x).slice(0, 2);
   // Sideways and tile builds show two photos with a wide drawing underneath.
   const wide = bp.structure ?? bp.tiles;
 
@@ -48,8 +52,8 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
           <div className="mt-6 grid gap-10 md:grid-cols-[1fr_1.05fr]">
             {wide ? (
               <div className="card bg-grid-light space-y-5 p-5">
-                <div className="grid grid-cols-2 gap-4">
-                  {[bp.photo_url, ...(wide.photos ?? [])].slice(0, 2).map((src, i) =>
+                <div className={photos.length > 1 ? "grid grid-cols-2 gap-4" : "mx-auto max-w-sm"}>
+                  {photos.map((src, i) =>
                     src ? (
                       <figure key={src} className="flex flex-col items-center">
                         <Photo
@@ -62,7 +66,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                           width={1200}
                           height={1400}
                           sizes="(max-width: 768px) 50vw, 280px"
-                          className="aspect-[6/7] w-full rounded-xl border-[3px] border-navy object-cover"
+                          className={`w-full rounded-xl border-[3px] border-navy ${photos.length > 1 ? "aspect-[6/7] object-cover" : "h-auto"}`}
                         />
                         <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
                           {i === 0 ? "The real build" : "Another view"}
@@ -77,7 +81,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                     structure={bp.structure}
                     tiles={bp.tiles}
                     wide
-                    className={bp.tiles ? "mx-auto h-64 w-auto max-w-full" : "h-auto w-full"}
+                    className={bp.tiles ? "mx-auto h-64 w-auto max-w-full" : "h-auto max-h-[22rem] w-full"}
                     title={`${bp.name} drawing`}
                   />
                   <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
@@ -163,7 +167,11 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
           <ul className="mt-4 space-y-3 text-lg text-ink">
             <li className="flex gap-3">
               <span aria-hidden>{bp.tiles ? "🟦" : "🧊"}</span>
-              {bp.tiles ? (
+              {bp.structure?.need ? (
+                <span>
+                  <strong className="font-extrabold">{bp.structure.need}</strong>
+                </span>
+              ) : bp.tiles ? (
                 <span>
                   <strong className="font-extrabold">{t.blocks} magnetic tile squares</strong> (any brand or colors. A big
                   square counts as 4, a long rectangle as 2)
@@ -175,9 +183,9 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
               )}
             </li>
             <li className="flex gap-3">
-              <span aria-hidden>{sideways ? "🪑" : "🟫"}</span>
+              <span aria-hidden>{onFurniture ? "🪑" : "🟫"}</span>
               <span>
-                {sideways
+                {onFurniture
                   ? "Two chairs and a table, lined up next to each other"
                   : bp.tiles
                     ? "A hard, flat floor so the walls stand up straight"
@@ -187,7 +195,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
             <li className="flex gap-3">
               <span aria-hidden>🙋</span>
               <span>
-                {sideways
+                {hasPillars
                   ? "A grown-up to help hold the beams while the magnets click together"
                   : bp.tiles
                     ? "A grown-up to hold the walls steady while the roofs click on"

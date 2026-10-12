@@ -188,6 +188,30 @@ export default function IsoTower({
       />
     );
   }
+  // X and O marks, painted onto the top face of a block like a game piece.
+  const markColor = variant === "ink" ? "#1146B8" : "#1E63E9";
+  const marks = (built?.marks ?? []).map((m, i) => {
+    const [ox, oy] = proj(m.x, m.y, m.z + 1);
+    return (
+      <g
+        key={`mark-${i}`}
+        transform={`matrix(${U_X[0]} ${U_X[1]} ${U_Y[0]} ${U_Y[1]} ${ox.toFixed(1)} ${oy.toFixed(1)})`}
+        fill="none"
+        stroke={markColor}
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        vectorEffect="non-scaling-stroke"
+      >
+        {m.mark === "X" ? (
+          // Lines along the block's edges look like an X once the top face is tilted.
+          <path d="M0.5 0.2 L0.5 0.8 M0.2 0.5 L0.8 0.5" vectorEffect="non-scaling-stroke" />
+        ) : (
+          <circle cx={0.5} cy={0.5} r={0.25} vectorEffect="non-scaling-stroke" />
+        )}
+      </g>
+    );
+  });
+
   const labels = surfaces.map((f, i) => {
     const [lx, ly] = proj(f.x1, f.y1, f.z);
     return (
@@ -271,6 +295,7 @@ export default function IsoTower({
     >
       {title ? <title>{title}</title> : null}
       {groups}
+      {marks}
       {labels}
     </svg>
   );
