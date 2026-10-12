@@ -5,7 +5,7 @@ import CoverPreview from "@/components/CoverPreview";
 import SignupForm from "@/components/SignupForm";
 import { track } from "@/components/Track";
 import type { Structure } from "@/lib/structure";
-import { formatPrice, type Section } from "@/lib/tower";
+import { formatPrice, theName, type Section } from "@/lib/tower";
 
 type Props = {
   slug: string;
@@ -53,7 +53,7 @@ export default function BuyBox({ slug, name, priceCents, checkoutUrl, status, se
             className="btn btn-sun mt-5 w-full text-xl"
             rel="noopener"
           >
-            Get the {name} blueprint
+            Get {theName(name)} blueprint
           </a>
           <p className="mt-3 text-sm text-ink/80">
             Grown-ups check out on a secure payment page. The printable blueprint opens right after.
@@ -77,7 +77,7 @@ export default function BuyBox({ slug, name, priceCents, checkoutUrl, status, se
             }}
             className="btn btn-sun mt-5 w-full text-xl"
           >
-            Get the {name} blueprint
+            Get {theName(name)} blueprint
           </button>
           <p className="mt-3 text-sm text-ink/80">A grown-up finishes the order. You print it and start building.</p>
         </>

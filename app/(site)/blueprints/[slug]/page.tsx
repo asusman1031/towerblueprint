@@ -51,7 +51,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                       <figure key={src} className="flex flex-col items-center">
                         <Photo
                           src={src}
-                          alt={i === 0 ? `Sawyer's real ${bp.name}, built from magnetic blocks` : `Another view of Sawyer's ${bp.name}`}
+                          alt={i === 0 ? `${bp.name}, built from magnetic blocks` : `Another view of ${bp.name}`}
                           width={1200}
                           height={1400}
                           sizes="(max-width: 768px) 50vw, 280px"
@@ -83,7 +83,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   {bp.photo_url ? (
                     <Photo
                       src={bp.photo_url}
-                      alt={`Sawyer's real ${bp.name}, built from magnetic blocks`}
+                      alt={`${bp.name}, built from magnetic blocks`}
                       className="h-[26rem] w-52 rounded-xl border-[3px] border-navy object-cover"
                     />
                   ) : (

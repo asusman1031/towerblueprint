@@ -15,7 +15,7 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
           {bp.photo_url ? (
             <Photo
               src={bp.photo_url}
-              alt={`Sawyer's ${bp.name} built with magnetic blocks`}
+              alt={`${bp.name}, built with magnetic blocks`}
               width={1200}
               height={1400}
               sizes="(max-width: 768px) 100vw, 400px"
@@ -32,7 +32,7 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
           {bp.photo_url ? (
             <Photo
               src={bp.photo_url}
-              alt={`Sawyer's ${bp.name} built with magnetic blocks`}
+              alt={`${bp.name}, built with magnetic blocks`}
               className="mb-6 h-56 w-28 rounded-xl border-[3px] border-navy object-cover"
             />
           ) : null}

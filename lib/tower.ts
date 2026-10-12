@@ -107,6 +107,11 @@ export function difficultyLabel(n: number) {
   return ["", "Easy", "Medium", "Expert"][Math.max(1, Math.min(3, n))];
 }
 
+// "the Jeddah Tower", but "The Sims Tower" for names that already start with "The".
+export function theName(name: string) {
+  return /^the\s/i.test(name) ? name : `the ${name}`;
+}
+
 export function formatPrice(cents: number | null | undefined) {
   if (cents == null) return "";
   const dollars = cents / 100;

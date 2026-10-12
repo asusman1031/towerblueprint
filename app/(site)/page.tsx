@@ -9,7 +9,7 @@ import SignupForm from "@/components/SignupForm";
 import Track from "@/components/Track";
 import { getBlueprints, getSettings } from "@/lib/data";
 import { designTotals } from "@/lib/structure";
-import { formatPrice, SAMPLE_CUSTOM_TOWER } from "@/lib/tower";
+import { formatPrice, SAMPLE_CUSTOM_TOWER, theName } from "@/lib/tower";
 
 export const revalidate = 60;
 
@@ -100,7 +100,7 @@ export default async function Home() {
                     {featured.photo_url ? (
                       <Photo
                         src={featured.photo_url}
-                        alt={`Sawyer's real ${featured.name}, built from magnetic blocks`}
+                        alt={`${featured.name}, built from magnetic blocks`}
                         className="h-80 w-40 rounded-xl border-[3px] border-navy object-cover sm:h-96 sm:w-48"
                       />
                     ) : null}
@@ -212,7 +212,7 @@ export default async function Home() {
               </ul>
               <p className="mt-6 text-ink">Print it at home or save it as a PDF. Build it as many times as you want.</p>
               <Link href={`/blueprints/${featured.slug}`} className="btn btn-sun mt-6">
-                Get the {featured.name} blueprint
+                Get {theName(featured.name)} blueprint
               </Link>
             </div>
             <CoverPreview

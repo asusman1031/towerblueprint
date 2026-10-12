@@ -261,7 +261,7 @@ export default function StructureSheets({
                 <Image
                   key={src}
                   src={src}
-                  alt={`Sawyer's real ${bp.name}`}
+                  alt={`${bp.name}, the real build`}
                   width={1200}
                   height={1400}
                   loading="eager"

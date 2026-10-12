@@ -181,6 +181,35 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     preview_url: null,
     sort_order: 3,
   },
+  {
+    id: "seed-sims-tower",
+    slug: "sims-tower",
+    number: 4,
+    name: "The Sims Tower",
+    tagline: "A stepped base and a super-tall tower with a spire on top.",
+    description:
+      "Sawyer's newest tower. A wide base steps in like a pyramid, then a 2×2 tower shoots straight up and ends with a 9-block spire.",
+    inspired_by: "",
+    fun_fact:
+      "Lots of skyscrapers get skinnier as they go up, in steps like this one. Builders call those steps setbacks. The Empire State Building in New York has them, and they help sunlight reach the street below.",
+    sections: [
+      { w: 7, d: 7, count: 1, label: "The Base" },
+      { w: 5, d: 5, count: 3, label: "The First Step" },
+      { w: 3, d: 3, count: 2, label: "The Second Step" },
+      { w: 2, d: 2, count: 28, label: "The Tower" },
+      { w: 1, d: 1, count: 9, label: "The Spire" },
+    ],
+    structure: null,
+    difficulty: 2,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/sims-tower.jpg",
+    designer: "",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 4,
+  },
 ];
 
 // Old web addresses of renamed blueprints, so links people already have keep working.

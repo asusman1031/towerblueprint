@@ -6,7 +6,7 @@ import PlacementDiagram from "@/components/PlacementDiagram";
 import PrintButton from "@/components/PrintButton";
 import { getOriginals, getPrint, RENAMED_SLUGS, type Blueprint, type OriginalFile } from "@/lib/data";
 import { buildStructure } from "@/lib/structure";
-import { difficultyLabel, sectionStats, towerTotals, type SectionStats } from "@/lib/tower";
+import { difficultyLabel, sectionStats, theName, towerTotals, type SectionStats } from "@/lib/tower";
 import { Certificate, CountingTrick, TickBoxes, TitleBar } from "./sheets";
 import StructureSheets, { structureStepPages } from "./StructureSheets";
 import "./print.css";
@@ -155,7 +155,7 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
   const header = (
     <div className="no-print mx-auto mb-6 flex max-w-[8.5in] flex-wrap items-center justify-between gap-4 px-4">
       <div>
-        <p className="font-display text-2xl text-navy">Your official {bp.name} blueprint</p>
+        <p className="font-display text-2xl text-navy">Your official blueprint for {theName(bp.name)}</p>
         <p className="text-sm text-ink">
           To download it, click the button and choose &ldquo;Save as PDF.&rdquo; Keep this link to print it again.
         </p>

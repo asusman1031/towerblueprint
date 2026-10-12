@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Blueprint } from "@/lib/data";
+import { theName } from "@/lib/tower";
 
 // Pieces shared by every official blueprint, tower or structure.
 
@@ -79,7 +80,7 @@ export function Certificate({ bp, stats }: { bp: Blueprint; stats: string }) {
         <p className="mt-8 text-lg text-ink">This certifies that</p>
         <div className="mt-8 w-4/5 border-b-[3px] border-blueprint" />
         <p className="mt-2 text-xs font-extrabold tracking-widest text-blueprint/60 uppercase">Builder&apos;s name</p>
-        <p className="mt-8 text-lg text-ink">built the</p>
+        <p className="mt-8 text-lg text-ink">{theName(bp.name) === bp.name ? "built" : "built the"}</p>
         <p className="font-display text-5xl text-blueprint">{bp.name}</p>
         <p className="mt-2 font-bold text-navy">{stats}</p>
         {bp.designer ? <p className="mt-1 text-ink">Designed by {bp.designer}</p> : null}
