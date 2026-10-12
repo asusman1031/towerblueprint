@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: PageProps<"/blueprints/[slug]
   return {
     title: `${bp.name} blueprint`,
     description: bp.designer
-      ? `${bp.tagline} An official step-by-step magnetic block tower blueprint, designed by ${bp.designer} and made by Sawyer, age 7.`
-      : `${bp.tagline} An official step-by-step magnetic block tower blueprint designed by Sawyer, age 7.`,
+      ? `${bp.tagline} An official step-by-step ${bp.tiles ? "magnetic tile" : "magnetic block tower"} blueprint, designed by ${bp.designer} and made by Sawyer, age 7.`
+      : `${bp.tagline} An official step-by-step ${bp.tiles ? "magnetic tile" : "magnetic block tower"} blueprint designed by Sawyer, age 7.`,
     openGraph: { images: bp.photo_url && !bp.photo_url.startsWith("/api/") ? [bp.photo_url] : ["/brand/logo.png"] },
   };
 }
@@ -34,6 +34,8 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
   }
   const t = designTotals(bp);
   const sideways = bp.structure;
+  // Sideways and tile builds show two photos with a wide drawing underneath.
+  const wide = bp.structure ?? bp.tiles;
 
   return (
     <>
@@ -44,15 +46,19 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
             ← All blueprints
           </Link>
           <div className="mt-6 grid gap-10 md:grid-cols-[1fr_1.05fr]">
-            {sideways ? (
+            {wide ? (
               <div className="card bg-grid-light space-y-5 p-5">
                 <div className="grid grid-cols-2 gap-4">
-                  {[bp.photo_url, ...(sideways.photos ?? [])].slice(0, 2).map((src, i) =>
+                  {[bp.photo_url, ...(wide.photos ?? [])].slice(0, 2).map((src, i) =>
                     src ? (
                       <figure key={src} className="flex flex-col items-center">
                         <Photo
                           src={src}
-                          alt={i === 0 ? `${bp.name}, built from magnetic blocks` : `Another view of ${bp.name}`}
+                          alt={
+                            i === 0
+                              ? `${bp.name}, built from magnetic ${bp.tiles ? "tiles" : "blocks"}`
+                              : `Another view of ${bp.name}`
+                          }
                           width={1200}
                           height={1400}
                           sizes="(max-width: 768px) 50vw, 280px"
@@ -68,9 +74,10 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                 <figure className="flex w-full flex-col items-center">
                   <BuildingTower
                     sections={bp.sections}
-                    structure={sideways}
+                    structure={bp.structure}
+                    tiles={bp.tiles}
                     wide
-                    className="h-auto w-full"
+                    className={bp.tiles ? "mx-auto h-64 w-auto max-w-full" : "h-auto w-full"}
                     title={`${bp.name} drawing`}
                   />
                   <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
@@ -120,7 +127,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
 
               <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {[
-                  ["Blocks", String(t.blocks)],
+                  [t.unit === "tiles" ? "Tiles" : "Blocks", String(t.blocks)],
                   ["Tall", `${t.height}`],
                   [t.base.label, t.base.value],
                   ["Level", difficultyLabel(bp.difficulty)],
@@ -141,6 +148,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   status={bp.status}
                   sections={bp.sections}
                   structure={bp.structure}
+                  tiles={bp.tiles}
                   number={bp.number}
                 />
               </div>
@@ -154,17 +162,26 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
           <h2 className="font-display text-3xl text-navy">What you need</h2>
           <ul className="mt-4 space-y-3 text-lg text-ink">
             <li className="flex gap-3">
-              <span aria-hidden>🧊</span>
-              <span>
-                <strong className="font-extrabold">{t.blocks} magnetic cube blocks</strong> (any colors you like)
-              </span>
+              <span aria-hidden>{bp.tiles ? "🟦" : "🧊"}</span>
+              {bp.tiles ? (
+                <span>
+                  <strong className="font-extrabold">{t.blocks} magnetic tile squares</strong> (any brand or colors. A big
+                  square counts as 4, a long rectangle as 2)
+                </span>
+              ) : (
+                <span>
+                  <strong className="font-extrabold">{t.blocks} magnetic cube blocks</strong> (any colors you like)
+                </span>
+              )}
             </li>
             <li className="flex gap-3">
               <span aria-hidden>{sideways ? "🪑" : "🟫"}</span>
               <span>
                 {sideways
                   ? "Two chairs and a table, lined up next to each other"
-                  : "A hard, flat floor so your tower stands straight"}
+                  : bp.tiles
+                    ? "A hard, flat floor so the walls stand up straight"
+                    : "A hard, flat floor so your tower stands straight"}
               </span>
             </li>
             <li className="flex gap-3">
@@ -172,7 +189,9 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
               <span>
                 {sideways
                   ? "A grown-up to help hold the beams while the magnets click together"
-                  : "A grown-up to help reach the top if it gets taller than you"}
+                  : bp.tiles
+                    ? "A grown-up to hold the walls steady while the roofs click on"
+                    : "A grown-up to help reach the top if it gets taller than you"}
               </span>
             </li>
             <li className="flex gap-3">

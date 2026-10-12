@@ -1,3 +1,4 @@
+import { buildTiles, type TileDesign } from "@/lib/tiles";
 import { towerTotals, type Cube, type Section } from "@/lib/tower";
 
 // Structures are builds that go sideways, like a bridge across two chairs.
@@ -305,15 +306,33 @@ export function headingBefore(s: Structure, index: number): Dir | null {
   return heading;
 }
 
-// The numbers every blueprint shows, whether it's a tower or a structure.
-export function designTotals(d: { sections: Section[]; structure?: Structure | null }) {
+// The numbers every blueprint shows, whether it's a tower, a structure or a tile build.
+// `blocks` counts pieces: cube blocks, or small tile squares when unit is "tiles".
+export function designTotals(d: { sections: Section[]; structure?: Structure | null; tiles?: TileDesign | null }) {
+  if (d.tiles) {
+    const b = buildTiles(d.tiles);
+    return {
+      blocks: b.tiles,
+      unit: "tiles" as const,
+      height: b.height,
+      base: { label: "Base", value: `${b.width}×${b.depth}` },
+      steps: b.rooms.length,
+    };
+  }
   if (d.structure) {
     const b = buildStructure(d.structure);
-    return { blocks: b.blocks, height: b.height, base: { label: "Long", value: `${b.length}` }, steps: b.parts.length };
+    return {
+      blocks: b.blocks,
+      unit: "blocks" as const,
+      height: b.height,
+      base: { label: "Long", value: `${b.length}` },
+      steps: b.parts.length,
+    };
   }
   const t = towerTotals(d.sections);
   return {
     blocks: t.blocks,
+    unit: "blocks" as const,
     height: t.height,
     base: { label: "Base", value: `${t.footprintW}×${t.footprintD}` },
     steps: d.sections.length,

@@ -1,4 +1,6 @@
+import TileDrawing from "@/components/TileDrawing";
 import { buildStructure, type Structure, type Surface } from "@/lib/structure";
+import type { TileDesign } from "@/lib/tiles";
 import { buildCubes, type Section } from "@/lib/tower";
 
 // Isometric SVG drawing of a tower or a structure. Pure render, works on server and client.
@@ -9,6 +11,7 @@ type Variant = "blocks" | "brand" | "ink";
 type Props = {
   sections?: Section[];
   structure?: Structure | null; // drawn instead of sections when set
+  tiles?: TileDesign | null; // a magnetic tile build, drawn as see-through panels
   variant?: Variant;
   highlight?: number; // section (or structure part) index to emphasise; others are ghosted
   animate?: boolean;
@@ -83,6 +86,7 @@ const U_Z = proj(0, 0, 1);
 export default function IsoTower({
   sections = [],
   structure,
+  tiles,
   variant = "blocks",
   highlight,
   animate = false,
@@ -91,6 +95,20 @@ export default function IsoTower({
   className,
   title,
 }: Props) {
+  if (tiles) {
+    return (
+      <TileDrawing
+        tiles={tiles}
+        variant={variant}
+        highlight={highlight}
+        animate={animate}
+        stepMs={stepMs}
+        seed={seed}
+        className={className}
+        title={title}
+      />
+    );
+  }
   const built = structure ? buildStructure(structure) : null;
   const cubes = built ? built.cubes : buildCubes(sections).map((c) => ({ ...c, group: c.section }));
   const surfaces: Surface[] = built?.surfaces ?? [];

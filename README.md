@@ -19,6 +19,8 @@ Every tower is just data: a list of sections, bottom first (`{ w, d, count }`). 
 
 Sideways builds, like The Snake Rope, are "structures" instead (`lib/structure.ts`): one long path of blocks that starts some blocks up and moves in runs (across, away, down...), plus pillars (a rectangular base and a one-block column) that hold up chosen path blocks. Parts can name the furniture they rest on (`on: "table"`), which the drawings show as dashed shapes. In HQ, Sawyer can change every number of a structure (base sizes, which block a pillar holds, run lengths, turns); the column heights and block math update automatically. New structures are added in code or SQL for now (see `supabase/migrations/20261012000000_structures.sql`).
 
+Magnetic tile builds, like the Museum of Tiles, are "tile builds" (`lib/tiles.ts`): a list of rooms, each a box of small squares (w wide, d deep, h tall) standing at x, y, z, with a roof and/or floor. Walls an earlier room already built are skipped, so the count is what a builder needs; a big square counts as 4 small squares and a long rectangle as 2. The drawings show see-through panels (`components/TileDrawing.tsx`), and each step page maps the room from above with the shared walls in yellow. In HQ, every room's size, position, roof and floor can be changed.
+
 Photos of builds look best with a plain background. The ones in `public/photos` had the room cut out and were put on blueprint paper.
 
 ## Bonus files

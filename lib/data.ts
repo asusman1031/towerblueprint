@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "@/lib/supabase";
 import { cleanStructure, type Structure } from "@/lib/structure";
+import { cleanTiles, type TileDesign } from "@/lib/tiles";
 import { cleanSections, type Section } from "@/lib/tower";
 
 export type Status = "draft" | "coming_soon" | "live";
@@ -16,6 +17,7 @@ export type Blueprint = {
   fun_fact: string;
   sections: Section[];
   structure: Structure | null; // set for sideways builds; then `sections` is only a placeholder
+  tiles: TileDesign | null; // set for magnetic tile builds; then `sections` is only a placeholder
   difficulty: number;
   price_cents: number;
   checkout_url: string | null;
@@ -55,6 +57,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
       { w: 1, d: 1, count: 21, label: "The Spire" },
     ],
     structure: null,
+    tiles: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -141,6 +144,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
         },
       ],
     },
+    tiles: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -171,6 +175,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
       { w: 1, d: 1, count: 4, label: "The Spire" },
     ],
     structure: null,
+    tiles: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -200,6 +205,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
       { w: 1, d: 1, count: 9, label: "The Spire" },
     ],
     structure: null,
+    tiles: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -209,6 +215,39 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     original_pages: 0,
     preview_url: null,
     sort_order: 4,
+  },
+  {
+    id: "seed-museum-of-tiles",
+    slug: "museum-of-tiles",
+    number: 5,
+    name: "Museum of Tiles",
+    tagline: "A see-through museum with two halls, a courtyard, and a tower on top.",
+    description:
+      "Ashton's second blueprint, and the first one built with magnetic tiles instead of blocks! Two halls, an open courtyard with a floor, a gallery upstairs, and a tower on top.",
+    inspired_by: "",
+    fun_fact:
+      "The Louvre in Paris is the most visited art museum in the world. Its famous entrance is a giant pyramid made of 673 glass panes, kind of like a huge build of see-through tiles!",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: {
+      photos: ["/photos/museum-of-tiles-back.jpg"],
+      rooms: [
+        { label: "The Left Hall", x: 0, y: 0, z: 0, w: 1, d: 2, h: 2, roof: true, floor: false, note: "Build it right on the floor: walls all the way around, then the roof." },
+        { label: "The Courtyard", x: 1, y: 0, z: 0, w: 2, d: 2, h: 2, roof: false, floor: true, note: "Lay the floor down first, then build the walls. Leave the top open so visitors can look in!" },
+        { label: "The Right Hall", x: 3, y: 0, z: 0, w: 1, d: 2, h: 2, roof: true, floor: false, note: "Build it on the other side of the courtyard, then put on its roof." },
+        { label: "The Gallery", x: 1, y: 0, z: 2, w: 2, d: 1, h: 1, roof: true, floor: false, note: "Stand it on the back half of the courtyard. It rests on the tops of the walls." },
+        { label: "The Tower", x: 1, y: 0, z: 3, w: 1, d: 1, h: 2, roof: true, floor: false, note: "Stand it on the left side of the gallery roof. Go slow, it gets tall!" },
+      ],
+    },
+    difficulty: 1,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/museum-of-tiles.jpg",
+    designer: "Ashton (age 5)",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 5,
   },
 ];
 
@@ -228,6 +267,7 @@ function normalize(row: Record<string, unknown>): Blueprint {
     ...(row as unknown as Blueprint),
     sections: cleanSections(row.sections),
     structure: cleanStructure(row.structure),
+    tiles: cleanTiles(row.tiles),
   };
 }
 

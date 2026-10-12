@@ -6,9 +6,11 @@ import PlacementDiagram from "@/components/PlacementDiagram";
 import PrintButton from "@/components/PrintButton";
 import { getOriginals, getPrint, RENAMED_SLUGS, type Blueprint, type OriginalFile } from "@/lib/data";
 import { buildStructure } from "@/lib/structure";
+import { buildTiles } from "@/lib/tiles";
 import { difficultyLabel, sectionStats, theName, towerTotals, type SectionStats } from "@/lib/tower";
 import { Certificate, CountingTrick, TickBoxes, TitleBar } from "./sheets";
 import StructureSheets, { structureStepPages } from "./StructureSheets";
+import TileSheets, { tileStepPages } from "./TileSheets";
 import "./print.css";
 
 export const metadata: Metadata = {
@@ -163,6 +165,19 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
       <PrintButton />
     </div>
   );
+
+  if (bp.tiles) {
+    const built = buildTiles(bp.tiles);
+    const pages = 2 + tileStepPages(built).length + 1 + bonusPages;
+    return (
+      <main className="print-root bg-[#e9eef6] py-6">
+        {header}
+        <TileSheets bp={bp} tiles={bp.tiles} built={built} pages={pages} />
+        <Certificate bp={bp} stats={`${built.tiles} tiles · ${built.height} squares tall`} />
+        {originals.length ? <BonusOriginals bp={bp} files={originals} keyParam={keyParam} /> : null}
+      </main>
+    );
+  }
 
   if (bp.structure) {
     const built = buildStructure(bp.structure);

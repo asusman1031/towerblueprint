@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { db } from "@/lib/supabase";
 import { cleanStructure } from "@/lib/structure";
+import { cleanTiles } from "@/lib/tiles";
 import { cleanSections } from "@/lib/tower";
 
 const COOKIE = "tb_hq";
@@ -52,6 +53,7 @@ export type BlueprintInput = {
   fun_fact: string;
   sections: unknown;
   structure?: unknown;
+  tiles?: unknown;
   difficulty: number;
   price_cents: number;
   checkout_url: string;
@@ -75,8 +77,10 @@ export async function saveBlueprint(input: BlueprintInput): Promise<{ ok: boolea
   if (!name) return { ok: false, message: "Every tower needs a name!" };
   const structure = input.structure == null ? null : cleanStructure(input.structure);
   if (input.structure != null && !structure) return { ok: false, message: "Something in the parts isn't quite right." };
-  // A structure keeps a one-block placeholder in sections, because the column is required.
-  const sections = structure ? [{ w: 1, d: 1, count: 1 }] : cleanSections(input.sections);
+  const tiles = input.tiles == null ? null : cleanTiles(input.tiles);
+  if (input.tiles != null && !tiles) return { ok: false, message: "Something in the rooms isn't quite right." };
+  // Structures and tile builds keep a one-block placeholder in sections, because the column is required.
+  const sections = structure || tiles ? [{ w: 1, d: 1, count: 1 }] : cleanSections(input.sections);
   if (sections.length === 0) return { ok: false, message: "Add at least one section to your tower." };
   const slug = slugify(input.slug || name);
   if (!slug) return { ok: false, message: "Try a name with some letters in it." };
@@ -98,6 +102,7 @@ export async function saveBlueprint(input: BlueprintInput): Promise<{ ok: boolea
       fun_fact: String(input.fun_fact ?? "").trim().slice(0, 600),
       sections,
       structure,
+      tiles,
       difficulty: Math.max(1, Math.min(3, Math.round(Number(input.difficulty) || 2))),
       price_cents: Math.max(0, Math.min(100000, Math.round(Number(input.price_cents) || 0))),
       checkout_url: checkout,

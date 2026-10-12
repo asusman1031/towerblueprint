@@ -46,12 +46,14 @@ export default async function Home() {
   const note = settings.architectNote;
   // The hero shows a tall tower next to its photo, so feature a tower when there is one.
   const featured =
-    blueprints.find((b) => b.status === "live" && !b.structure) ??
+    blueprints.find((b) => b.status === "live" && !b.structure && !b.tiles) ??
     blueprints.find((b) => b.status === "live") ??
     blueprints[0];
   const featuredTotals = featured ? designTotals(featured) : null;
-  const biggest = Math.max(0, ...blueprints.map((b) => designTotals(b).blocks));
-  const tallest = Math.max(0, ...blueprints.map((b) => designTotals(b).height));
+  // Block stats only; tile builds count tiles, not blocks.
+  const blockBuilds = blueprints.filter((b) => !b.tiles);
+  const biggest = Math.max(0, ...blockBuilds.map((b) => designTotals(b).blocks));
+  const tallest = Math.max(0, ...blockBuilds.map((b) => designTotals(b).height));
 
   return (
     <>
@@ -114,6 +116,7 @@ export default async function Home() {
                       <BuildingTower
                         sections={featured.sections}
                         structure={featured.structure}
+                        tiles={featured.tiles}
                         className="h-72 w-auto sm:h-[22rem]"
                         title={`${featured.name}, ${featuredTotals.blocks} blocks`}
                       />
@@ -226,6 +229,7 @@ export default async function Home() {
             <CoverPreview
               sections={featured.sections}
               structure={featured.structure}
+              tiles={featured.tiles}
               name={featured.name}
               number={featured.number}
             />

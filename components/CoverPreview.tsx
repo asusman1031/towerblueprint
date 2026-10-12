@@ -1,5 +1,6 @@
 import IsoTower from "@/components/IsoTower";
 import type { Structure } from "@/lib/structure";
+import type { TileDesign } from "@/lib/tiles";
 import type { Section } from "@/lib/tower";
 
 // A mini cover page of the official blueprint. Shows only the drawing, never
@@ -7,12 +8,14 @@ import type { Section } from "@/lib/tower";
 export default function CoverPreview({
   sections,
   structure,
+  tiles,
   name,
   number,
   size = "lg",
 }: {
   sections: Section[];
   structure?: Structure | null;
+  tiles?: TileDesign | null;
   name: string;
   number: number;
   size?: "sm" | "lg";
@@ -32,6 +35,7 @@ export default function CoverPreview({
             <IsoTower
               sections={sections}
               structure={structure}
+              tiles={tiles}
               variant="ink"
               className="h-full w-auto max-w-full"
               title={`${name} cover`}
@@ -60,6 +64,7 @@ export default function CoverPreview({
           <IsoTower
             sections={sections}
             structure={structure}
+            tiles={tiles}
             variant="ink"
             className="h-full w-auto max-w-full"
             title={`${name} blueprint cover`}

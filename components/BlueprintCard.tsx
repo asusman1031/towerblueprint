@@ -9,8 +9,8 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
   const t = designTotals(bp);
   return (
     <Link href={`/blueprints/${bp.slug}`} className="card group flex flex-col overflow-hidden transition hover:-translate-y-1">
-      {bp.structure ? (
-        // Sideways builds are wide: the photo fills the top, the drawing sits in a corner.
+      {bp.structure || bp.tiles ? (
+        // Sideways and tile builds are wide: the photo fills the top, the drawing sits in a corner.
         <div className="bg-grid-light relative h-72 border-b-[3px] border-navy">
           {bp.photo_url ? (
             <Photo
@@ -22,8 +22,15 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
               className="h-full w-full object-cover"
             />
           ) : null}
-          <div className="absolute right-3 bottom-3 w-[55%] rounded-xl border-2 border-navy bg-white/90 p-2">
-            <IsoTower structure={bp.structure} className="h-auto w-full" title={`${bp.name} drawing`} />
+          <div
+            className={`absolute right-3 bottom-3 rounded-xl border-2 border-navy bg-white/90 p-2 ${bp.tiles ? "" : "w-[55%]"}`}
+          >
+            <IsoTower
+              structure={bp.structure}
+              tiles={bp.tiles}
+              className={bp.tiles ? "mx-auto h-28 w-auto max-w-full" : "h-auto w-full"}
+              title={`${bp.name} drawing`}
+            />
           </div>
           <Badges bp={bp} />
         </div>
@@ -46,7 +53,9 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
         <p className="mt-1 text-ink">{bp.tagline}</p>
         <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
           <div className="rounded-xl bg-ice p-2">
-            <dt className="text-[0.65rem] font-extrabold tracking-wider text-ink uppercase">Blocks</dt>
+            <dt className="text-[0.65rem] font-extrabold tracking-wider text-ink uppercase">
+              {t.unit === "tiles" ? "Tiles" : "Blocks"}
+            </dt>
             <dd className="font-display text-xl text-navy">{t.blocks}</dd>
           </div>
           <div className="rounded-xl bg-ice p-2">
@@ -76,6 +85,11 @@ function Badges({ bp }: { bp: Blueprint }) {
       {bp.status === "coming_soon" ? (
         <span className="absolute top-3 right-3 rounded-full border-2 border-navy bg-tangerine px-3 py-0.5 text-xs font-extrabold text-white uppercase">
           Coming soon
+        </span>
+      ) : bp.tiles ? (
+        // Tells buyers which toy they need.
+        <span className="absolute top-3 right-3 rounded-full border-2 border-navy bg-sun px-3 py-0.5 text-xs font-extrabold uppercase">
+          Magnetic tiles
         </span>
       ) : null}
     </>

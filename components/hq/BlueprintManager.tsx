@@ -50,7 +50,13 @@ export default function BlueprintManager({
     return (
       <li key={bp.id} className="card flex gap-4 p-4">
         <div className="bg-grid-light flex w-24 shrink-0 items-end justify-center rounded-xl border-2 border-navy/20 p-2">
-          <IsoTower sections={bp.sections} structure={bp.structure} className="h-36 w-auto max-w-full" title={bp.name} />
+          <IsoTower
+            sections={bp.sections}
+            structure={bp.structure}
+            tiles={bp.tiles}
+            className="h-36 w-auto max-w-full"
+            title={bp.name}
+          />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -69,7 +75,7 @@ export default function BlueprintManager({
           <h3 className="truncate font-display text-2xl text-navy">{bp.name}</h3>
           <p className="text-sm font-bold text-ink">
             {bp.designer ? `Designed by ${bp.designer} · ` : ""}
-            {t.blocks} blocks · {t.height} tall · {formatPrice(bp.price_cents)}
+            {t.blocks} {t.unit} · {t.height} tall · {formatPrice(bp.price_cents)}
           </p>
           {!bp.designer || bp.status !== "draft" ? (
             <p className="mt-1 text-sm text-ink">

@@ -6,8 +6,10 @@ import { deleteOriginal, saveBlueprint, uploadOriginal, uploadPhoto } from "@/ap
 import IsoTower from "@/components/IsoTower";
 import { fileToBase64, pageWithPreview, shrinkImage } from "@/lib/image-client";
 import { buildStructure, type Structure } from "@/lib/structure";
+import { buildTiles, type TileDesign } from "@/lib/tiles";
 import { MAX_LAYERS, MAX_SIDE, sectionStats, towerTotals, type Section } from "@/lib/tower";
 import StructureEditor from "./StructureEditor";
+import TilesEditor from "./TilesEditor";
 import type { HqBlueprint } from "./types";
 
 type Draft = {
@@ -20,6 +22,7 @@ type Draft = {
   fun_fact: string;
   sections: Section[];
   structure: Structure | null;
+  tiles: TileDesign | null;
   difficulty: number;
   price: string;
   checkout_url: string;
@@ -50,6 +53,7 @@ function toDraft(bp?: HqBlueprint, seed?: EditorSeed): Draft {
         { w: 1, d: 1, count: 10 },
       ],
       structure: null,
+      tiles: null,
       difficulty: 2,
       price: "5",
       checkout_url: "",
@@ -67,6 +71,7 @@ function toDraft(bp?: HqBlueprint, seed?: EditorSeed): Draft {
     fun_fact: bp.fun_fact,
     sections: bp.sections,
     structure: bp.structure,
+    tiles: bp.tiles,
     difficulty: bp.difficulty,
     price: (bp.price_cents / 100).toString(),
     checkout_url: bp.checkout_url ?? "",
@@ -158,8 +163,15 @@ export default function BlueprintEditor({
 
   const stats = sectionStats(d.sections);
   const built = d.structure ? buildStructure(d.structure) : null;
-  const totals = built ?? towerTotals(d.sections);
-  const sums = built ? built.parts.map((p) => p.blocks) : stats.map((s) => s.blocks);
+  const tileBuild = d.tiles ? buildTiles(d.tiles) : null;
+  const totals = tileBuild
+    ? { blocks: tileBuild.tiles, height: tileBuild.height }
+    : (built ?? towerTotals(d.sections));
+  const sums = tileBuild
+    ? tileBuild.rooms.map((r) => r.tiles)
+    : built
+      ? built.parts.map((p) => p.blocks)
+      : stats.map((s) => s.blocks);
 
   function save() {
     setMsg(null);
@@ -174,6 +186,7 @@ export default function BlueprintEditor({
         fun_fact: d.fun_fact,
         sections: d.sections,
         structure: d.structure,
+        tiles: d.tiles,
         difficulty: d.difficulty,
         price_cents: Math.round(Number(d.price) * 100),
         checkout_url: d.checkout_url,
@@ -275,7 +288,9 @@ export default function BlueprintEditor({
             </div>
           </div>
 
-          {d.structure ? (
+          {d.tiles ? (
+            <TilesEditor tiles={d.tiles} onChange={(next) => set("tiles", next)} />
+          ) : d.structure ? (
             <StructureEditor structure={d.structure} onChange={(next) => set("structure", next)} />
           ) : (
             <div>
@@ -569,13 +584,14 @@ export default function BlueprintEditor({
           <IsoTower
             sections={d.sections}
             structure={d.structure}
+            tiles={d.tiles}
             className={d.structure ? "h-auto w-full" : "h-80 w-auto max-w-full"}
             title="Tower preview"
           />
           <div className="mt-4 grid w-full grid-cols-2 gap-2 text-center">
             <div className="rounded-xl bg-white p-2">
               <div className="font-display text-3xl text-navy">{totals.blocks}</div>
-              <div className="text-xs font-extrabold text-ink uppercase">blocks</div>
+              <div className="text-xs font-extrabold text-ink uppercase">{tileBuild ? "tiles" : "blocks"}</div>
             </div>
             <div className="rounded-xl bg-white p-2">
               <div className="font-display text-3xl text-navy">{totals.height}</div>
