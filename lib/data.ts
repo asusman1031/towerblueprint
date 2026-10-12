@@ -249,12 +249,50 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     preview_url: null,
     sort_order: 5,
   },
+  {
+    id: "seed-ring-tower",
+    slug: "ring-tower",
+    number: 6,
+    name: "Ring Tower",
+    tagline: "A tall tower wrapped in rings, with a tiny ring at the very top.",
+    description:
+      "Sawyer's newest tower has rings! Three wide 5×5 rings stick out around the tower, and a little 3×3 ring sits near the top, just under the spire.",
+    inspired_by: "",
+    fun_fact:
+      "Real supertall skyscrapers have extra-strong floors partway up, called belt floors. They wrap around the building like a ring and help keep it from swaying in the wind.",
+    sections: [
+      { w: 5, d: 5, count: 1, label: "The Bottom Ring" },
+      { w: 5, d: 3, count: 3, label: "The Base" },
+      { w: 5, d: 5, count: 1, label: "The Second Ring" },
+      { w: 5, d: 3, count: 4, label: "The Lower Tower" },
+      { w: 3, d: 3, count: 5, label: "The Middle" },
+      { w: 5, d: 5, count: 1, label: "The Third Ring" },
+      { w: 5, d: 3, count: 3, label: "The Upper Tower" },
+      { w: 3, d: 3, count: 4, label: "The Top Tower" },
+      { w: 1, d: 1, count: 2, label: "The Neck" },
+      { w: 3, d: 3, count: 1, label: "The Top Ring" },
+      { w: 1, d: 1, count: 4, label: "The Spire" },
+    ],
+    structure: null,
+    tiles: null,
+    difficulty: 3,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/sawyer-ring-tower.jpg",
+    designer: "",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 6,
+  },
 ];
 
 // Old web addresses of renamed blueprints, so links people already have keep working.
 // Pages only redirect when the old address no longer finds a blueprint, so the
 // database can be renamed before or after a deploy.
 export const RENAMED_SLUGS: Record<string, string> = {
+  // The Dragon Tower was briefly "ring-tower"; that address now belongs to Sawyer's
+  // Ring Tower, so only print links with a Dragon Tower key end up forwarded.
   "ring-tower": "dragon-tower",
   "snaking-pillar-structure": "snake-rope",
 };
