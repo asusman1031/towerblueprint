@@ -1,6 +1,7 @@
 import { buildBoxes, type BoxDesign } from "@/lib/boxes";
 import { buildBricks, type BrickDesign } from "@/lib/bricks";
 import { buildDice, type DiceDesign } from "@/lib/dice";
+import { buildPaper, type PaperDesign } from "@/lib/paper";
 import { buildTiles, type TileDesign } from "@/lib/tiles";
 import { towerTotals, type Cube, type Section } from "@/lib/tower";
 
@@ -350,19 +351,45 @@ export function headingBefore(s: Structure, index: number): Dir | null {
 // The numbers every blueprint shows, whether it's a tower, a structure or a tile build.
 // `blocks` counts pieces: cube blocks, small tile squares when unit is "tiles", or
 // LEGO-style bricks (and plates) when unit is "bricks", cardboard boxes, or dice.
-export function designTotals(d: {
+// A packing paper build counts the feet of rope instead. `tall` is the second stat
+// on cards: how tall for most builds, but how many sheets of paper for a paper one.
+export function designTotals(d: Parameters<typeof pieceTotals>[0]) {
+  const t = pieceTotals(d);
+  return { ...t, tall: t.tall ?? { label: "Tall", value: `${t.height}` } };
+}
+
+function pieceTotals(d: {
   sections: Section[];
   structure?: Structure | null;
   tiles?: TileDesign | null;
   bricks?: BrickDesign | null;
   boxes?: BoxDesign | null;
   dice?: DiceDesign | null;
-}) {
+  paper?: PaperDesign | null;
+}): {
+  blocks: number;
+  unit: "blocks" | "tiles" | "bricks" | "boxes" | "dice" | "feet";
+  height: number;
+  tall?: { label: string; value: string };
+  base: { label: string; value: string };
+  steps: number;
+} {
+  if (d.paper) {
+    const b = buildPaper(d.paper);
+    return {
+      blocks: b.feet,
+      unit: "feet",
+      height: 0,
+      tall: { label: "Sheets", value: `${b.sheets}` },
+      base: { label: "Floor", value: `${b.wide}×${b.deep} ft` },
+      steps: b.steps.length,
+    };
+  }
   if (d.dice) {
     const b = buildDice(d.dice);
     return {
       blocks: b.count,
-      unit: "dice" as const,
+      unit: "dice",
       height: b.tall,
       base: { label: "Dots", value: `${b.dots}` },
       steps: b.steps.length,
@@ -372,7 +399,7 @@ export function designTotals(d: {
     const b = buildBoxes(d.boxes);
     return {
       blocks: b.count,
-      unit: "boxes" as const,
+      unit: "boxes",
       height: b.levels,
       base: { label: "Flaps", value: `${b.flaps}` },
       steps: b.count,
@@ -382,7 +409,7 @@ export function designTotals(d: {
     const b = buildBricks(d.bricks);
     return {
       blocks: b.count,
-      unit: "bricks" as const,
+      unit: "bricks",
       height: b.tall,
       base: { label: "Base", value: `${b.base.w}×${b.base.d}` },
       steps: b.steps.length,
@@ -392,7 +419,7 @@ export function designTotals(d: {
     const b = buildTiles(d.tiles);
     return {
       blocks: b.tiles,
-      unit: "tiles" as const,
+      unit: "tiles",
       height: b.height,
       base: { label: "Base", value: `${b.width}×${b.depth}` },
       steps: b.rooms.length,
@@ -402,7 +429,7 @@ export function designTotals(d: {
     const b = buildStructure(d.structure);
     return {
       blocks: b.blocks,
-      unit: "blocks" as const,
+      unit: "blocks",
       height: b.height,
       base: { label: "Long", value: `${b.length}` },
       steps: b.parts.length,
@@ -411,12 +438,12 @@ export function designTotals(d: {
   const t = towerTotals(d.sections);
   return {
     blocks: t.blocks,
-    unit: "blocks" as const,
+    unit: "blocks",
     height: t.height,
     base: { label: "Base", value: `${t.footprintW}×${t.footprintD}` },
     steps: d.sections.length,
   };
 }
 
-// "Blocks", "Tiles", "Bricks", "Boxes" or "Dice", for stat labels.
+// "Blocks", "Tiles", "Bricks", "Boxes", "Dice" or "Feet", for stat labels.
 export const unitLabel = (unit: string) => unit.charAt(0).toUpperCase() + unit.slice(1);

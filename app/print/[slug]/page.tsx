@@ -8,12 +8,14 @@ import { getOriginals, getPrint, RENAMED_SLUGS, type Blueprint, type OriginalFil
 import { buildBoxes } from "@/lib/boxes";
 import { buildBricks } from "@/lib/bricks";
 import { buildDice } from "@/lib/dice";
+import { buildPaper } from "@/lib/paper";
 import { buildStructure } from "@/lib/structure";
 import { buildTiles } from "@/lib/tiles";
 import { difficultyLabel, sectionStats, theName, towerTotals, type SectionStats } from "@/lib/tower";
 import BoxSheets, { boxStepPages, feet } from "./BoxSheets";
 import BrickSheets, { brickStepPages } from "./BrickSheets";
 import DiceSheets, { diceStepPages } from "./DiceSheets";
+import PaperSheets, { paperStepPages, ropeWord } from "./PaperSheets";
 import { Certificate, CountingTrick, TickBoxes, TitleBar } from "./sheets";
 import StructureSheets, { structureStepPages } from "./StructureSheets";
 import TileSheets, { tileStepPages } from "./TileSheets";
@@ -171,6 +173,22 @@ export default async function PrintPage({ params, searchParams }: PageProps<"/pr
       <PrintButton />
     </div>
   );
+
+  if (bp.paper) {
+    const built = buildPaper(bp.paper);
+    const pages = 2 + paperStepPages(built).length + 1 + bonusPages;
+    return (
+      <main className="print-root bg-[#e9eef6] py-6">
+        {header}
+        <PaperSheets bp={bp} paper={bp.paper} built={built} pages={pages} />
+        <Certificate
+          bp={bp}
+          stats={`${built.feet} feet of ${ropeWord(bp.paper)} · ${built.sheets} ${built.sheets === 1 ? "sheet" : "sheets"} of packing paper`}
+        />
+        {originals.length ? <BonusOriginals bp={bp} files={originals} keyParam={keyParam} /> : null}
+      </main>
+    );
+  }
 
   if (bp.dice) {
     const built = buildDice(bp.dice);

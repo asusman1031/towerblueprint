@@ -7,6 +7,7 @@ import IsoTower from "@/components/IsoTower";
 import { buildBoxes, type BoxDesign } from "@/lib/boxes";
 import { buildBricks, type BrickDesign } from "@/lib/bricks";
 import { buildDice, type DiceDesign } from "@/lib/dice";
+import { buildPaper, type PaperDesign } from "@/lib/paper";
 import { fileToBase64, pageWithPreview, shrinkImage } from "@/lib/image-client";
 import { buildStructure, type Structure } from "@/lib/structure";
 import { buildTiles, type TileDesign } from "@/lib/tiles";
@@ -14,6 +15,7 @@ import { MAX_LAYERS, MAX_SIDE, sectionStats, towerTotals, type Section } from "@
 import BoxesEditor from "./BoxesEditor";
 import BricksEditor from "./BricksEditor";
 import DiceEditor from "./DiceEditor";
+import PaperEditor from "./PaperEditor";
 import StructureEditor from "./StructureEditor";
 import TilesEditor from "./TilesEditor";
 import type { HqBlueprint } from "./types";
@@ -32,6 +34,7 @@ type Draft = {
   bricks: BrickDesign | null;
   boxes: BoxDesign | null;
   dice: DiceDesign | null;
+  paper: PaperDesign | null;
   difficulty: number;
   price: string;
   checkout_url: string;
@@ -66,6 +69,7 @@ function toDraft(bp?: HqBlueprint, seed?: EditorSeed): Draft {
       bricks: null,
       boxes: null,
       dice: null,
+      paper: null,
       difficulty: 2,
       price: "5",
       checkout_url: "",
@@ -87,6 +91,7 @@ function toDraft(bp?: HqBlueprint, seed?: EditorSeed): Draft {
     bricks: bp.bricks,
     boxes: bp.boxes,
     dice: bp.dice,
+    paper: bp.paper,
     difficulty: bp.difficulty,
     price: (bp.price_cents / 100).toString(),
     checkout_url: bp.checkout_url ?? "",
@@ -182,7 +187,10 @@ export default function BlueprintEditor({
   const brickBuild = d.bricks ? buildBricks(d.bricks) : null;
   const boxBuild = d.boxes ? buildBoxes(d.boxes) : null;
   const diceBuild = d.dice ? buildDice(d.dice) : null;
-  const totals = diceBuild
+  const paperBuild = d.paper ? buildPaper(d.paper) : null;
+  const totals = paperBuild
+    ? { blocks: paperBuild.feet, height: paperBuild.sheets }
+    : diceBuild
     ? { blocks: diceBuild.count, height: diceBuild.tall }
     : boxBuild
       ? { blocks: boxBuild.count, height: boxBuild.levels }
@@ -191,7 +199,9 @@ export default function BlueprintEditor({
       : tileBuild
       ? { blocks: tileBuild.tiles, height: tileBuild.height }
       : (built ?? towerTotals(d.sections));
-  const sums = diceBuild
+  const sums = paperBuild
+    ? paperBuild.steps.map((s) => s.feet)
+    : diceBuild
     ? diceBuild.steps.map((s) => s.dice.length)
     : boxBuild
       ? boxBuild.boxes.map(() => 1)
@@ -220,6 +230,7 @@ export default function BlueprintEditor({
         bricks: d.bricks,
         boxes: d.boxes,
         dice: d.dice,
+        paper: d.paper,
         difficulty: d.difficulty,
         price_cents: Math.round(Number(d.price) * 100),
         checkout_url: d.checkout_url,
@@ -321,7 +332,9 @@ export default function BlueprintEditor({
             </div>
           </div>
 
-          {d.dice ? (
+          {d.paper ? (
+            <PaperEditor paper={d.paper} onChange={(next) => set("paper", next)} />
+          ) : d.dice ? (
             <DiceEditor dice={d.dice} onChange={(next) => set("dice", next)} />
           ) : d.boxes ? (
             <BoxesEditor boxes={d.boxes} onChange={(next) => set("boxes", next)} />
@@ -627,17 +640,18 @@ export default function BlueprintEditor({
             bricks={d.bricks}
             boxes={d.boxes}
             dice={d.dice}
+            paper={d.paper}
             className={d.structure ? "h-auto w-full" : "h-80 w-auto max-w-full"}
             title="Tower preview"
           />
           <div className="mt-4 grid w-full grid-cols-2 gap-2 text-center">
             <div className="rounded-xl bg-white p-2">
               <div className="font-display text-3xl text-navy">{totals.blocks}</div>
-              <div className="text-xs font-extrabold text-ink uppercase">{diceBuild ? "dice" : boxBuild ? "boxes" : brickBuild ? "bricks" : tileBuild ? "tiles" : "blocks"}</div>
+              <div className="text-xs font-extrabold text-ink uppercase">{paperBuild ? "feet" : diceBuild ? "dice" : boxBuild ? "boxes" : brickBuild ? "bricks" : tileBuild ? "tiles" : "blocks"}</div>
             </div>
             <div className="rounded-xl bg-white p-2">
               <div className="font-display text-3xl text-navy">{totals.height}</div>
-              <div className="text-xs font-extrabold text-ink uppercase">tall</div>
+              <div className="text-xs font-extrabold text-ink uppercase">{paperBuild ? "sheets" : "tall"}</div>
             </div>
           </div>
           <p className="mt-3 text-center text-sm font-bold text-ink">

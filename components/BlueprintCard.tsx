@@ -35,8 +35,9 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
               bricks={bp.bricks}
               boxes={bp.boxes}
               dice={bp.dice}
+              paper={bp.paper}
               className={
-                kind === "bricks"
+                kind === "bricks" || kind === "paper"
                   ? "mx-auto h-40 w-auto max-w-full"
                   : kind === "structure"
                     ? "h-auto max-h-40 w-full"
@@ -74,8 +75,8 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
             <dd className="font-display text-xl text-navy">{t.blocks}</dd>
           </div>
           <div className="rounded-xl bg-ice p-2">
-            <dt className="text-[0.65rem] font-extrabold tracking-wider text-ink uppercase">Tall</dt>
-            <dd className="font-display text-xl text-navy">{t.height}</dd>
+            <dt className="text-[0.65rem] font-extrabold tracking-wider text-ink uppercase">{t.tall.label}</dt>
+            <dd className="font-display text-xl text-navy">{t.tall.value}</dd>
           </div>
           <div className="rounded-xl bg-ice p-2">
             <dt className="text-[0.65rem] font-extrabold tracking-wider text-ink uppercase">Level</dt>

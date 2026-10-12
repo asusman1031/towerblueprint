@@ -4,6 +4,7 @@ import { cleanStructure, type Structure } from "@/lib/structure";
 import { cleanBoxes, type BoxDesign } from "@/lib/boxes";
 import { cleanBricks, type BrickDesign } from "@/lib/bricks";
 import { cleanDice, type DiceDesign } from "@/lib/dice";
+import { cleanPaper, type PaperDesign } from "@/lib/paper";
 import { cleanTiles, type TileDesign } from "@/lib/tiles";
 import { cleanSections, type Section } from "@/lib/tower";
 
@@ -24,6 +25,7 @@ export type Blueprint = {
   bricks: BrickDesign | null; // set for studded brick builds (LEGO); then `sections` is only a placeholder
   boxes: BoxDesign | null; // set for cardboard box builds; then `sections` is only a placeholder
   dice: DiceDesign | null; // set for dice builds; then `sections` is only a placeholder
+  paper: PaperDesign | null; // set for packing paper builds; then `sections` is only a placeholder
   difficulty: number;
   price_cents: number;
   checkout_url: string | null;
@@ -67,6 +69,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     bricks: null,
     boxes: null,
     dice: null,
+    paper: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -157,6 +160,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     bricks: null,
     boxes: null,
     dice: null,
+    paper: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -191,6 +195,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     bricks: null,
     boxes: null,
     dice: null,
+    paper: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -224,6 +229,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     bricks: null,
     boxes: null,
     dice: null,
+    paper: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -260,6 +266,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     bricks: null,
     boxes: null,
     dice: null,
+    paper: null,
     difficulty: 1,
     price_cents: 500,
     checkout_url: null,
@@ -299,6 +306,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     bricks: null,
     boxes: null,
     dice: null,
+    paper: null,
     difficulty: 3,
     price_cents: 500,
     checkout_url: null,
@@ -347,6 +355,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     bricks: null,
     boxes: null,
     dice: null,
+    paper: null,
     difficulty: 1,
     price_cents: 200,
     checkout_url: null,
@@ -424,6 +433,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     },
     boxes: null,
     dice: null,
+    paper: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -560,6 +570,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     },
     boxes: null,
     dice: null,
+    paper: null,
     difficulty: 2,
     price_cents: 500,
     checkout_url: null,
@@ -630,6 +641,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
       ],
     },
     dice: null,
+    paper: null,
     difficulty: 1,
     price_cents: 200,
     checkout_url: null,
@@ -681,6 +693,7 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
         },
       ],
     },
+    paper: null,
     difficulty: 1,
     price_cents: 200,
     checkout_url: null,
@@ -690,6 +703,60 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     original_pages: 0,
     preview_url: null,
     sort_order: 11,
+  },
+  {
+    id: "seed-cardboard-snake",
+    slug: "cardboard-snake",
+    number: 12,
+    name: "Cardboard Snake",
+    tagline: "A giant floor snake made from the packing paper that came in a box.",
+    description:
+      "Sawyer's first blueprint made from packing paper! He saved the crinkly paper that came stuffed in a delivery box, scrunched it into one long rope, and turned it into a snake: a curly tail, a long wiggly body, a big U-turn, and a crumpled-up head.",
+    inspired_by: "",
+    fun_fact:
+      "The longest snakes in the world, reticulated pythons, can grow more than 20 feet long. That's about as long as this paper snake!",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: null,
+    boxes: null,
+    dice: null,
+    paper: {
+      sheets: 1,
+      face: true,
+      need: "Packing paper from a delivery box, about 21 feet of it (one long strip, or a few pieces twisted together)",
+      steps: [
+        {
+          label: "The Curly Tail",
+          note: "Start at the dot in the middle. Wind the rope around and around like a snail shell, then let it come out at the bottom.",
+          path: [[2.5, 7.1], [2.2, 7.4], [1.8, 7.0], [1.7, 6.3], [1.9, 5.9], [2.3, 6.1], [2.7, 6.2], [3.1, 6.5], [3.4, 7.0], [3.3, 7.5], [2.9, 8.1], [2.6, 8.3], [2.0, 8.5], [1.5, 7.9], [1.3, 7.0], [1.3, 6.2]],
+        },
+        {
+          label: "The Long Wiggle",
+          note: "Swoop down past the tail toward you, with a gentle wiggle.",
+          path: [[1.4, 5.5], [1.6, 5.1], [1.9, 4.6], [2.3, 4.0], [2.4, 3.4], [2.5, 2.4], [2.6, 1.3]],
+        },
+        {
+          label: "The Big U-Turn",
+          note: "Curve all the way around in a big U, so the snake heads back the other way.",
+          path: [[2.5, 0.5], [2.3, 0.1], [1.8, 0.0], [1.5, 0.3], [1.3, 1.2]],
+        },
+        {
+          label: "Neck & Head",
+          note: "Run back up beside the body, then bend to the left. Leave the end big and crumpled up: that's the head!",
+          path: [[1.2, 2.4], [1.1, 3.8], [0.8, 4.7], [0.5, 4.9], [0.1, 4.9]],
+        },
+      ],
+    },
+    difficulty: 1,
+    price_cents: 200,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/cardboard-snake.webp",
+    designer: "",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 12,
   },
 ];
 
@@ -715,6 +782,7 @@ function normalize(row: Record<string, unknown>): Blueprint {
     bricks: cleanBricks(row.bricks),
     boxes: cleanBoxes(row.boxes),
     dice: cleanDice(row.dice),
+    paper: cleanPaper(row.paper),
   };
 }
 

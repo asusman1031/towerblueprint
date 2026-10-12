@@ -7,6 +7,7 @@ import Photo from "@/components/Photo";
 import Track from "@/components/Track";
 import { getBlueprint, RENAMED_SLUGS } from "@/lib/data";
 import { BLUEPRINT_KIND, buildKind, isCutout, MATERIAL } from "@/lib/kind";
+import { buildPaper } from "@/lib/paper";
 import { designTotals, unitLabel } from "@/lib/structure";
 import { difficultyLabel } from "@/lib/tower";
 
@@ -35,11 +36,12 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
     notFound();
   }
   const t = designTotals(bp);
+  const floor = bp.paper ? buildPaper(bp.paper) : null;
   const sideways = bp.structure;
   // Sideways builds that rest on furniture (chairs, a table) need it lined up first.
   const onFurniture = !!bp.structure?.parts.some((p) => p.on);
   const hasPillars = !!bp.structure?.parts.some((p) => p.kind === "pillar");
-  const photos = [bp.photo_url, ...((bp.structure ?? bp.tiles ?? bp.bricks ?? bp.boxes ?? bp.dice)?.photos ?? [])]
+  const photos = [bp.photo_url, ...((bp.structure ?? bp.tiles ?? bp.bricks ?? bp.boxes ?? bp.dice ?? bp.paper)?.photos ?? [])]
     .filter((x): x is string => !!x)
     .slice(0, 2);
   // Everything but a plain tower shows two photos with the drawing underneath.
@@ -89,9 +91,10 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                     bricks={bp.bricks}
                     boxes={bp.boxes}
                     dice={bp.dice}
+                    paper={bp.paper}
                     wide
                     className={
-                      bp.bricks
+                      bp.bricks || bp.paper
                         ? "mx-auto h-80 w-auto max-w-full"
                         : bp.dice
                           ? "mx-auto h-48 w-auto max-w-full"
@@ -149,7 +152,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
               <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {[
                   [unitLabel(t.unit), String(t.blocks)],
-                  ["Tall", `${t.height}`],
+                  [t.tall.label, t.tall.value],
                   [t.base.label, t.base.value],
                   ["Level", difficultyLabel(bp.difficulty)],
                 ].map(([k, v]) => (
@@ -173,6 +176,7 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   bricks={bp.bricks}
                   boxes={bp.boxes}
                   dice={bp.dice}
+                  paper={bp.paper}
                   number={bp.number}
                 />
               </div>
@@ -186,10 +190,21 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
           <h2 className="font-display text-3xl text-navy">What you need</h2>
           <ul className="mt-4 space-y-3 text-lg text-ink">
             <li className="flex gap-3">
-              <span aria-hidden>{bp.tiles ? "🟦" : bp.bricks ? "🧱" : bp.boxes ? "📦" : bp.dice ? "🎲" : "🧊"}</span>
+              <span aria-hidden>{bp.tiles ? "🟦" : bp.bricks ? "🧱" : bp.boxes ? "📦" : bp.dice ? "🎲" : bp.paper ? "📜" : "🧊"}</span>
               {bp.structure?.need ? (
                 <span>
                   <strong className="font-extrabold">{bp.structure.need}</strong>
+                </span>
+              ) : bp.paper ? (
+                <span>
+                  {bp.paper.need ? (
+                    <strong className="font-extrabold">{bp.paper.need}</strong>
+                  ) : (
+                    <>
+                      <strong className="font-extrabold">About {t.blocks} feet of packing paper</strong> (the crinkly
+                      paper that comes stuffed in delivery boxes)
+                    </>
+                  )}
                 </span>
               ) : bp.dice ? (
                 <span>
@@ -223,7 +238,9 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   ? "Two chairs and a table, lined up next to each other"
                   : bp.tiles
                     ? "A hard, flat floor so the walls stand up straight"
-                    : "A hard, flat floor so your tower stands straight"}
+                    : bp.paper
+                      ? `A clear patch of floor about ${floor?.wide} × ${floor?.deep} feet, away from doorways`
+                      : "A hard, flat floor so your tower stands straight"}
               </span>
             </li>
             <li className="flex gap-3">
@@ -239,6 +256,8 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                         ? "A grown-up to open any taped-up flaps"
                         : bp.dice
                           ? "A steady hand: dice are smooth, so set them down gently"
+                          : bp.paper
+                            ? "Gentle hands: packing paper tears if you pull too hard"
                       : "A grown-up to help reach the top if it gets taller than you"}
               </span>
             </li>

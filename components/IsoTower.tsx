@@ -1,10 +1,12 @@
 import BoxDrawing from "@/components/BoxDrawing";
 import BrickDrawing from "@/components/BrickDrawing";
 import DiceDrawing from "@/components/DiceDrawing";
+import PaperDrawing from "@/components/PaperDrawing";
 import TileDrawing from "@/components/TileDrawing";
 import type { BoxDesign } from "@/lib/boxes";
 import type { BrickDesign } from "@/lib/bricks";
 import type { DiceDesign } from "@/lib/dice";
+import type { PaperDesign } from "@/lib/paper";
 import { buildStructure, type Structure, type Surface } from "@/lib/structure";
 import type { TileDesign } from "@/lib/tiles";
 import { buildCubes, type Section } from "@/lib/tower";
@@ -21,6 +23,7 @@ type Props = {
   bricks?: BrickDesign | null; // a LEGO-style brick build, drawn with studs
   boxes?: BoxDesign | null; // a cardboard box build
   dice?: DiceDesign | null; // a dice build, drawn with dots
+  paper?: PaperDesign | null; // a packing paper build, drawn from above
   variant?: Variant;
   highlight?: number; // section (or structure part) index to emphasise; others are ghosted
   animate?: boolean;
@@ -99,6 +102,7 @@ export default function IsoTower({
   bricks,
   boxes,
   dice,
+  paper,
   variant = "blocks",
   highlight,
   animate = false,
@@ -107,6 +111,19 @@ export default function IsoTower({
   className,
   title,
 }: Props) {
+  if (paper) {
+    return (
+      <PaperDrawing
+        paper={paper}
+        variant={variant}
+        highlight={highlight}
+        animate={animate}
+        stepMs={stepMs}
+        className={className}
+        title={title}
+      />
+    );
+  }
   if (dice) {
     return (
       <DiceDrawing

@@ -4,6 +4,7 @@ import { useState } from "react";
 import IsoTower from "@/components/IsoTower";
 import type { BoxDesign } from "@/lib/boxes";
 import type { DiceDesign } from "@/lib/dice";
+import type { PaperDesign } from "@/lib/paper";
 import type { BrickDesign } from "@/lib/bricks";
 import type { Structure } from "@/lib/structure";
 import type { TileDesign } from "@/lib/tiles";
@@ -17,6 +18,7 @@ export default function BuildingTower({
   bricks,
   boxes,
   dice,
+  paper,
   className,
   title,
   stepMs = 65,
@@ -28,6 +30,7 @@ export default function BuildingTower({
   bricks?: BrickDesign | null;
   boxes?: BoxDesign | null;
   dice?: DiceDesign | null;
+  paper?: PaperDesign | null;
   className?: string;
   title?: string;
   stepMs?: number;
@@ -44,6 +47,7 @@ export default function BuildingTower({
         bricks={bricks}
         boxes={boxes}
         dice={dice}
+        paper={paper}
         animate
         stepMs={stepMs}
         className={className}

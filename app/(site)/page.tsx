@@ -122,6 +122,7 @@ export default async function Home() {
                         bricks={featured.bricks}
                         boxes={featured.boxes}
                         dice={featured.dice}
+                        paper={featured.paper}
                         className="h-72 w-auto sm:h-[22rem]"
                         title={`${featured.name}, ${featuredTotals.blocks} blocks`}
                       />
@@ -243,6 +244,7 @@ export default async function Home() {
               bricks={featured.bricks}
               boxes={featured.boxes}
               dice={featured.dice}
+              paper={featured.paper}
               name={featured.name}
               number={featured.number}
             />

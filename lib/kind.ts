@@ -2,9 +2,12 @@ import type { Blueprint } from "@/lib/data";
 
 // Which kind of build a blueprint is, and the words the site uses for it.
 
-export type BuildKind = "tower" | "structure" | "tiles" | "bricks" | "boxes" | "dice";
+export type BuildKind = "tower" | "structure" | "tiles" | "bricks" | "boxes" | "dice" | "paper";
 
-export function buildKind(bp: Pick<Blueprint, "structure" | "tiles" | "bricks" | "boxes" | "dice">): BuildKind {
+export function buildKind(
+  bp: Pick<Blueprint, "structure" | "tiles" | "bricks" | "boxes" | "dice" | "paper">,
+): BuildKind {
+  if (bp.paper) return "paper";
   if (bp.dice) return "dice";
   if (bp.boxes) return "boxes";
   if (bp.bricks) return "bricks";
@@ -21,6 +24,7 @@ export const MATERIAL: Record<BuildKind, string> = {
   bricks: "LEGO DUPLO bricks",
   boxes: "cardboard boxes",
   dice: "dice",
+  paper: "packing paper",
 };
 
 // The kind of blueprint, for page descriptions: "an official ... blueprint".
@@ -31,6 +35,7 @@ export const BLUEPRINT_KIND: Record<BuildKind, string> = {
   bricks: "LEGO DUPLO",
   boxes: "cardboard box",
   dice: "dice",
+  paper: "packing paper",
 };
 
 // Photos cut out onto a see-through background (WebP or PNG) sit right on the
@@ -43,4 +48,5 @@ export const TOY_CHIP: Partial<Record<BuildKind, string>> = {
   bricks: "LEGO DUPLO",
   boxes: "Cardboard boxes",
   dice: "Dice",
+  paper: "Packing paper",
 };

@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { cleanBoxes } from "@/lib/boxes";
 import { cleanBricks } from "@/lib/bricks";
 import { cleanDice } from "@/lib/dice";
+import { cleanPaper } from "@/lib/paper";
 import { db } from "@/lib/supabase";
 import { cleanStructure } from "@/lib/structure";
 import { cleanTiles } from "@/lib/tiles";
@@ -60,6 +61,7 @@ export type BlueprintInput = {
   bricks?: unknown;
   boxes?: unknown;
   dice?: unknown;
+  paper?: unknown;
   difficulty: number;
   price_cents: number;
   checkout_url: string;
@@ -91,9 +93,11 @@ export async function saveBlueprint(input: BlueprintInput): Promise<{ ok: boolea
   if (input.boxes != null && !boxes) return { ok: false, message: "Something in the boxes isn't quite right." };
   const dice = input.dice == null ? null : cleanDice(input.dice);
   if (input.dice != null && !dice) return { ok: false, message: "Something in the dice isn't quite right." };
+  const paper = input.paper == null ? null : cleanPaper(input.paper);
+  if (input.paper != null && !paper) return { ok: false, message: "Something in the paper rope isn't quite right." };
   // Every build but a plain tower keeps a one-block placeholder in sections, because the column is required.
   const sections =
-    structure || tiles || bricks || boxes || dice ? [{ w: 1, d: 1, count: 1 }] : cleanSections(input.sections);
+    structure || tiles || bricks || boxes || dice || paper ? [{ w: 1, d: 1, count: 1 }] : cleanSections(input.sections);
   if (sections.length === 0) return { ok: false, message: "Add at least one section to your tower." };
   const slug = slugify(input.slug || name);
   if (!slug) return { ok: false, message: "Try a name with some letters in it." };
@@ -119,6 +123,7 @@ export async function saveBlueprint(input: BlueprintInput): Promise<{ ok: boolea
       bricks,
       boxes,
       dice,
+      paper,
       difficulty: Math.max(1, Math.min(3, Math.round(Number(input.difficulty) || 2))),
       price_cents: Math.max(0, Math.min(100000, Math.round(Number(input.price_cents) || 0))),
       checkout_url: checkout,

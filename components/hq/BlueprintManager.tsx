@@ -57,6 +57,7 @@ export default function BlueprintManager({
             bricks={bp.bricks}
             boxes={bp.boxes}
             dice={bp.dice}
+            paper={bp.paper}
             className="h-36 w-auto max-w-full"
             title={bp.name}
           />
@@ -78,7 +79,8 @@ export default function BlueprintManager({
           <h3 className="truncate font-display text-2xl text-navy">{bp.name}</h3>
           <p className="text-sm font-bold text-ink">
             {bp.designer ? `Designed by ${bp.designer} · ` : ""}
-            {t.blocks} {t.unit} · {t.height} tall · {formatPrice(bp.price_cents)}
+            {t.blocks} {t.unit} · {t.tall.value} {t.tall.label.toLowerCase().replace(/s$/, t.tall.value === "1" ? "" : "s")} ·{" "}
+            {formatPrice(bp.price_cents)}
           </p>
           {!bp.designer || bp.status !== "draft" ? (
             <p className="mt-1 text-sm text-ink">
