@@ -2,7 +2,9 @@
 // list of steps, and each step is a list of bricks. A brick is w × d studs and
 // h plates tall (a plate is the thin piece, a regular brick is 3 plates, a tall
 // brick 6), standing at x, y (in studs) and z (in plates). Bricks can stick out
-// past the ones below, because the studs hold them on.
+// past the ones below, because the studs hold them on. A curved ramp is a
+// brick whose top swoops down from a tall end (with studs) to a thin tip; `ramp`
+// says which way the tip points, and w × d × h is the box it fits in.
 
 export const BRICK_COLORS = {
   red: "#D7262E",
@@ -22,7 +24,19 @@ export const BRICK_COLORS = {
 export type BrickColor = keyof typeof BRICK_COLORS;
 const COLOR_NAMES = Object.keys(BRICK_COLORS) as BrickColor[];
 
-export type Brick = { x: number; y: number; z: number; w: number; d: number; h: number; color: BrickColor };
+export type RampDir = "left" | "right" | "front" | "back";
+export const RAMP_DIRS: RampDir[] = ["left", "right", "front", "back"];
+
+export type Brick = {
+  x: number;
+  y: number;
+  z: number;
+  w: number;
+  d: number;
+  h: number;
+  color: BrickColor;
+  ramp?: RampDir;
+};
 export type BrickStep = { label: string; note?: string; bricks: Brick[] };
 export type BrickDesign = {
   steps: BrickStep[];
@@ -82,6 +96,7 @@ export function cleanBricks(input: unknown): BrickDesign | null {
         d: int(v.d, 1, 16, 2),
         h: int(v.h, 1, 12, 3),
         color: COLOR_NAMES.includes(v.color as BrickColor) ? (v.color as BrickColor) : "red",
+        ...(RAMP_DIRS.includes(v.ramp as RampDir) ? { ramp: v.ramp as RampDir } : {}),
       };
     });
     return { label: text(s.label, 40) || `Step ${i + 1}`, ...(note ? { note } : {}), bricks };
@@ -94,8 +109,9 @@ export function cleanBricks(input: unknown): BrickDesign | null {
   return { steps, ...(photos.length ? { photos } : {}), ...(need ? { need } : {}) };
 }
 
-// "2×4 brick", "2×4 plate", "2×2 tall brick"
-export function brickName(b: Pick<Brick, "w" | "d" | "h">) {
+// "2×4 brick", "2×4 plate", "2×2 tall brick", "curved ramp"
+export function brickName(b: Pick<Brick, "w" | "d" | "h" | "ramp">) {
+  if (b.ramp) return "curved ramp";
   const size = `${Math.min(b.w, b.d)}×${Math.max(b.w, b.d)}`;
   if (b.h === 1) return `${size} plate`;
   if (b.h === 3) return `${size} brick`;
@@ -155,3 +171,7 @@ export function buildBricks(design: BrickDesign): BuiltBricks {
     kinds: [...kinds.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)),
   };
 }
+
+// Which way a ramp's curve swoops, in the words the step pages use.
+export const rampWord = (dir: RampDir) =>
+  ({ left: "curve out to the left", right: "curve out to the right", front: "curve toward you", back: "curve away from you" })[dir];

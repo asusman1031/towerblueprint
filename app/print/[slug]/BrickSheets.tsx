@@ -1,6 +1,14 @@
 import Image from "next/image";
 import BrickDrawing from "@/components/BrickDrawing";
-import { BRICK_COLORS, brickName, type BrickDesign, type BuiltBricks, type PlacedBrick, type StepStats } from "@/lib/bricks";
+import {
+  BRICK_COLORS,
+  brickName,
+  rampWord,
+  type BrickDesign,
+  type BuiltBricks,
+  type PlacedBrick,
+  type StepStats,
+} from "@/lib/bricks";
 import type { Blueprint } from "@/lib/data";
 import { difficultyLabel } from "@/lib/tower";
 import { CountingTrick, TickBoxes, TitleBar } from "./sheets";
@@ -69,11 +77,29 @@ function stepBox(step: StepStats, built: BuiltBricks): Box {
   return { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) };
 }
 
-// Top view of one layer. Dashed squares are what's already there; the new
-// bricks are drawn in color.
-function LayerMap({ z, built, box, className }: { z: number; built: BuiltBricks; box: Box; className?: string }) {
-  const fresh = built.bricks.filter((b) => b.z === z);
-  const under = underCells(built, z);
+// Top view of one layer. Dashed squares are what's already there (including
+// bricks an earlier step put on this same layer); this step's bricks are in color.
+function LayerMap({
+  z,
+  step,
+  built,
+  box,
+  className,
+}: {
+  z: number;
+  step: StepStats;
+  built: BuiltBricks;
+  box: Box;
+  className?: string;
+}) {
+  const fresh = step.bricks.filter((b) => b.z === z);
+  const under = new Set([
+    ...underCells(built, z),
+    ...cellsAt(
+      built.bricks.filter((b) => b.z === z && b.step < step.index),
+      z,
+    ),
+  ]);
   const cx = (x: number) => (x - box.x0) * CELL;
   const cy = (y: number) => (y - box.y0) * CELL;
 
@@ -101,32 +127,66 @@ function LayerMap({ z, built, box, className }: { z: number; built: BuiltBricks;
           />
         );
       })}
-      {fresh.map((b) => (
-        <g key={b.id}>
-          <rect
-            x={cx(b.x) + 0.5}
-            y={cy(b.y) + 0.5}
-            width={b.w * CELL - 1}
-            height={b.d * CELL - 1}
-            rx={1.2}
-            fill={BRICK_COLORS[b.color]}
-            stroke="#0B1F4D"
-            strokeWidth={0.9}
-          />
-          {Array.from({ length: b.w * b.d }, (_, i) => (
-            <circle
-              key={i}
-              cx={cx(b.x + (i % b.w)) + CELL / 2}
-              cy={cy(b.y + Math.floor(i / b.w)) + CELL / 2}
-              r={2.6}
-              fill="none"
-              stroke="rgba(11,31,77,0.45)"
-              strokeWidth={0.7}
+      {fresh.map((b) => {
+        const studs = Array.from({ length: b.w * b.d }, (_, i) => [b.x + (i % b.w), b.y + Math.floor(i / b.w)]).filter(
+          ([x, y]) => !b.ramp || rampTop(b, x, y),
+        );
+        return (
+          <g key={b.id}>
+            <rect
+              x={cx(b.x) + 0.5}
+              y={cy(b.y) + 0.5}
+              width={b.w * CELL - 1}
+              height={b.d * CELL - 1}
+              rx={1.2}
+              fill={BRICK_COLORS[b.color]}
+              fillOpacity={b.ramp ? 0.55 : 1}
+              stroke="#0B1F4D"
+              strokeWidth={0.9}
             />
-          ))}
-        </g>
-      ))}
+            {b.ramp ? <RampArrow b={b} cx={cx} cy={cy} /> : null}
+            {studs.map(([x, y]) => (
+              <circle
+                key={`${x}-${y}`}
+                cx={cx(x) + CELL / 2}
+                cy={cy(y) + CELL / 2}
+                r={2.6}
+                fill={b.ramp ? BRICK_COLORS[b.color] : "none"}
+                stroke="rgba(11,31,77,0.45)"
+                strokeWidth={0.7}
+              />
+            ))}
+          </g>
+        );
+      })}
     </svg>
+  );
+}
+
+// The tall end of a ramp, where its studs are: the row of squares farthest from the tip.
+function rampTop(b: PlacedBrick, x: number, y: number) {
+  if (b.ramp === "left") return x === b.x + b.w - 1;
+  if (b.ramp === "right") return x === b.x;
+  if (b.ramp === "back") return y === b.y + b.d - 1;
+  return y === b.y;
+}
+
+// On a map, an arrow from a ramp's tall end toward its tip.
+function RampArrow({ b, cx, cy }: { b: PlacedBrick; cx: (x: number) => number; cy: (y: number) => number }) {
+  const midX = cx(b.x) + (b.w * CELL) / 2;
+  const midY = cy(b.y) + (b.d * CELL) / 2;
+  const [dx, dy] = { left: [-1, 0], right: [1, 0], front: [0, 1], back: [0, -1] }[b.ramp!];
+  const len = ((dx ? b.w : b.d) - 1) * CELL * 0.42;
+  const off = (dx ? b.w : b.d) * CELL * 0.18; // start a little toward the tall end
+  const x0 = midX - dx * off;
+  const y0 = midY - dy * off;
+  const x1 = x0 + dx * len * 2;
+  const y1 = y0 + dy * len * 2;
+  return (
+    <g stroke="#0B1F4D" strokeWidth={0.9} strokeLinecap="round" fill="none">
+      <line x1={x0} y1={y0} x2={x1} y2={y1} />
+      <path d={`M${x1 - dx * 2.6 - dy * 2.2},${y1 - dy * 2.6 - dx * 2.2}L${x1},${y1}L${x1 - dx * 2.6 + dy * 2.2},${y1 - dy * 2.6 + dx * 2.2}`} />
+    </g>
   );
 }
 
@@ -182,7 +242,7 @@ function BrickStep({
               return (
                 <li key={z} className="flex items-center gap-3">
                   <div className="flex w-[1.75in] shrink-0 flex-col items-center">
-                    <LayerMap z={z} built={built} box={box} className="h-auto max-h-[0.5in] w-full" />
+                    <LayerMap z={z} step={step} built={built} box={box} className="h-auto max-h-[0.5in] w-full" />
                   </div>
                   <div className="text-[0.9rem] leading-snug text-navy">
                     <span className="font-display text-blueprint">Layer {layerNo.get(z)}:</span>{" "}
@@ -193,6 +253,7 @@ function BrickStep({
                           <span key={b.id}>
                             {i ? " + " : ""}
                             <Swatch color={b.color} /> {b.color} {brickName(b)}
+                            {b.ramp ? ` (${rampWord(b.ramp)})` : null}
                             {sticksOut(b, below) ? <strong className="text-[#c2410c]"> (sticks out!)</strong> : null}
                           </span>
                         ))}
@@ -252,7 +313,8 @@ export default function BrickSheets({
   const layerNo = new Map(layers.map((z, i) => [z, i + 1]));
   const hasPlate = built.bricks.some((b) => b.h === 1);
   const basePlate = built.bricks.some((b) => b.h === 1 && b.z === 0);
-  const hasTall = built.bricks.some((b) => b.h === 6);
+  const hasTall = built.bricks.some((b) => b.h === 6 && !b.ramp);
+  const hasRamp = built.bricks.some((b) => b.ramp);
   const overhang = built.bricks.some((b) =>
     sticksOut(
       b,
@@ -397,6 +459,11 @@ export default function BrickSheets({
             {basePlate ? <li>No thin plate? Leave it out and start the next layer right on the floor.</li> : null}
             {hasPlate && !basePlate ? <li>No thin plates? Long bricks of the same size work too.</li> : null}
             {overhang ? <li>Bricks that stick out need a steady hand. Hold the tower while you press them on.</li> : null}
+            {hasRamp ? (
+              <li>
+                A curved ramp has studs only on its tall end. On the maps, the arrow points the way the curve swoops.
+              </li>
+            ) : null}
             <li>Any colors work. Swap in the colors you have and make it yours!</li>
           </ul>
         </div>

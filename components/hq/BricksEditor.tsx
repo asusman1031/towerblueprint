@@ -1,6 +1,6 @@
 "use client";
 
-import { BRICK_COLORS, buildBricks, type Brick, type BrickColor, type BrickDesign } from "@/lib/bricks";
+import { BRICK_COLORS, buildBricks, RAMP_DIRS, type Brick, type BrickColor, type BrickDesign, type RampDir } from "@/lib/bricks";
 
 // Edit the bricks of a LEGO-style build, step by step: where each brick sits,
 // its size and its color. The counts update as you type.
@@ -11,6 +11,8 @@ const HEIGHTS = [
   { v: 3, label: "Brick" },
   { v: 6, label: "Tall brick" },
 ];
+// A curved ramp, named by the way its curve swoops (its tall end, with the studs, is the other way).
+const RAMPS: { v: RampDir; label: string }[] = RAMP_DIRS.map((v) => ({ v, label: `Curved ramp, curving ${v}` }));
 
 function Num({
   value,
@@ -92,9 +94,18 @@ export default function BricksEditor({ bricks, onChange }: { bricks: BrickDesign
                   </select>
                   <select
                     className="field !w-auto !py-1 text-sm"
-                    value={b.h}
+                    value={b.ramp ? `ramp:${b.ramp}` : b.h}
                     aria-label={`Kind of brick ${k + 1}`}
-                    onChange={(e) => setBrick(i, k, { h: Number(e.target.value) })}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setBrick(
+                        i,
+                        k,
+                        v.startsWith("ramp:")
+                          ? { ramp: v.slice(5) as RampDir, h: b.ramp ? b.h : 6 }
+                          : { h: Number(v), ramp: undefined },
+                      );
+                    }}
                   >
                     {[...HEIGHTS, ...(HEIGHTS.some((x) => x.v === b.h) ? [] : [{ v: b.h, label: `${b.h} plates tall` }])].map(
                       (o) => (
@@ -103,6 +114,11 @@ export default function BricksEditor({ bricks, onChange }: { bricks: BrickDesign
                         </option>
                       ),
                     )}
+                    {RAMPS.map((o) => (
+                      <option key={o.v} value={`ramp:${o.v}`}>
+                        {o.label}
+                      </option>
+                    ))}
                   </select>
                   <Num label="Wide" value={b.w} min={1} max={16} onChange={(n) => setBrick(i, k, { w: n })} />
                   <Num label="Deep" value={b.d} min={1} max={16} onChange={(n) => setBrick(i, k, { d: n })} />
