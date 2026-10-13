@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   },
   description:
     "Official step-by-step blueprints for giant magnetic block towers, designed and tested by Sawyer, a 7-year-old architect.",
+  icons: {
+    icon: [{ url: "/icon.png", sizes: "512x512", type: "image/png" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  appleWebApp: { capable: true, title: "Tower Blueprints", statusBarStyle: "default" },
   openGraph: {
     title: "Tower Blueprints for Kids",
     description: "Official step-by-step blueprints for giant magnetic block towers, designed by a 7-year-old architect.",
