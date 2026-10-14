@@ -1227,6 +1227,54 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     preview_url: null,
     sort_order: 17,
   },
+  {
+    id: "seed-north-tower",
+    slug: "north-tower",
+    number: 18,
+    name: "The North Tower",
+    tagline: "A super tall skinny tower that reaches way up high!",
+    description:
+      "Sawyer's North Tower! A wide, sturdy base 20 blocks tall holds up a long skinny stem that stretches way up into the sky, with a green block on top. It's 137 magnetic blocks tall and tricky to balance!",
+    inspired_by: "",
+    fun_fact:
+      "A compass needle is a tiny magnet. It points north because the whole Earth acts like a giant magnet!",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: null,
+    boxes: null,
+    dice: null,
+    paper: null,
+    cubes: {
+      need: "137 magnetic cube blocks (any pictures or colors)",
+      steps: [
+        {
+          label: "The Base: Bottom Half",
+          note: "Make a tall, skinny tower 3 blocks wide and 2 deep. Build the same layer 10 times.",
+          boxes: [{ x: 0, y: 0, z: 0, w: 3, d: 2, h: 10 }],
+        },
+        {
+          label: "The Base: Top Half",
+          note: "Ten more layers just like the first ones. Now the base is 20 blocks tall!",
+          boxes: [{ x: 0, y: 0, z: 10, w: 3, d: 2, h: 10 }],
+        },
+        {
+          label: "The Skinny Stem",
+          note: "One block wide and 17 blocks tall, standing on top of the base. Go slowly so it doesn't wobble!",
+          boxes: [{ x: 1, y: 0, z: 20, w: 1, d: 1, h: 17 }],
+        },
+      ],
+    },
+    difficulty: 3,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/north-tower.webp",
+    designer: "",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 18,
+  },
 ];
 
 // Old web addresses of renamed blueprints, so links people already have keep working.
