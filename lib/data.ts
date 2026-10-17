@@ -1275,6 +1275,60 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     preview_url: null,
     sort_order: 18,
   },
+  {
+    id: "seed-steve-tower",
+    slug: "steve-tower",
+    number: 19,
+    name: "Steve Tower",
+    tagline: "Minecraft's Steve, made of magnetic blocks, with a face you can see!",
+    description:
+      "The Steve Tower, from Minecraft! A skinny body holds up a big square head made of 5 × 5 × 5 blocks. Look at the front of the head: some blocks are pushed in, so you can see Steve's eyes and nose.",
+    inspired_by: "Minecraft",
+    fun_fact:
+      "In the game Minecraft, the whole world is made of blocks, and so is Steve, the main character!",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: null,
+    boxes: null,
+    dice: null,
+    paper: null,
+    cubes: {
+      need: "248 magnetic cube blocks (any pictures or colors)",
+      photos: ["/photos/steve-tower-side.webp"],
+      steps: [
+        {
+          label: "The Body",
+          note: "Build a tower 3 blocks wide and 3 deep. Build the same layer 14 times. This is Steve's body!",
+          boxes: [{ x: 1, y: 1, z: 0, w: 3, d: 3, h: 14 }],
+        },
+        {
+          label: "The Head: Chin and Nose",
+          note: "Now the big square head, 5 blocks wide and 5 deep. Start with one full 5 × 5 layer. Then another layer with a gap in the front for the nose: leave out the middle block on the front row.",
+          boxes: [{ x: 0, y: 0, z: 14, w: 5, d: 5, h: 1 }, { x: 0, y: 0, z: 15, w: 2, d: 1, h: 1 }, { x: 3, y: 0, z: 15, w: 2, d: 1, h: 1 }, { x: 0, y: 1, z: 15, w: 5, d: 4, h: 1 }],
+        },
+        {
+          label: "The Head: Eyes",
+          note: "Another 5 × 5 layer with two gaps in the front row for Steve's eyes. Leave out the 2nd and 4th blocks on the front row.",
+          boxes: [{ x: 0, y: 0, z: 16, w: 1, d: 1, h: 1 }, { x: 2, y: 0, z: 16, w: 1, d: 1, h: 1 }, { x: 4, y: 0, z: 16, w: 1, d: 1, h: 1 }, { x: 0, y: 1, z: 16, w: 5, d: 4, h: 1 }],
+        },
+        {
+          label: "The Head: Hair",
+          note: "Finish the head with two more full 5 × 5 layers on top.",
+          boxes: [{ x: 0, y: 0, z: 17, w: 5, d: 5, h: 2 }],
+        },
+      ],
+    },
+    difficulty: 3,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/steve-tower.webp",
+    designer: "",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 19,
+  },
 ];
 
 // Old web addresses of renamed blueprints, so links people already have keep working.
