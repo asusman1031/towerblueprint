@@ -1407,6 +1407,55 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     preview_url: null,
     sort_order: 20,
   },
+  {
+    id: "seed-stairs-tower",
+    slug: "stairs-tower",
+    number: 21,
+    name: "Stairs Tower",
+    tagline: "A giant staircase of magnetic blocks, 13 steps tall!",
+    description:
+      "Sawyer's Stairs Tower! It's a staircase that goes up one block at a time, from a tiny 1-block step all the way up to a 13-block-tall wall. It's wide and sturdy, so it's easy to build but it takes a LOT of blocks.",
+    inspired_by: "",
+    fun_fact:
+      "The Great Pyramid of Giza has about 200 layers of stone blocks, stacked up like giant steps. When it was new, it was nearly 150 meters tall!",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: null,
+    boxes: null,
+    dice: null,
+    paper: null,
+    cubes: {
+      need: "273 magnetic cube blocks (any pictures or colors)",
+      photos: ["/photos/stairs-tower-side.webp"],
+      steps: [
+        {
+          label: "The Low Steps",
+          note: "Build 4 walls side by side, each 3 blocks wide (that's the width of the stairs). The first wall is 1 block tall, then 2, then 3, then 4 blocks tall.",
+          boxes: [{ x: 0, y: 0, z: 0, w: 1, d: 3, h: 1 }, { x: 1, y: 0, z: 0, w: 1, d: 3, h: 2 }, { x: 2, y: 0, z: 0, w: 1, d: 3, h: 3 }, { x: 3, y: 0, z: 0, w: 1, d: 3, h: 4 }],
+        },
+        {
+          label: "The Middle Steps",
+          note: "Keep going! Build 5 more walls: 5, 6, 7, 8 and 9 blocks tall. Each wall is 1 block taller than the last one.",
+          boxes: [{ x: 4, y: 0, z: 0, w: 1, d: 3, h: 5 }, { x: 5, y: 0, z: 0, w: 1, d: 3, h: 6 }, { x: 6, y: 0, z: 0, w: 1, d: 3, h: 7 }, { x: 7, y: 0, z: 0, w: 1, d: 3, h: 8 }, { x: 8, y: 0, z: 0, w: 1, d: 3, h: 9 }],
+        },
+        {
+          label: "The High Steps",
+          note: "Finish with 4 tall walls: 10, 11, 12 and 13 blocks tall. Now you've built a giant staircase!",
+          boxes: [{ x: 9, y: 0, z: 0, w: 1, d: 3, h: 10 }, { x: 10, y: 0, z: 0, w: 1, d: 3, h: 11 }, { x: 11, y: 0, z: 0, w: 1, d: 3, h: 12 }, { x: 12, y: 0, z: 0, w: 1, d: 3, h: 13 }],
+        },
+      ],
+    },
+    difficulty: 2,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/stairs-tower.webp",
+    designer: "",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 21,
+  },
 ];
 
 // Old web addresses of renamed blueprints, so links people already have keep working.
