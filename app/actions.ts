@@ -1,5 +1,6 @@
 "use server";
 
+import { notifyOwner } from "@/lib/notify";
 import { db } from "@/lib/supabase";
 
 export type JoinState = { ok: boolean; message: string } | null;
@@ -35,6 +36,13 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
   if (error) {
     console.error("join_list", error.message);
     return { ok: false, message: "Something went wrong. Please try again in a minute." };
+  }
+  if (data === "joined") {
+    await notifyOwner(kind === "preorder" ? "New reservation on Tower Blueprints" : "New Builders Club signup", [
+      `${email} signed up${kind === "preorder" ? ` to reserve ${slug || "a blueprint"}` : " for the Builders Club"}.`,
+      "",
+      "See everyone in Architect HQ: https://www.towerblueprintsforkids.com/hq",
+    ]);
   }
   return MESSAGES[String(data)] ?? { ok: false, message: "Something went wrong. Please try again." };
 }
@@ -80,6 +88,14 @@ export async function submitDesign(input: DesignInput): Promise<{ ok: boolean; m
   if (error) {
     console.error("submit_design_request", error.message);
     return { ok: false, message: "Something went wrong. Please try again in a minute." };
+  }
+  if (data === "sent") {
+    await notifyOwner("New tower design sent to Tower Blueprints", [
+      `${String(input.builderName ?? "").slice(0, 40) || "Someone"} sent in "${String(input.towerName ?? "").slice(0, 80) || "a tower"}".`,
+      `Email: ${email}`,
+      "",
+      "Open Architect HQ to read it and see the photo: https://www.towerblueprintsforkids.com/hq",
+    ]);
   }
   return DESIGN_MESSAGES[String(data)] ?? { ok: false, message: "Something went wrong. Please try again." };
 }

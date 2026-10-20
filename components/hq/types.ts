@@ -21,6 +21,13 @@ export type HqRequest = {
   has_photo: boolean;
 };
 
+export type HqSignup = {
+  email: string;
+  kind: "club" | "preorder";
+  blueprint_slug: string | null;
+  created_at: string;
+};
+
 export type HqSale = {
   id: number;
   amount_cents: number;

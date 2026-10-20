@@ -8,7 +8,8 @@ import LoginForm from "@/components/hq/LoginForm";
 import CustomSettingsForm from "@/components/hq/CustomSettingsForm";
 import NoteForm from "@/components/hq/NoteForm";
 import SaleForm from "@/components/hq/SaleForm";
-import type { HqDashboard } from "@/components/hq/types";
+import SignupsList from "@/components/hq/SignupsList";
+import type { HqDashboard, HqSignup } from "@/components/hq/types";
 import { DEFAULT_ARCHITECT_NOTE, DEFAULT_CUSTOM_PRICE_CENTS } from "@/lib/data";
 import { cleanBoxes } from "@/lib/boxes";
 import { cleanBricks } from "@/lib/bricks";
@@ -66,10 +67,16 @@ export default async function HQPage() {
 
   const token = (await cookies()).get("tb_hq")?.value;
   let dash: HqDashboard | null = null;
+  let signups: HqSignup[] = [];
   if (token) {
-    const { data, error } = await sb.rpc("hq_dashboard", { p_token: token });
-    if (error) console.error("hq_dashboard", error.message);
-    dash = (data as HqDashboard | null) ?? null;
+    const [dashRes, signupsRes] = await Promise.all([
+      sb.rpc("hq_dashboard", { p_token: token }),
+      sb.rpc("hq_signups", { p_token: token }),
+    ]);
+    if (dashRes.error) console.error("hq_dashboard", dashRes.error.message);
+    if (signupsRes.error) console.error("hq_signups", signupsRes.error.message);
+    dash = (dashRes.data as HqDashboard | null) ?? null;
+    signups = Array.isArray(signupsRes.data) ? (signupsRes.data as HqSignup[]) : [];
   }
   if (!dash) {
     return (
@@ -253,6 +260,13 @@ export default async function HQPage() {
           <NoteForm note={note} />
         </section>
 
+        {/* Signups */}
+        <section className="card p-5">
+          <h2 className="font-display text-3xl text-navy">Who signed up</h2>
+          <p className="mb-4 text-ink">Everyone who joined the Builders Club or reserved a blueprint, newest first.</p>
+          <SignupsList signups={signups} />
+        </section>
+
         {/* Grown-up corner */}
         <section className="rounded-2xl border-2 border-dashed border-navy/30 p-5 text-sm text-ink">
           <h2 className="font-display text-xl text-navy">Grown-up corner</h2>
@@ -267,8 +281,9 @@ export default async function HQPage() {
               field.
             </li>
             <li>
-              <strong>Emails:</strong> Builders Club and reservation emails are in Supabase, table{" "}
-              <code>private.signups</code>.
+              <strong>Emails:</strong> Builders Club and reservation emails are listed in &ldquo;Who signed up&rdquo; above.
+              To get an email each time someone signs up, add <code>RESEND_API_KEY</code> and <code>NOTIFY_EMAIL</code>{" "}
+              in Vercel (Settings, Environment Variables).
             </li>
             <li>
               <strong>Design requests:</strong> reply to the grown-up&apos;s email to confirm and send a payment link.
