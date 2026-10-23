@@ -1735,6 +1735,89 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     preview_url: null,
     sort_order: 25,
   },
+  {
+    id: "seed-cemetery-pyramid",
+    slug: "cemetery-pyramid",
+    number: 26,
+    name: "Cemetery Pyramid",
+    tagline: "A giant stepped pyramid with a field of tombs lying all around it!",
+    description:
+      "Ashton's Cemetery Pyramid! It's a huge stepped pyramid that climbs up in 6 big steps to a spire at the top. And all around it, behind it, there are tombs: 132 of them, each one made of two blocks lying flat on the floor, laid out like a spooky graveyard. It's the biggest build on the site, so get lots of blocks ready!",
+    inspired_by: "",
+    fun_fact:
+      "The ancient Egyptians built pyramids as tombs for their pharaohs. The Great Pyramid of Giza was the tallest building in the world for almost 4,000 years!",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: null,
+    boxes: null,
+    dice: null,
+    paper: null,
+    cubes: {
+      need: "519 magnetic cube blocks (any pictures or colors)",
+      steps: [
+        {
+          label: "The Two Low Steps",
+          note: "Build the pyramid from the front. It's 12 blocks wide. The first wall is 1 block tall and 1 block deep. Right behind it, build a second wall 2 blocks tall.",
+          boxes: [{ x: 0, y: 0, z: 0, w: 12, d: 1, h: 1 }, { x: 0, y: 1, z: 0, w: 12, d: 1, h: 2 }],
+        },
+        {
+          label: "The Middle Steps",
+          note: "Keep going backward. Build the next two walls, each one block taller than the last: 3 blocks tall, then 4 blocks tall.",
+          boxes: [{ x: 0, y: 2, z: 0, w: 12, d: 1, h: 3 }, { x: 0, y: 3, z: 0, w: 12, d: 1, h: 4 }],
+        },
+        {
+          label: "The High Steps",
+          note: "Build the last two walls: 5 blocks tall, then 6 blocks tall. Now the pyramid looks like a giant staircase going up toward the back!",
+          boxes: [{ x: 0, y: 4, z: 0, w: 12, d: 1, h: 5 }, { x: 0, y: 5, z: 0, w: 12, d: 1, h: 6 }],
+        },
+        {
+          label: "The Spire",
+          note: "On the very top, in the middle of the back wall, stand 3 blocks tall. That's the point of the pyramid.",
+          boxes: [{ x: 5, y: 5, z: 6, w: 1, d: 1, h: 3 }],
+        },
+        {
+          label: "The Tombs: Part 1",
+          note: "Outside the pyramid, lay down tombs. A tomb is 2 blocks stuck together, lying flat on the floor. Put them in 2 rows behind the pyramid, with a gap between each one so they're not touching. Make 22 tombs in this step.",
+          boxes: [{ x: 0, y: 8, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 8, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 8, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 8, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 8, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 8, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 8, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 8, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 8, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 8, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 8, z: 0, w: 2, d: 1, h: 1 }, { x: 0, y: 10, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 10, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 10, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 10, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 10, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 10, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 10, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 10, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 10, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 10, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 10, z: 0, w: 2, d: 1, h: 1 }],
+        },
+        {
+          label: "The Tombs: Part 2",
+          note: "Outside the pyramid, lay down tombs. A tomb is 2 blocks stuck together, lying flat on the floor. Put them in 2 rows behind the pyramid, with a gap between each one so they're not touching. Make 22 tombs in this step.",
+          boxes: [{ x: 0, y: 12, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 12, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 12, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 12, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 12, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 12, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 12, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 12, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 12, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 12, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 12, z: 0, w: 2, d: 1, h: 1 }, { x: 0, y: 14, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 14, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 14, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 14, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 14, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 14, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 14, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 14, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 14, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 14, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 14, z: 0, w: 2, d: 1, h: 1 }],
+        },
+        {
+          label: "The Tombs: Part 3",
+          note: "Outside the pyramid, lay down tombs. A tomb is 2 blocks stuck together, lying flat on the floor. Put them in 2 rows behind the pyramid, with a gap between each one so they're not touching. Make 22 tombs in this step.",
+          boxes: [{ x: 0, y: 16, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 16, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 16, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 16, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 16, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 16, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 16, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 16, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 16, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 16, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 16, z: 0, w: 2, d: 1, h: 1 }, { x: 0, y: 18, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 18, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 18, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 18, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 18, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 18, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 18, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 18, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 18, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 18, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 18, z: 0, w: 2, d: 1, h: 1 }],
+        },
+        {
+          label: "The Tombs: Part 4",
+          note: "Outside the pyramid, lay down tombs. A tomb is 2 blocks stuck together, lying flat on the floor. Put them in 2 rows behind the pyramid, with a gap between each one so they're not touching. Make 22 tombs in this step.",
+          boxes: [{ x: 0, y: 20, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 20, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 20, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 20, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 20, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 20, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 20, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 20, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 20, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 20, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 20, z: 0, w: 2, d: 1, h: 1 }, { x: 0, y: 22, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 22, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 22, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 22, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 22, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 22, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 22, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 22, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 22, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 22, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 22, z: 0, w: 2, d: 1, h: 1 }],
+        },
+        {
+          label: "The Tombs: Part 5",
+          note: "Outside the pyramid, lay down tombs. A tomb is 2 blocks stuck together, lying flat on the floor. Put them in 2 rows behind the pyramid, with a gap between each one so they're not touching. Make 22 tombs in this step.",
+          boxes: [{ x: 0, y: 24, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 24, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 24, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 24, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 24, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 24, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 24, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 24, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 24, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 24, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 24, z: 0, w: 2, d: 1, h: 1 }, { x: 0, y: 26, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 26, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 26, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 26, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 26, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 26, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 26, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 26, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 26, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 26, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 26, z: 0, w: 2, d: 1, h: 1 }],
+        },
+        {
+          label: "The Tombs: Part 6",
+          note: "Outside the pyramid, lay down tombs. A tomb is 2 blocks stuck together, lying flat on the floor. Put them in 2 rows behind the pyramid, with a gap between each one so they're not touching. Make 22 tombs in this step.",
+          boxes: [{ x: 0, y: 28, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 28, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 28, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 28, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 28, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 28, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 28, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 28, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 28, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 28, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 28, z: 0, w: 2, d: 1, h: 1 }, { x: 0, y: 30, z: 0, w: 2, d: 1, h: 1 }, { x: 3, y: 30, z: 0, w: 2, d: 1, h: 1 }, { x: 6, y: 30, z: 0, w: 2, d: 1, h: 1 }, { x: 9, y: 30, z: 0, w: 2, d: 1, h: 1 }, { x: 12, y: 30, z: 0, w: 2, d: 1, h: 1 }, { x: 15, y: 30, z: 0, w: 2, d: 1, h: 1 }, { x: 18, y: 30, z: 0, w: 2, d: 1, h: 1 }, { x: 21, y: 30, z: 0, w: 2, d: 1, h: 1 }, { x: 24, y: 30, z: 0, w: 2, d: 1, h: 1 }, { x: 27, y: 30, z: 0, w: 2, d: 1, h: 1 }, { x: 30, y: 30, z: 0, w: 2, d: 1, h: 1 }],
+        },
+      ],
+    },
+    difficulty: 4,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/cemetery-pyramid.webp",
+    designer: "Ashton (age 5)",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 26,
+  },
 ];
 
 // Old web addresses of renamed blueprints, so links people already have keep working.
