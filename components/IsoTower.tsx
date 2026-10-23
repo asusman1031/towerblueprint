@@ -31,6 +31,7 @@ type Props = {
   animate?: boolean;
   stepMs?: number;
   seed?: number;
+  coarse?: boolean; // skip the pixel texture: far fewer shapes, for small thumbnails
   className?: string;
   title?: string;
 };
@@ -111,6 +112,7 @@ export default function IsoTower({
   animate = false,
   stepMs = 70,
   seed = 7,
+  coarse = false,
   className,
   title,
 }: Props) {
@@ -235,7 +237,7 @@ export default function IsoTower({
     layers.get(c.z)!.push(c);
   }
 
-  const texture = variant === "blocks";
+  const texture = variant === "blocks" && !coarse;
   const stroke = variant === "ink" ? "#1146B8" : "rgba(10,25,60,0.45)";
   const strokeWidth = variant === "ink" ? 0.7 : 0.5;
 

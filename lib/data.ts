@@ -1990,3 +1990,24 @@ export async function getOriginals(slug: string, key: string): Promise<OriginalF
   }
   return (data ?? []) as OriginalFile[];
 }
+
+export type WallEntry = {
+  id: number;
+  first_name: string;
+  age: number | null;
+  state: string;
+  tower_name: string;
+  blurb: string;
+};
+
+// Approved Builder Wall entries (no email, no photo data; photos load from /api/wall-photo).
+export async function getWallEntries(): Promise<WallEntry[]> {
+  const sb = db();
+  if (!sb) return [];
+  const { data, error } = await sb.rpc("wall_entries");
+  if (error) {
+    console.error("getWallEntries", error.message);
+    return [];
+  }
+  return Array.isArray(data) ? (data as WallEntry[]) : [];
+}

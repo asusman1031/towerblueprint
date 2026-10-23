@@ -99,3 +99,65 @@ export async function submitDesign(input: DesignInput): Promise<{ ok: boolean; m
   }
   return DESIGN_MESSAGES[String(data)] ?? { ok: false, message: "Something went wrong. Please try again." };
 }
+
+const WALL_MESSAGES: Record<string, { ok: boolean; message: string }> = {
+  sent: {
+    ok: true,
+    message: "Thank you! Sawyer's team will look at it, and your tower will show up on the wall once it's approved.",
+  },
+  need_consent: { ok: false, message: "A grown-up needs to check the permission box." },
+  bad_email: MESSAGES.bad_email,
+  need_name: { ok: false, message: "Please add the builder's first name." },
+  bad_age: { ok: false, message: "Please check the age." },
+  need_state: { ok: false, message: "Please choose a state." },
+  bad_photo: { ok: false, message: "Please add a photo of the tower (JPG or PNG)." },
+  busy: { ok: false, message: "Lots of towers came in today! Please try again tomorrow." },
+};
+
+export type WallInput = {
+  email: string;
+  consent: boolean;
+  firstName: string;
+  age: number | null;
+  state: string;
+  towerName: string;
+  blurb: string;
+  photoMime: string;
+  photoB64: string;
+};
+
+export async function submitWallEntry(input: WallInput): Promise<{ ok: boolean; message: string }> {
+  const email = String(input.email ?? "").trim();
+  if (!input.consent) return WALL_MESSAGES.need_consent;
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || email.length > 254) return WALL_MESSAGES.bad_email;
+  const photo = String(input.photoB64 ?? "");
+  if (photo.length > 1_400_000) return { ok: false, message: "That photo is too big. Try a smaller one." };
+
+  const sb = db();
+  if (!sb) return { ok: false, message: "The Builder Wall opens very soon. Please check back in a day or two!" };
+  const firstName = String(input.firstName ?? "").slice(0, 30);
+  const age = Number.isFinite(input.age) ? Math.round(Number(input.age)) : null;
+  const { data, error } = await sb.rpc("submit_wall_entry", {
+    p_email: email,
+    p_consent: true,
+    p_first_name: firstName,
+    p_age: age,
+    p_state: String(input.state ?? "").slice(0, 40),
+    p_tower_name: String(input.towerName ?? "").slice(0, 80),
+    p_blurb: String(input.blurb ?? "").slice(0, 200),
+    p_photo_mime: photo ? input.photoMime : null,
+    p_photo_b64: photo || null,
+  });
+  if (error) {
+    console.error("submit_wall_entry", error.message);
+    return { ok: false, message: "Something went wrong. Please try again in a minute." };
+  }
+  if (data === "sent") {
+    await notifyOwner("New tower for the Builder Wall", [
+      `${firstName || "Someone"} sent a tower for the Builder Wall.`,
+      "",
+      "Look at the photo and approve it in Architect HQ: https://www.towerblueprintsforkids.com/hq",
+    ]);
+  }
+  return WALL_MESSAGES[String(data)] ?? { ok: false, message: "Something went wrong. Please try again." };
+}

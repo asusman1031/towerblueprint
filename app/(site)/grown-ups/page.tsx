@@ -45,6 +45,12 @@ export default function GrownUpsPage() {
                 If you send a design, we store your email, the details you type, and the tower photo, only to make the
                 blueprint. Please send photos of towers only, with no people in them.
               </li>
+              <li>
+                If you send a tower to the Builder Wall, we store your email privately and show only the builder&apos;s
+                first name, age, state, and the tower photo, and only after you say it&apos;s OK and Sawyer&apos;s team
+                approves it. Photos must show the tower only, never a child&apos;s face. Ask us and we&apos;ll take an
+                entry down.
+              </li>
               <li>We never sell or share your email. Ask us and we&apos;ll delete it.</li>
               <li>We count page visits in total (no cookies, no ad trackers) so Sawyer can see how his business is doing.</li>
               <li>Payments are handled by our payment processor; we never see your card number.</li>

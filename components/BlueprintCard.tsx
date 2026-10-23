@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Award from "@/components/Award";
-import IsoTower from "@/components/IsoTower";
 import Photo from "@/components/Photo";
 import type { Blueprint } from "@/lib/data";
+import { drawingUrl } from "@/lib/drawing";
 import { buildKind, isCutout, MATERIAL, TOY_CHIP } from "@/lib/kind";
 import { designTotals, unitLabel } from "@/lib/structure";
 import { difficultyLabel, formatPrice } from "@/lib/tower";
 
+/* eslint-disable @next/next/no-img-element -- drawings are cached SVG files, not photos for next/image */
 export default function BlueprintCard({ bp }: { bp: Blueprint }) {
   const t = designTotals(bp);
   const kind = buildKind(bp);
@@ -30,14 +31,11 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
           <div
             className={`absolute right-3 bottom-3 rounded-xl border-2 border-navy bg-white/90 p-2 ${kind === "structure" ? "w-[55%]" : ""}`}
           >
-            <IsoTower
-              structure={bp.structure}
-              tiles={bp.tiles}
-              bricks={bp.bricks}
-              boxes={bp.boxes}
-              dice={bp.dice}
-              paper={bp.paper}
-              cubes={bp.cubes}
+            <img
+              src={drawingUrl(bp)}
+              alt={`${bp.name} drawing`}
+              loading="lazy"
+              decoding="async"
               className={
                 kind === "bricks" || kind === "paper"
                   ? "mx-auto h-40 w-auto max-w-full"
@@ -47,7 +45,6 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
                       ? "mx-auto h-20 w-auto max-w-full"
                       : "mx-auto h-28 w-auto max-w-full"
               }
-              title={`${bp.name} drawing`}
             />
           </div>
           <Badges bp={bp} />
@@ -61,7 +58,13 @@ export default function BlueprintCard({ bp }: { bp: Blueprint }) {
               className="mb-6 h-56 w-28 rounded-xl border-[3px] border-navy object-cover"
             />
           ) : null}
-          <IsoTower sections={bp.sections} className="mb-6 h-56 w-auto max-w-[45%]" title={`${bp.name} drawing`} />
+          <img
+            src={drawingUrl(bp)}
+            alt={`${bp.name} drawing`}
+            loading="lazy"
+            decoding="async"
+            className="mb-6 h-56 w-auto max-w-[45%]"
+          />
           <Badges bp={bp} />
         </div>
       )}

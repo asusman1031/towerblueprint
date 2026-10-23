@@ -9,7 +9,8 @@ import CustomSettingsForm from "@/components/hq/CustomSettingsForm";
 import NoteForm from "@/components/hq/NoteForm";
 import SaleForm from "@/components/hq/SaleForm";
 import SignupsList from "@/components/hq/SignupsList";
-import type { HqDashboard, HqSignup } from "@/components/hq/types";
+import type { HqDashboard, HqSignup, HqWallEntry } from "@/components/hq/types";
+import WallReview from "@/components/hq/WallReview";
 import { DEFAULT_ARCHITECT_NOTE, DEFAULT_CUSTOM_PRICE_CENTS } from "@/lib/data";
 import { cleanBoxes } from "@/lib/boxes";
 import { cleanBricks } from "@/lib/bricks";
@@ -68,15 +69,19 @@ export default async function HQPage() {
   const token = (await cookies()).get("tb_hq")?.value;
   let dash: HqDashboard | null = null;
   let signups: HqSignup[] = [];
+  let wall: HqWallEntry[] = [];
   if (token) {
-    const [dashRes, signupsRes] = await Promise.all([
+    const [dashRes, signupsRes, wallRes] = await Promise.all([
       sb.rpc("hq_dashboard", { p_token: token }),
       sb.rpc("hq_signups", { p_token: token }),
+      sb.rpc("hq_wall", { p_token: token }),
     ]);
     if (dashRes.error) console.error("hq_dashboard", dashRes.error.message);
     if (signupsRes.error) console.error("hq_signups", signupsRes.error.message);
+    if (wallRes.error) console.error("hq_wall", wallRes.error.message);
     dash = (dashRes.data as HqDashboard | null) ?? null;
     signups = Array.isArray(signupsRes.data) ? (signupsRes.data as HqSignup[]) : [];
+    wall = Array.isArray(wallRes.data) ? (wallRes.data as HqWallEntry[]) : [];
   }
   if (!dash) {
     return (
@@ -216,6 +221,19 @@ export default async function HQPage() {
           <h2 className="font-display text-3xl text-navy">My blueprints</h2>
           <p className="mb-4 text-ink">Design a tower, watch it build, and publish it when it&apos;s ready.</p>
           <BlueprintManager blueprints={blueprints} requests={dash.requests ?? []} origin={origin} />
+        </section>
+
+        {/* Builder Wall */}
+        <section className="card p-5">
+          <h2 className="font-display text-3xl text-navy">Builder Wall</h2>
+          <p className="mb-4 text-ink">
+            Towers sent in by other kids&apos; grown-ups. Check each photo shows only the tower, never a face, before you
+            approve it.
+            {wall.some((w) => w.status === "pending") ? (
+              <strong> {wall.filter((w) => w.status === "pending").length} waiting for you!</strong>
+            ) : null}
+          </p>
+          <WallReview entries={wall} />
         </section>
 
         {/* Cash register */}

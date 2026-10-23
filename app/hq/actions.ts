@@ -262,3 +262,11 @@ export async function saveCustomSettings(_prev: FormState, formData: FormData): 
   revalidatePath("/", "layout");
   return { ok: true, message: "Saved! ✨" };
 }
+
+export async function setWallStatus(id: number, status: "approved" | "rejected" | "pending" | "delete") {
+  const sb = db();
+  if (!sb) return;
+  await sb.rpc("hq_set_wall", { p_token: await token(), p_id: id, p_status: status });
+  revalidatePath("/hq");
+  revalidatePath("/wall");
+}

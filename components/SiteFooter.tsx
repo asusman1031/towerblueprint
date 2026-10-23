@@ -17,6 +17,15 @@ export default function SiteFooter() {
           <Link href="/blueprints" className="hover:text-white">
             All blueprints
           </Link>
+          <Link href="/watch" className="hover:text-white">
+            Watch the towers build
+          </Link>
+          <Link href="/wall" className="hover:text-white">
+            Builder Wall
+          </Link>
+          <Link href="/party" className="hover:text-white">
+            Build-a-Tower Party
+          </Link>
           <Link href="/your-design" className="hover:text-white">
             Make my design a blueprint
           </Link>

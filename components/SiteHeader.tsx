@@ -3,9 +3,10 @@ import Link from "next/link";
 
 const NAV = [
   { href: "/blueprints", label: "Blueprints" },
+  { href: "/watch", label: "Watch" },
+  { href: "/wall", label: "Builder Wall" },
   { href: "/your-design", label: "Your design" },
   { href: "/#how-it-works", label: "How it works" },
-  { href: "/#architect", label: "The Architect" },
 ];
 
 export default function SiteHeader() {

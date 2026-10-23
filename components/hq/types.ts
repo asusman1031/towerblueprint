@@ -49,3 +49,15 @@ export type HqDashboard = {
   requests: HqRequest[];
   settings: Partial<Record<"architect_note" | "custom_price_cents" | "custom_open", string>>;
 };
+
+export type HqWallEntry = {
+  id: number;
+  first_name: string;
+  age: number | null;
+  state: string;
+  tower_name: string;
+  blurb: string;
+  parent_email: string;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
+};

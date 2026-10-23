@@ -3,12 +3,13 @@ import Link from "next/link";
 import BlueprintCard from "@/components/BlueprintCard";
 import BlueprintCarousel from "@/components/BlueprintCarousel";
 import BlueprintPeek from "@/components/BlueprintPeek";
-import BuildingTower from "@/components/BuildingTower";
+import DrawingPlayer from "@/components/DrawingPlayer";
 import CoverPreview from "@/components/CoverPreview";
 import Photo from "@/components/Photo";
 import SignupForm from "@/components/SignupForm";
 import Track from "@/components/Track";
 import { getBlueprints, getSettings } from "@/lib/data";
+import { drawingUrl } from "@/lib/drawing";
 import { buildKind } from "@/lib/kind";
 import { designTotals } from "@/lib/structure";
 import { formatPrice, SAMPLE_CUSTOM_TOWER, theName } from "@/lib/tower";
@@ -115,17 +116,10 @@ export default async function Home() {
                   </figure>
                   <figure className="flex flex-col items-center">
                     <div className="flex items-stretch gap-2">
-                      <BuildingTower
-                        sections={featured.sections}
-                        structure={featured.structure}
-                        tiles={featured.tiles}
-                        bricks={featured.bricks}
-                        boxes={featured.boxes}
-                        dice={featured.dice}
-                        paper={featured.paper}
-                        cubes={featured.cubes}
+                      <DrawingPlayer
+                        src={drawingUrl(featured, { animate: true })}
+                        alt={`${featured.name}, ${featuredTotals.blocks} blocks`}
                         className="h-72 w-auto sm:h-[22rem]"
-                        title={`${featured.name}, ${featuredTotals.blocks} blocks`}
                       />
                     </div>
                     <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
@@ -207,6 +201,46 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Collage of every build, linking to the animation gallery */}
+      <section className="bg-grid-light border-y-[3px] border-navy">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="font-display text-4xl text-navy sm:text-5xl">Watch them build</h2>
+              <p className="mt-2 max-w-xl text-lg text-ink">
+                Every tower builds itself on screen, one layer at a time. Flip through them all.
+              </p>
+            </div>
+            <Link href="/watch" className="btn btn-sun">
+              ▶ Watch the towers
+            </Link>
+          </div>
+          <ul className="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+            {[...blueprints]
+              .sort((a, b) => b.number - a.number)
+              .slice(0, 12)
+              .map((bp) => (
+                <li key={bp.id}>
+                  <Link
+                    href="/watch"
+                    aria-label={`Watch ${bp.name} build`}
+                    className="card flex aspect-[4/5] items-center justify-center p-2 transition hover:-translate-y-1"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={drawingUrl(bp)}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-contain"
+                    />
+                  </Link>
+                </li>
+              ))}
+          </ul>
+        </div>
+      </section>
+
       {/* What's inside */}
       {featured ? (
         <section className="bg-ice overflow-x-clip border-y-[3px] border-navy">
@@ -279,6 +313,34 @@ export default async function Home() {
               <span className="font-display text-xl">{formatPrice(settings.customPriceCents)}</span>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Birthday parties and the Builder Wall */}
+      <section className="mx-auto grid max-w-6xl gap-6 px-4 py-16 sm:px-6 md:grid-cols-2">
+        <div className="card p-7">
+          <span className="text-4xl" aria-hidden>
+            🎂
+          </span>
+          <h2 className="mt-2 font-display text-3xl text-navy sm:text-4xl">Build-a-Tower Party</h2>
+          <p className="mt-2 text-lg text-ink">
+            Everyone builds a tower at the party, and each guest takes home an official blueprint of theirs as a favor.
+          </p>
+          <Link href="/party" className="btn btn-sun mt-5">
+            Plan a party
+          </Link>
+        </div>
+        <div className="card p-7">
+          <span className="text-4xl" aria-hidden>
+            🌎
+          </span>
+          <h2 className="mt-2 font-display text-3xl text-navy sm:text-4xl">The Builder Wall</h2>
+          <p className="mt-2 text-lg text-ink">
+            Young architects from all over show off their towers. Grown-ups can send in a photo to join the wall.
+          </p>
+          <Link href="/wall" className="btn btn-sun mt-5">
+            See the wall
+          </Link>
         </div>
       </section>
 

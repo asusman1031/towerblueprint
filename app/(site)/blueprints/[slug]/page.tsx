@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import Award from "@/components/Award";
-import BuildingTower from "@/components/BuildingTower";
+import DrawingPlayer from "@/components/DrawingPlayer";
 import BuyBox from "@/components/BuyBox";
 import Photo from "@/components/Photo";
 import Track from "@/components/Track";
 import { getBlueprint, RENAMED_SLUGS } from "@/lib/data";
+import { drawingUrl } from "@/lib/drawing";
 import { BLUEPRINT_KIND, buildKind, isCutout, MATERIAL } from "@/lib/kind";
 import { buildPaper } from "@/lib/paper";
 import { designTotals, unitLabel } from "@/lib/structure";
@@ -85,15 +86,9 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   )}
                 </div>
                 <figure className="flex w-full flex-col items-center">
-                  <BuildingTower
-                    sections={bp.sections}
-                    structure={bp.structure}
-                    tiles={bp.tiles}
-                    bricks={bp.bricks}
-                    boxes={bp.boxes}
-                    dice={bp.dice}
-                    paper={bp.paper}
-                    cubes={bp.cubes}
+                  <DrawingPlayer
+                    src={drawingUrl(bp, { animate: true })}
+                    alt={`${bp.name} drawing`}
                     wide
                     className={
                       bp.bricks || bp.paper
@@ -104,7 +99,6 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                           ? "mx-auto h-64 w-auto max-w-full"
                           : "h-auto max-h-[22rem] w-full"
                     }
-                    title={`${bp.name} drawing`}
                   />
                   <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
                     The blueprint
@@ -130,7 +124,11 @@ export default async function BlueprintPage({ params }: PageProps<"/blueprints/[
                   </figcaption>
                 </figure>
                 <figure className="flex flex-col items-center">
-                  <BuildingTower sections={bp.sections} className="h-[22rem] w-auto" title={`${bp.name} drawing`} />
+                  <DrawingPlayer
+                    src={drawingUrl(bp, { animate: true })}
+                    alt={`${bp.name} drawing`}
+                    className="h-[22rem] w-auto"
+                  />
                   <figcaption className="mt-2 text-xs font-extrabold tracking-wider text-ink uppercase">
                     The blueprint
                   </figcaption>
