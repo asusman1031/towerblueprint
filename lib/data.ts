@@ -2034,6 +2034,60 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     preview_url: null,
     sort_order: 29,
   },
+  {
+    id: "seed-shooting-head-tower",
+    slug: "shooting-head-tower",
+    number: 30,
+    name: "Shooting Head Tower",
+    tagline: "A chunky tower with funny faces on the front and a head on top!",
+    description:
+      "Ashton's Shooting Head Tower! It starts narrow at the bottom, bulges out wide in the middle, then narrows again into a skinny stem with a dark head block on the very top. Look closely at the front: there's a ghost face and a boy in a cap hiding in the blocks.",
+    inspired_by: "",
+    fun_fact:
+      "Most skyscrapers are widest at the bottom so they stay steady. This tower bulges out in the middle instead, and the magnets inside the blocks help hold it all together!",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: null,
+    boxes: null,
+    dice: null,
+    paper: null,
+    cubes: {
+      need: "108 magnetic cube blocks (any pictures or colors)",
+      photos: ["/photos/shooting-head-tower-side.webp"],
+      steps: [
+        {
+          label: "The Narrow Base",
+          note: "Start with a solid block of cubes that is 3 blocks wide, 3 long and 3 tall.",
+          boxes: [{ x: 1, y: 0, z: 0, w: 3, d: 3, h: 3 }],
+        },
+        {
+          label: "The Wide Middle",
+          note: "Now build wider! Make a block that is 5 blocks wide, 3 long and 4 tall, and put it right on top of the base. It sticks out 1 block on each side.",
+          boxes: [{ x: 0, y: 0, z: 3, w: 5, d: 3, h: 4 }],
+        },
+        {
+          label: "The Shoulders",
+          note: "Go narrow again. Build a block 3 wide, 3 long and 2 tall in the middle of the wide part.",
+          boxes: [{ x: 1, y: 0, z: 7, w: 3, d: 3, h: 2 }],
+        },
+        {
+          label: "The Head Stem",
+          note: "Finish with a skinny stem of 3 blocks standing in the middle. Put the dark head block on the very top!",
+          boxes: [{ x: 2, y: 1, z: 9, w: 1, d: 1, h: 3 }],
+        },
+      ],
+    },
+    difficulty: 2,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/shooting-head-tower.webp",
+    designer: "Ashton",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 30,
+  },
 ];
 
 // Old web addresses of renamed blueprints, so links people already have keep working.
