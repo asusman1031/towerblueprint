@@ -2088,6 +2088,59 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     preview_url: null,
     sort_order: 30,
   },
+  {
+    id: "seed-side-to-side-tower",
+    slug: "side-to-side-tower",
+    number: 31,
+    name: "Side to Side Tower",
+    tagline: "A long, wide base with a super tall tower and a skinny pillar side by side!",
+    description:
+      "Arden's Side to Side Tower! A long, wide base stretches out side to side, with a skinny pillar on one end and a super tall tower rising from the other side. Arden is our neighbor, and this is the very first blueprint from a guest architect outside the family!",
+    inspired_by: "",
+    fun_fact:
+      "The tallest buildings in the world stand on very wide foundations that spread their weight out, just like this tower's long, wide base.",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: null,
+    boxes: null,
+    dice: null,
+    paper: null,
+    cubes: {
+      need: "137 magnetic cube blocks (any pictures or colors)",
+      steps: [
+        {
+          label: "The Long Base",
+          note: "Build a long, solid base on the floor: 5 blocks wide, 2 blocks deep and 7 tall.",
+          boxes: [{ x: 0, y: 0, z: 0, w: 5, d: 2, h: 7 }],
+        },
+        {
+          label: "The Raised Side",
+          note: "On the right 3 columns of the base, build up 3 more blocks. The right side is now 10 blocks tall, and the left 2 columns stay lower.",
+          boxes: [{ x: 2, y: 0, z: 7, w: 3, d: 2, h: 3 }],
+        },
+        {
+          label: "The Skinny Pillar",
+          note: "On the lowest left corner, stand a skinny pillar 5 blocks tall, 1 block wide and 1 block deep.",
+          boxes: [{ x: 0, y: 0, z: 7, w: 1, d: 1, h: 5 }],
+        },
+        {
+          label: "The Tall Tower",
+          note: "Now the big finish! On the raised side, build a tower 2 blocks wide, 2 deep and 11 tall. It's the tallest part by far.",
+          boxes: [{ x: 2, y: 0, z: 10, w: 2, d: 2, h: 11 }],
+        },
+      ],
+    },
+    difficulty: 2,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/side-to-side-tower.webp",
+    designer: "Arden",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 31,
+  },
 ];
 
 // Old web addresses of renamed blueprints, so links people already have keep working.
