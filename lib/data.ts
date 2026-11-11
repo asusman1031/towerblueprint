@@ -2264,6 +2264,65 @@ export const SEED_BLUEPRINTS: Blueprint[] = [
     preview_url: null,
     sort_order: 33,
   },
+  {
+    id: "seed-huggy-twin-towers",
+    slug: "huggy-twin-towers",
+    number: 34,
+    name: "Huggy Twin Towers",
+    tagline: "Two tall twin towers holding hands across a bridge, with a little leg in the middle!",
+    description:
+      "Sawyer's Huggy Twin Towers! Two tall towers stand side by side like twins, each with a skinny chimney on top. A bridge joins them near the bottom, like they are holding hands for a big hug, and a short leg in the middle holds the bridge up.",
+    inspired_by: "",
+    fun_fact:
+      "Some real skyscrapers come in pairs, joined by a bridge high in the air. The Petronas Towers in Malaysia have a sky bridge between them.",
+    sections: [{ w: 1, d: 1, count: 1 }],
+    structure: null,
+    tiles: null,
+    bricks: null,
+    boxes: null,
+    dice: null,
+    paper: null,
+    cubes: {
+      need: "274 magnetic cube blocks (any pictures or colors)",
+      photos: ["/photos/huggy-twin-towers-side.webp"],
+      steps: [
+        {
+          label: "The Left Tower",
+          note: "Build the first tower: a solid block 3 wide, 3 long and 13 tall.",
+          boxes: [{ x: 0, y: 0, z: 0, w: 3, d: 3, h: 13 }],
+        },
+        {
+          label: "The Right Tower",
+          note: "Build its twin about 5 blocks to the right: another solid block, also 3 wide, 3 long and 13 tall. Leave a gap of 5 blocks between the two towers.",
+          boxes: [{ x: 8, y: 0, z: 0, w: 3, d: 3, h: 13 }],
+        },
+        {
+          label: "The Hug",
+          note: "Now the towers hold hands! Lay a bridge between them, 5 blocks long, 2 deep and 2 tall, starting 3 blocks up from the floor on the front side.",
+          boxes: [{ x: 3, y: 0, z: 3, w: 5, d: 2, h: 2 }],
+        },
+        {
+          label: "The Middle Leg",
+          note: "Under the middle of the bridge, build a short leg 2 wide, 2 deep and 3 tall, standing on the floor and holding the bridge up.",
+          boxes: [{ x: 4, y: 0, z: 0, w: 2, d: 2, h: 3 }],
+        },
+        {
+          label: "The Two Chimneys",
+          note: "Finish by standing a skinny stem of 4 blocks in the middle of each tower's roof.",
+          boxes: [{ x: 1, y: 1, z: 13, w: 1, d: 1, h: 4 }, { x: 9, y: 1, z: 13, w: 1, d: 1, h: 4 }],
+        },
+      ],
+    },
+    difficulty: 3,
+    price_cents: 500,
+    checkout_url: null,
+    status: "live",
+    photo_url: "/photos/huggy-twin-towers.webp",
+    designer: "",
+    original_pages: 0,
+    preview_url: null,
+    sort_order: 34,
+  },
 ];
 
 // Old web addresses of renamed blueprints, so links people already have keep working.
